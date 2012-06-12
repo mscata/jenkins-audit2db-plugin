@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jenkins.plugins.dbaudit.test;
+package org.jenkins.plugins.dbaudit.test.data;
 
 import java.util.ArrayList;
 import java.util.Calendar;
