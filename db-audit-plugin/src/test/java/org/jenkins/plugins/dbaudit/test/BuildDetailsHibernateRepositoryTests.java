@@ -62,6 +62,30 @@ public class BuildDetailsHibernateRepositoryTests {
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		Assert.assertEquals("Unexpected build id", buildId, build.getId());
 	}
+
+	
+	@Test
+	public void retrievalByNonMatchingIdShouldReturnNullEntity() {
+		final BuildDetails build = getBuildDetails();
+		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
+		Assert.assertNotNull("Unexpected null build id", buildId);
+		
+		final BuildDetails retrievedBuild = buildDetailsRepository.getBuildDetailsById(
+				build.getId() + "NOMATCH");
+		Assert.assertNull("Unexpected null build", retrievedBuild);
+	}
+
+	@Test
+	public void retrievalByMatchingIdShouldReturnSameEntity() {
+		final BuildDetails build = getBuildDetails();
+		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
+		Assert.assertNotNull("Unexpected null build id", buildId);
+		
+		final BuildDetails retrievedBuild = buildDetailsRepository.getBuildDetailsById(
+				build.getId());
+		Assert.assertNotNull("Unexpected null build", build);
+		Assert.assertEquals("Mismatching build details found", build, retrievedBuild);
+	}
 	
 	@Test
 	public void retrievalByNonMatchingDateRangeShouldReturnEmptyList() {

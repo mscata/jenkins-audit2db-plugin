@@ -39,6 +39,23 @@ public class BuildDetailsHibernateRepository implements BuildDetailsRepository {
 	}
 
 	/**
+	 * @see org.jenkins.plugins.dbaudit.data.BuildDetailsRepository#getBuildDetailsById(String)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public BuildDetails getBuildDetailsById(final String id) {
+		BuildDetails retval = null;
+		
+		final DetachedCriteria criteria = DetachedCriteria.forClass(BuildDetails.class);
+		criteria.add(Restrictions.eq("id", id));
+		final List<BuildDetails> builds = hibernate.findByCriteria(criteria);
+		if ((builds != null) && !builds.isEmpty()) {
+			retval = builds.get(0);
+		}
+		return retval;
+	}
+	
+	/**
 	 * @see org.jenkins.plugins.dbaudit.data.BuildDetailsRepository#getBuildDetailsByName(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
