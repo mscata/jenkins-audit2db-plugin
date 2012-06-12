@@ -1,0 +1,40 @@
+<!--
+  Edit View Page
+-->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+	<f:section title="Database Audit Plugin">
+		<f:entry title="Build Pipeline View Title" field="buildViewTitle">
+			<f:textbox name="buildViewTitle"/> 
+	  	</f:entry>
+	  	  
+	    <f:entry title="Select Initial Job" field="selectedJob">    
+			<f:select name="selectedJob"> 
+			</f:select>
+	  	</f:entry>
+	  
+	  	<f:entry title="No Of Displayed Builds" field="noOfDisplayedBuilds">
+			<f:select name="noOfDisplayedBuilds">
+	    	</f:select>
+	  	</f:entry>
+	
+	  	<f:entry title="Restrict Trigger to the Most Recent Build" field="triggerOnlyLatestJob">
+			<f:booleanRadio field="triggerOnlyLatestJob" true="Yes" false="No" default="false"/>
+	  	</f:entry>
+	  	
+	  	<f:entry title="Allow re-execution of successful pipeline steps" field="alwaysAllowManualTrigger">
+	  	    <f:booleanRadio field="alwaysAllowManualTrigger" true="Yes" false="No" default="false"/>
+	  	</f:entry>
+	  	
+	  	<f:entry title="Show pipeline parameters" field="showPipelineParameters">
+	  		<f:booleanRadio field="showPipelineParameters" true="Yes" false="No" default="false"/>
+	  	</f:entry>
+	  	
+	  	<f:entry title="Show pipeline definition header" field="showPipelineDefinitionHeader">
+	  		<f:booleanRadio field="showPipelineDefinitionHeader" true="Yes" false="No" default="false"/>
+	  	</f:entry>
+	  	
+	  	<f:entry title="Show revision box" field="showRevisionBox">
+	  		<f:booleanRadio field="showRevisionBox" true="Yes" false="No" default="false"/>
+	  	</f:entry>
+	</f:section>
+</j:jelly>
