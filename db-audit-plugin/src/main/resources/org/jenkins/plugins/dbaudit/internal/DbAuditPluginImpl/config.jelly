@@ -1,0 +1,32 @@
+<!--
+  Edit View Page
+-->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+	<f:section title="Database Audit Plugin">
+		<f:radioBlock title="${%Use JNDI Datasource}" name="dbaudit.datasource" value="${it.useJndi}" checked="${it.isUseJndi()}">
+			<f:entry title="${%Datasource name}" field="jndiDatasource">
+				<f:textbox name="dbaudit.jndiDatasource" value="${it.jndiDatasource}"/> 
+		  	</f:entry>
+			<f:entry title="${%User}" field="username">
+				<f:textbox name="dbaudit.username" value="${it.username}" />
+			</f:entry>
+			<f:entry title="${%Password}" field="password">
+				<f:password name="dbaudit.password" value="${it.password}" />
+			</f:entry>
+		</f:radioBlock>
+		<f:radioBlock title="${%Use JDBC Datasource}" name="dbaudit.datasource" value="${it.useJndi}" checked="${it.isUseJndi()}">
+			<f:entry title="${%Driver class}" field="jdbcDriver">
+				<f:textbox name="dbaudit.jdbcDriver" value="${it.jdbcDriver}"/> 
+		  	</f:entry>
+			<f:entry title="${%Url}" field="jdbcUrl">
+				<f:textbox name="dbaudit.jdbcUrl" value="${it.jdbcUrl}"/> 
+		  	</f:entry>
+			<f:entry title="${%User}" field="username">
+				<f:textbox name="dbaudit.username" value="${it.username}" />
+			</f:entry>
+			<f:entry title="${%Password}" field="password">
+				<f:password name="dbaudit.password" value="${it.password}" />
+			</f:entry>
+		</f:radioBlock>
+	</f:section>
+</j:jelly>
