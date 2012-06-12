@@ -192,10 +192,27 @@ public class BuildDetailsImpl implements BuildDetails {
 			final BuildParameter[] tempParams = params.toArray(new BuildParameter[]{});
 			this.parameters.clear();
 			Collections.addAll(this.parameters, tempParams);
-//			for (final BuildParameter tempParam : tempParams) {
-//				this.parameters.add(tempParam);
-//			}
 		}
 	}
 
+	@Override
+	public String toString() {
+		return String.format("%s [%s]");
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.id.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		// fail-fast logic
+		if (null == obj) { return false; }
+		if (!(obj instanceof BuildDetails)) { return false; }
+		
+		final BuildDetails other = (BuildDetails) obj;
+		
+		return other.hashCode() == this.hashCode();
+	}
 }

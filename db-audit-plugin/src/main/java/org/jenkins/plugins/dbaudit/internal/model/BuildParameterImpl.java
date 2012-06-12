@@ -100,4 +100,35 @@ public class BuildParameterImpl implements BuildParameter {
 		this.buildId = buildId;
 	}
 
+	/**
+	 * Used to decide equality.
+	 * 
+	 * @return the internal id.
+	 */
+	private String getInternalId() {
+		return String.format("%s/%s", 
+				this.buildId, this.name);
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s=%s [%s]", 
+				getInternalId(), this.value, this.id);
+	}
+	
+	@Override
+	public int hashCode() {
+		return getInternalId().hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		// fail-fast logic
+		if (null == obj) { return false; }
+		if (!(obj instanceof BuildParameter)) { return false; }
+		
+		final BuildParameter other = (BuildParameter) obj;
+		
+		return other.hashCode() == this.hashCode();
+	}
 }
