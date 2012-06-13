@@ -156,10 +156,15 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 		}
 		this.username = datasourceDetails.getString("username");
 		this.password = datasourceDetails.getString("password");
+		save();
+	}
+	
+	public static Descriptor<DbAuditPluginImpl> getPlugindescriptor() {
+		return PluginDescriptor;
 	}
 
 	@Override
-	public Descriptor getDescriptor() {
+	public Descriptor<DbAuditPluginImpl> getDescriptor() {
 		return PluginDescriptor;
 	}
 }

@@ -6,7 +6,7 @@
 		<version>1.446</version>
 	</parent>
 	<groupId>jenkins.plugins</groupId>
-	<artifactId>dbaudit-plugin</artifactId>
+	<artifactId>dbaudit</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>Database Audit Plugin</name>
