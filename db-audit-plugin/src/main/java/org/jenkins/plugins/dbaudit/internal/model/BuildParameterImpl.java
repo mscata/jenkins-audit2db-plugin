@@ -6,6 +6,7 @@ package org.jenkins.plugins.dbaudit.internal.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import org.jenkins.plugins.dbaudit.model.BuildParameter;
 
@@ -105,6 +106,7 @@ public class BuildParameterImpl implements BuildParameter {
 	 * 
 	 * @return the internal id.
 	 */
+	@Transient
 	private String getInternalId() {
 		return String.format("%s/%s", 
 				this.buildId, this.name);

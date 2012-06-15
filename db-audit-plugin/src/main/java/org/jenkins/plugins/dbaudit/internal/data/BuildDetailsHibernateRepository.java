@@ -3,6 +3,7 @@
  */
 package org.jenkins.plugins.dbaudit.internal.data;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -87,13 +88,28 @@ public class BuildDetailsHibernateRepository implements BuildDetailsRepository {
 		// we need this funny-looking complex criteria because the
 		// semantics of the 'between' criteria can vary across
 		// db providers and we want a predictable inclusive behaviour.
+		
+		final Calendar inclusiveStartDate = Calendar.getInstance();
+		inclusiveStartDate.setTime(start);
+		inclusiveStartDate.set(Calendar.HOUR_OF_DAY, 0);
+		inclusiveStartDate.set(Calendar.MINUTE, 0);
+		inclusiveStartDate.set(Calendar.SECOND, 0);
+		inclusiveStartDate.set(Calendar.MILLISECOND, 0);
+		
+		final Calendar inclusiveEndDate = Calendar.getInstance();
+		inclusiveEndDate.setTime(end);
+		inclusiveEndDate.set(Calendar.HOUR_OF_DAY, 23);
+		inclusiveEndDate.set(Calendar.MINUTE, 59);
+		inclusiveEndDate.set(Calendar.SECOND, 59);
+		inclusiveEndDate.set(Calendar.MILLISECOND, 999);
+		
 		criteria.add(Restrictions.or(
 				Restrictions.and(
-					Restrictions.ge("startDate", start),
-					Restrictions.le("startDate", end)),
+					Restrictions.ge("startDate", inclusiveStartDate.getTime()),
+					Restrictions.le("startDate", inclusiveEndDate.getTime())),
 				Restrictions.and(
-						Restrictions.ge("endDate", start),
-						Restrictions.le("endDate", end))
+						Restrictions.ge("endDate", inclusiveStartDate.getTime()),
+						Restrictions.le("endDate", inclusiveEndDate.getTime()))
 		));
 		return hibernate.findByCriteria(criteria);
 	}
