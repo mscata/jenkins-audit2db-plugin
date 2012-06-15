@@ -3,6 +3,10 @@
  */
 package org.jenkins.plugins.dbaudit;
 
+import java.sql.Connection;
+
+import javax.sql.DataSource;
+
 /**
  * @author Marco Scata
  *
@@ -62,4 +66,14 @@ public interface DbAuditPlugin {
 	 * @param password a valid password for the specified user.
 	 */
 	void setPassword(String password);
+	
+	/**
+	 * @return <code>true</code> if the datasource is reachable.
+	 */
+	boolean testDatasourceConnection();
+	
+	/**
+	 * @return the datasource for the audit database.
+	 */
+	DataSource getDatasource();
 }

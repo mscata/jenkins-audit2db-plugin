@@ -3,26 +3,40 @@
  */
 package org.jenkins.plugins.dbaudit.internal;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-
 import hudson.Plugin;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Descriptor.FormException;
+
+import java.io.IOException;
+import java.sql.Connection;
+
+import javax.servlet.ServletException;
+import javax.sql.DataSource;
 
 import net.sf.json.JSONObject;
 
 import org.jenkins.plugins.dbaudit.DbAuditPlugin;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jndi.JndiTemplate;
+import org.springframework.orm.hibernate3.AbstractSessionFactoryBean;
 
 /**
+ * Implementation of the {@link DbAuditPlugin} interface.
+ * 
  * @author Marco Scata
  *
  */
 public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describable<DbAuditPluginImpl> {
+	private final static Logger LOGGER = LoggerFactory.getLogger(DbAuditPluginImpl.class);
+	private static DataSource datasource;
+	private static ApplicationContext appContext;
+	
 	private boolean useJndi;
 	private String jndiDatasource;
 	
@@ -69,7 +83,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	 * @see DbAuditPlugin#setUseJndi(boolean)
 	 */
 	@Override
-	public void setUseJndi(boolean useJndi) {
+	public void setUseJndi(final boolean useJndi) {
 		this.useJndi = useJndi;
 	}
 	/**
@@ -83,7 +97,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	 * @see DbAuditPlugin#setJndiDatasource(String)
 	 */
 	@Override
-	public void setJndiDatasource(String jndiDatasource) {
+	public void setJndiDatasource(final String jndiDatasource) {
 		this.jndiDatasource = jndiDatasource;
 	}
 	/**
@@ -97,7 +111,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	 * @see DbAuditPlugin#setJdbcDriver(String)
 	 */
 	@Override
-	public void setJdbcDriver(String jdbcDriver) {
+	public void setJdbcDriver(final String jdbcDriver) {
 		this.jdbcDriver = jdbcDriver;
 	}
 	/**
@@ -111,7 +125,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	 * @see DbAuditPlugin#setJdbcUrl(String)
 	 */
 	@Override
-	public void setJdbcUrl(String jdbcUrl) {
+	public void setJdbcUrl(final String jdbcUrl) {
 		this.jdbcUrl = jdbcUrl;
 	}
 	/**
@@ -125,7 +139,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	 * @see DbAuditPlugin#setUsername(String)
 	 */
 	@Override
-	public void setUsername(String username) {
+	public void setUsername(final String username) {
 		this.username = username;
 	}
 	/**
@@ -138,8 +152,60 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	 * @see DbAuditPlugin#setPassword(String)
 	 */
 	@Override
-	public void setPassword(String password) {
+	public void setPassword(final String password) {
 		this.password = password;
+	}
+	
+	private Connection getJndiConnection(final String jndiName,
+			final String username, final String password) {
+		Connection retval = null;
+		final JndiTemplate jndi = new JndiTemplate();
+		try {
+			final Object jndiObject = jndi.lookup(jndiName);
+			if (!DataSource.class.isAssignableFrom(jndiObject.getClass())) {
+				throw new ClassCastException(String.format(
+						"JNDI connection is not of the right type: found %s",
+						jndiObject.getClass().getName()));
+			}
+			
+			datasource = (DataSource) jndiObject;
+			retval = datasource.getConnection(username, password);
+		} catch (final Exception e) {
+			final String msg = String.format(
+					"Unable to retrieve JNDI datasource: %s", 
+					e.getMessage());
+			LOGGER.error(msg, e);
+		}
+		
+		return retval;
+	}
+	
+	private Connection getJdbcConnection(final String jdbcDriver,
+			final String jdbcUrl, final String username, final String password) {
+		return null;
+	}
+	
+	/**
+	 * @see DbAuditPlugin#testDatasourceConnection()
+	 */
+	@Override
+	public boolean testDatasourceConnection() {
+		final Connection connection;
+		if (useJndi) {
+			connection = getJndiConnection(jndiDatasource, username, password);
+		} else {
+			connection = getJdbcConnection(jdbcDriver, jdbcUrl, username, password);
+		}
+
+		return (connection != null);
+	}
+	
+	/**
+	 * @see DbAuditPlugin#getDatasource()
+	 */
+	@Override
+	public DataSource getDatasource() {
+		return datasource;
 	}
 	
 	@Override
@@ -147,15 +213,25 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 			throws IOException, ServletException, FormException {
 		super.configure(req, formData);
 		final JSONObject datasourceDetails = formData.getJSONObject("datasource");
+		this.username = datasourceDetails.getString("username");
+		this.password = datasourceDetails.getString("password");
 		this.useJndi = datasourceDetails.getBoolean("value");
+
+		Connection connection = null;
 		if (this.useJndi) {
 			this.jndiDatasource = datasourceDetails.getString("jndiDatasource");
+			connection = getJndiConnection(
+					this.jndiDatasource, this.username, this.password);
 		} else {
 			this.jdbcDriver = datasourceDetails.getString("jdbcDriver");
 			this.jdbcUrl = datasourceDetails.getString("jdbcUrl");
+			connection = getJdbcConnection(this.jdbcDriver,
+					this.jdbcUrl, this.username, this.password);
 		}
-		this.username = datasourceDetails.getString("username");
-		this.password = datasourceDetails.getString("password");
+		
+		final AbstractSessionFactoryBean sessionFactory = (AbstractSessionFactoryBean) appContext.getBean("sessionFactory");
+		sessionFactory.setDataSource(datasource);
+		
 		save();
 	}
 	
@@ -163,8 +239,14 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 		return PluginDescriptor;
 	}
 
-	@Override
 	public Descriptor<DbAuditPluginImpl> getDescriptor() {
 		return PluginDescriptor;
+	}
+	
+	@Override
+	public void start() throws Exception {
+		super.start();
+		appContext = new ClassPathXmlApplicationContext(
+				new String[] {"/org/jenkins/plugins/dbaudit/application-context.xml"});
 	}
 }
