@@ -10,6 +10,7 @@ import hudson.model.Descriptor.FormException;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.sql.DataSource;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.hibernate3.AbstractSessionFactoryBean;
 
@@ -36,6 +38,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	private final static Logger LOGGER = LoggerFactory.getLogger(DbAuditPluginImpl.class);
 	private static DataSource datasource;
 	private static ApplicationContext appContext;
+	private static AbstractSessionFactoryBean sessionFactory;
 	
 	private boolean useJndi;
 	private String jndiDatasource;
@@ -70,6 +73,13 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 		this.jdbcUrl = jdbcUrl;
 		this.username = username;
 		this.password = password;
+	}
+	
+	private AbstractSessionFactoryBean getSessionFactory() {
+		if ((null == sessionFactory) && (appContext != null)){
+			sessionFactory = (AbstractSessionFactoryBean) appContext.getBean("sessionFactory");
+		}
+		return sessionFactory;
 	}
 	
 	/**
@@ -182,7 +192,21 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	
 	private Connection getJdbcConnection(final String jdbcDriver,
 			final String jdbcUrl, final String username, final String password) {
-		return null;
+		Connection retval = null;
+		
+		datasource = new DriverManagerDataSource(jdbcUrl, username, password);
+		((DriverManagerDataSource)datasource).setDriverClassName(jdbcDriver);
+		
+		try {
+			retval = datasource.getConnection(username, password);
+		} catch (final SQLException e) {
+			final String msg = String.format(
+					"Unable to create JDBC datasource: %s", 
+					e.getMessage());
+			LOGGER.error(msg, e);
+		}
+		
+		return retval;
 	}
 	
 	/**
@@ -228,9 +252,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 			connection = getJdbcConnection(this.jdbcDriver,
 					this.jdbcUrl, this.username, this.password);
 		}
-		
-		final AbstractSessionFactoryBean sessionFactory = (AbstractSessionFactoryBean) appContext.getBean("sessionFactory");
-		sessionFactory.setDataSource(datasource);
+		getSessionFactory().setDataSource(datasource);
 		
 		save();
 	}
@@ -247,6 +269,6 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public void start() throws Exception {
 		super.start();
 		appContext = new ClassPathXmlApplicationContext(
-				new String[] {"/org/jenkins/plugins/dbaudit/application-context.xml"});
+				new String[] {"application-context.xml"});
 	}
 }

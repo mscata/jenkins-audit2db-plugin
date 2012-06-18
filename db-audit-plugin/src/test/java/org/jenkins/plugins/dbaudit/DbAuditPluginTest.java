@@ -27,7 +27,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/org/jenkins/plugins/dbaudit/application-context.xml")
+@ContextConfiguration(locations="/application-context.xml")
 public class DbAuditPluginTest {
 	private static final String jndiName = "jdbc/dbauditplugin";
 	private static final String jdbcDriver = "org.hsqldb.jdbc.JDBCDriver";

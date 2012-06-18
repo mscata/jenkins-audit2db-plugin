@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/org/jenkins/plugins/dbaudit/application-context.xml")
+@ContextConfiguration(locations="/application-context.xml")
 public class BuildDetailsHibernateRepositoryTests {
 	@Autowired
 	private BuildDetailsRepository buildDetailsRepository;
