@@ -25,12 +25,12 @@ public interface DbAuditPlugin {
 	/**
 	 * @return the name of the JNDI datasource.
 	 */
-	String getJndiDatasource();
+	String getJndiName();
 	
 	/**
 	 * @param datasource a valid JNDI datasource.
 	 */
-	void setJndiDatasource(String datasource);
+	void setJndiName(String datasource);
 	
 	/**
 	 * @return the JDBC driver class name.

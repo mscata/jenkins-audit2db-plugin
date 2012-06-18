@@ -3,8 +3,6 @@
  */
 package org.jenkins.plugins.dbaudit;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import junit.framework.Assert;
@@ -12,11 +10,9 @@ import junit.framework.Assert;
 import org.jenkins.plugins.dbaudit.internal.DbAuditPluginImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.mock.jndi.SimpleNamingContextBuilder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,8 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Marco Scata
  *
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/application-context.xml")
 public class DbAuditPluginTest {
 	private static final String jndiName = "jdbc/dbauditplugin";
 	private static final String jdbcDriver = "org.hsqldb.jdbc.JDBCDriver";

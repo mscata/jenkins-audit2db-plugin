@@ -7,6 +7,7 @@ import hudson.Plugin;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Descriptor.FormException;
+import hudson.util.FormValidation;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -19,6 +20,7 @@ import net.sf.json.JSONObject;
 
 import org.jenkins.plugins.dbaudit.DbAuditPlugin;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,56 +34,59 @@ import org.springframework.orm.hibernate3.AbstractSessionFactoryBean;
  * Implementation of the {@link DbAuditPlugin} interface.
  * 
  * @author Marco Scata
- *
+ * 
  */
-public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describable<DbAuditPluginImpl> {
-	private final static Logger LOGGER = LoggerFactory.getLogger(DbAuditPluginImpl.class);
+public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin,
+		Describable<DbAuditPluginImpl> {
+	private final static Logger LOGGER = LoggerFactory
+			.getLogger(DbAuditPluginImpl.class);
 	private static DataSource datasource;
 	private static ApplicationContext appContext;
 	private static AbstractSessionFactoryBean sessionFactory;
-	
+
 	private boolean useJndi;
-	private String jndiDatasource;
-	
+	private String jndiName;
+
 	private String jdbcDriver;
 	private String jdbcUrl;
-	
+
 	private String username;
 	private String password;
-	
+
 	public static final Descriptor<DbAuditPluginImpl> PluginDescriptor = new Descriptor<DbAuditPluginImpl>() {
 		public final String DISPLAY_NAME = "Database Audit Plugin";
+
 		@Override
 		public String getDisplayName() {
 			return DISPLAY_NAME;
 		}
 	};
-	
-	public DbAuditPluginImpl(){
+
+	public DbAuditPluginImpl() {
 		super();
 	};
-	
+
 	@DataBoundConstructor
-	public DbAuditPluginImpl(
-			final boolean useJndi, final String jndiDatasource,
-			final String jdbcDriver, final String jdbcUrl,
-			final String username, final String password) {
+	public DbAuditPluginImpl(final boolean useJndi,
+			final String jndiName, final String jdbcDriver,
+			final String jdbcUrl, final String username, final String password) {
 		this();
 		this.useJndi = useJndi;
-		this.jndiDatasource = jndiDatasource;
+		this.jndiName = jndiName;
 		this.jdbcDriver = jdbcDriver;
 		this.jdbcUrl = jdbcUrl;
 		this.username = username;
 		this.password = password;
 	}
-	
+
 	private AbstractSessionFactoryBean getSessionFactory() {
-		if ((null == sessionFactory) && (appContext != null)){
-			sessionFactory = (AbstractSessionFactoryBean) appContext.getBean("sessionFactory");
+		if ((null == sessionFactory) && (appContext != null)) {
+			sessionFactory = (AbstractSessionFactoryBean) appContext
+					.getBean("sessionFactory");
 		}
 		return sessionFactory;
 	}
-	
+
 	/**
 	 * @see DbAuditPlugin#isUseJndi()
 	 */
@@ -89,6 +94,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public boolean isUseJndi() {
 		return useJndi;
 	}
+
 	/**
 	 * @see DbAuditPlugin#setUseJndi(boolean)
 	 */
@@ -96,20 +102,23 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public void setUseJndi(final boolean useJndi) {
 		this.useJndi = useJndi;
 	}
+
 	/**
-	 * @see DbAuditPlugin#getJndiDatasource()
+	 * @see DbAuditPlugin#getJndiName()
 	 */
 	@Override
-	public String getJndiDatasource() {
-		return jndiDatasource;
+	public String getJndiName() {
+		return jndiName;
 	}
+
 	/**
-	 * @see DbAuditPlugin#setJndiDatasource(String)
+	 * @see DbAuditPlugin#setJndiName(String)
 	 */
 	@Override
-	public void setJndiDatasource(final String jndiDatasource) {
-		this.jndiDatasource = jndiDatasource;
+	public void setJndiName(final String jndiName) {
+		this.jndiName = jndiName;
 	}
+
 	/**
 	 * @see DbAuditPlugin#getJdbcDriver()
 	 */
@@ -117,6 +126,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public String getJdbcDriver() {
 		return jdbcDriver;
 	}
+
 	/**
 	 * @see DbAuditPlugin#setJdbcDriver(String)
 	 */
@@ -124,6 +134,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public void setJdbcDriver(final String jdbcDriver) {
 		this.jdbcDriver = jdbcDriver;
 	}
+
 	/**
 	 * @see DbAuditPlugin#getJdbcUrl()
 	 */
@@ -131,6 +142,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public String getJdbcUrl() {
 		return jdbcUrl;
 	}
+
 	/**
 	 * @see DbAuditPlugin#setJdbcUrl(String)
 	 */
@@ -138,6 +150,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public void setJdbcUrl(final String jdbcUrl) {
 		this.jdbcUrl = jdbcUrl;
 	}
+
 	/**
 	 * @see DbAuditPlugin#getUsername()
 	 */
@@ -145,6 +158,7 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public String getUsername() {
 		return username;
 	}
+
 	/**
 	 * @see DbAuditPlugin#setUsername(String)
 	 */
@@ -152,12 +166,14 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public void setUsername(final String username) {
 		this.username = username;
 	}
+
 	/**
 	 * @return the password for the specified user.
 	 */
 	String getPassword() {
 		return password;
 	}
+
 	/**
 	 * @see DbAuditPlugin#setPassword(String)
 	 */
@@ -165,10 +181,8 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public void setPassword(final String password) {
 		this.password = password;
 	}
-	
-	private Connection getJndiConnection(final String jndiName,
-			final String username, final String password) {
-		Connection retval = null;
+
+	private DataSource getJndiDatasource(final String jndiName) {
 		final JndiTemplate jndi = new JndiTemplate();
 		try {
 			final Object jndiObject = jndi.lookup(jndiName);
@@ -177,53 +191,44 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 						"JNDI connection is not of the right type: found %s",
 						jndiObject.getClass().getName()));
 			}
-			
+
 			datasource = (DataSource) jndiObject;
-			retval = datasource.getConnection(username, password);
 		} catch (final Exception e) {
 			final String msg = String.format(
-					"Unable to retrieve JNDI datasource: %s", 
-					e.getMessage());
+					"Unable to retrieve JNDI datasource: %s", e.getMessage());
 			LOGGER.error(msg, e);
+			throw new RuntimeException(e);
 		}
-		
-		return retval;
+
+		return datasource;
 	}
-	
-	private Connection getJdbcConnection(final String jdbcDriver,
-			final String jdbcUrl, final String username, final String password) {
-		Connection retval = null;
-		
-		datasource = new DriverManagerDataSource(jdbcUrl, username, password);
-		((DriverManagerDataSource)datasource).setDriverClassName(jdbcDriver);
-		
-		try {
-			retval = datasource.getConnection(username, password);
-		} catch (final SQLException e) {
-			final String msg = String.format(
-					"Unable to create JDBC datasource: %s", 
-					e.getMessage());
-			LOGGER.error(msg, e);
-		}
-		
-		return retval;
+
+	private DataSource getJdbcDatasource(final String jdbcDriver,
+			final String jdbcUrl) {
+		datasource = new DriverManagerDataSource(jdbcUrl);
+		((DriverManagerDataSource) datasource).setDriverClassName(jdbcDriver);
+
+		return datasource;
 	}
-	
+
 	/**
 	 * @see DbAuditPlugin#testDatasourceConnection()
 	 */
 	@Override
 	public boolean testDatasourceConnection() {
-		final Connection connection;
-		if (useJndi) {
-			connection = getJndiConnection(jndiDatasource, username, password);
-		} else {
-			connection = getJdbcConnection(jdbcDriver, jdbcUrl, username, password);
+		FormValidation result = FormValidation.error("");
+		try {
+			if (useJndi) {
+				result = doTestJndiConnection(jndiName, username, password);
+			} else {
+				result = doTestJdbcConnection(jdbcDriver, jdbcUrl, username, password);
+			}
+		} catch (final Exception e) {
+			// do nothing -> result is failure
 		}
-
-		return (connection != null);
+		return result.kind.equals(FormValidation.Kind.OK);
 	}
-	
+
 	/**
 	 * @see DbAuditPlugin#getDatasource()
 	 */
@@ -231,32 +236,29 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public DataSource getDatasource() {
 		return datasource;
 	}
-	
+
 	@Override
 	public void configure(final StaplerRequest req, final JSONObject formData)
 			throws IOException, ServletException, FormException {
 		super.configure(req, formData);
-		final JSONObject datasourceDetails = formData.getJSONObject("datasource");
+		final JSONObject datasourceDetails = formData
+				.getJSONObject("datasource");
 		this.username = datasourceDetails.getString("username");
 		this.password = datasourceDetails.getString("password");
 		this.useJndi = datasourceDetails.getBoolean("value");
 
-		Connection connection = null;
 		if (this.useJndi) {
-			this.jndiDatasource = datasourceDetails.getString("jndiDatasource");
-			connection = getJndiConnection(
-					this.jndiDatasource, this.username, this.password);
+			this.jndiName = datasourceDetails.getString("jndiName");
+			datasource = getJndiDatasource(this.jndiName);
 		} else {
 			this.jdbcDriver = datasourceDetails.getString("jdbcDriver");
 			this.jdbcUrl = datasourceDetails.getString("jdbcUrl");
-			connection = getJdbcConnection(this.jdbcDriver,
-					this.jdbcUrl, this.username, this.password);
+			datasource = getJdbcDatasource(this.jdbcDriver, this.jdbcUrl);
 		}
-		getSessionFactory().setDataSource(datasource);
-		
+
 		save();
 	}
-	
+
 	public static Descriptor<DbAuditPluginImpl> getPlugindescriptor() {
 		return PluginDescriptor;
 	}
@@ -264,11 +266,76 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin, Describa
 	public Descriptor<DbAuditPluginImpl> getDescriptor() {
 		return PluginDescriptor;
 	}
-	
+
 	@Override
 	public void start() throws Exception {
 		super.start();
 		appContext = new ClassPathXmlApplicationContext(
-				new String[] {"application-context.xml"});
+				new String[] { "application-context.xml" });
+	}
+
+	public FormValidation doTestJndiConnection(
+			@QueryParameter("jndiName") final String jndiName,
+			@QueryParameter("username") final String username,
+			@QueryParameter("password") final String password)
+			throws IOException, ServletException {
+		
+		FormValidation retval = FormValidation.ok("Connection Successful");
+		
+		try {
+			getJndiDatasource(jndiName).getConnection(username, password);
+		} catch (final Exception e) {
+			final String msg = String.format(
+					"Unable to establish connection: %s", e.getMessage());
+			LOGGER.error(msg, e);
+			retval = FormValidation.error(msg);
+		}
+
+		return retval;
+	}
+
+	public FormValidation doTestJdbcConnection(
+			@QueryParameter("jdbcDriver") final String jdbcDriver,
+			@QueryParameter("jdbcUrl") final String jdbcUrl,
+			@QueryParameter("username") final String username,
+			@QueryParameter("password") final String password)
+			throws IOException, ServletException {
+		
+		FormValidation retval = FormValidation.ok("Connection Successful");
+		
+		try {
+			getJdbcDatasource(jdbcDriver, jdbcUrl).getConnection(username, password);
+		} catch (final Exception e) {
+			final String msg = String.format(
+					"Unable to establish connection: %s", e.getMessage());
+			LOGGER.error(msg, e);
+			retval = FormValidation.error(msg);
+		}
+
+		return retval;
+	}
+	
+	public FormValidation doCheckJdbcDriver(
+			@QueryParameter("jdbcDriver") final String jdbcDriver) {
+		FormValidation retval = FormValidation.ok();
+		if (!isUseJndi()) {
+			if ((null == jdbcDriver) || jdbcDriver.isEmpty()) {
+				retval = FormValidation.error("JDBC driver must be provided");
+			}
+		}
+		
+		return retval;
+	}
+	
+	public FormValidation doCheckJdbcUrl(
+			@QueryParameter("jdbcUrl") final String jdbcUrl) {
+		FormValidation retval = FormValidation.ok();
+		if (!isUseJndi()) {
+			if ((null == jdbcUrl) || jdbcUrl.isEmpty()) {
+				retval = FormValidation.error("JDBC URL must be provided");
+			}
+		}
+		
+		return retval;
 	}
 }

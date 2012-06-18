@@ -4,8 +4,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 	<f:section title="Database Audit Plugin">
 		<f:radioBlock title="${%Use JNDI Datasource}" name="dbaudit.datasource" value="true" checked="${it.isUseJndi()}">
-			<f:entry title="${%Datasource name}" field="jndiDatasource" help="${rootURL}/plugin/dbaudit/help/jndiDatasource.html">
-				<f:textbox name="dbaudit.jndiDatasource" value="${it.jndiDatasource}"/> 
+			<f:entry title="${%Datasource name}" field="jndiName" help="${rootURL}/plugin/dbaudit/help/jndiDatasource.html">
+				<f:textbox name="dbaudit.jndiName" value="${it.jndiDatasourceName}"/> 
 		  	</f:entry>
 			<f:entry title="${%User}" field="username">
 				<f:textbox name="dbaudit.username" value="${it.username}" />
@@ -13,6 +13,8 @@
 			<f:entry title="${%Password}" field="password">
 				<f:password name="dbaudit.password" value="${it.password}" />
 			</f:entry>
+			<f:validateButton title="${%Test Connection}" progress="${%Connecting...}"
+				method="testJndiConnection" with="jndiName,username,password" />
 		</f:radioBlock>
 		<f:radioBlock title="${%Use JDBC Datasource}" name="dbaudit.datasource" value="false" checked="${!it.isUseJndi()}">
 			<f:entry title="${%Driver class}" field="jdbcDriver" help="${rootURL}/plugin/dbaudit/help/jdbcDriver.html">
@@ -27,6 +29,8 @@
 			<f:entry title="${%Password}" field="password">
 				<f:password name="dbaudit.password" value="${it.password}" />
 			</f:entry>
-			</f:radioBlock>
+			<f:validateButton title="${%Test Connection}" progress="${%Connecting...}"
+				method="testJdbcConnection" with="jdbcDriver,jdbcUrl,username,password" />
+		</f:radioBlock>
 	</f:section>
 </j:jelly>
