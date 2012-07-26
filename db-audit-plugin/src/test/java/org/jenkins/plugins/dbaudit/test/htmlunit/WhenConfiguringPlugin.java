@@ -48,16 +48,16 @@ public class WhenConfiguringPlugin extends HudsonTestCase {
 		final String password = "MyJndiPassword";
 		
 		page.setUseJndi(true);
-		page.setDatasourceName(datasourceName);
-		page.setUser(user);
-		page.setPassword(password);
+		page.setJndiDatasource(datasourceName);
+		page.setJndiUser(user);
+		page.setJndiPassword(password);
 		page.saveChanges();
 		page.load();
 		
 		Assert.assertTrue("The useJndi flag was not set to true.", page.isUseJndi());
-		Assert.assertEquals("Mismatched datasource name", datasourceName, page.getDatasourceName());
-		Assert.assertEquals("Mismatched user", user, page.getUser());
-		Assert.assertTrue("Mismatched password", page.getPassword().isEmpty());
+		Assert.assertEquals("Mismatched datasource name", datasourceName, page.getJndiDatasource());
+		Assert.assertEquals("Mismatched user", user, page.getJndiUser());
+		Assert.assertTrue("Mismatched password", page.getJndiPassword().isEmpty());
 	}
 	
 	@Test
@@ -70,15 +70,15 @@ public class WhenConfiguringPlugin extends HudsonTestCase {
 		page.setUseJndi(false);
 		page.setJdbcDriver(jdbcDriver);
 		page.setJdbcUrl(jdbcUrl);
-		page.setUser(user);
-		page.setPassword(password);
+		page.setJdbcUser(user);
+		page.setJdbcPassword(password);
 		page.saveChanges();
 		page.load();
 		
 		Assert.assertFalse("The useJndi flag was not set to false.", page.isUseJndi());
 		Assert.assertEquals("Mismatched driver class", jdbcDriver, page.getJdbcDriver());
 		Assert.assertEquals("Mismatched jdbc url", jdbcUrl, page.getJdbcUrl());
-		Assert.assertEquals("Mismatched user", user, page.getUser());
-		Assert.assertTrue("Mismatched password", page.getPassword().isEmpty());
+		Assert.assertEquals("Mismatched user", user, page.getJdbcUser());
+		Assert.assertTrue("Mismatched password", page.getJdbcPassword().isEmpty());
 	}
 }

@@ -44,12 +44,7 @@ public class JenkinsConfigurationPage extends AbstractJenkinsPage {
 	
 	public void setConfigValue(final String inputName, final String value) {
 		final HtmlInput input = configForm.getInputByName(inputName);
-		if (null == input) {
-			throw new RuntimeException(
-					String.format("Input '%s' cannot be found", inputName));
-		} else {
-			input.setValueAttribute(value);
-		}
+		input.setValueAttribute(value);
 	}
 	
 	public HtmlElement getJndiDatasourceRadioButton() {
@@ -94,14 +89,31 @@ public class JenkinsConfigurationPage extends AbstractJenkinsPage {
 		}
 	}
 	
-	public String getDatasourceName() {
+	public String getJndiDatasource() {
 		return getConfigValue("dbaudit.jndiName");
 	}
 	
-	public void setDatasourceName(final String datasourceName) {
+	public void setJndiDatasource(final String datasourceName) {
 		setConfigValue("dbaudit.jndiName", datasourceName);
 	}
+
 	
+	public String getJndiUser() {
+		return getConfigValue("dbaudit.jndiUser");
+	}
+	
+	public void setJndiUser(final String user) {
+		setConfigValue("dbaudit.jndiUser", user);
+	}
+	
+	public String getJndiPassword() {
+		return getConfigValue("dbaudit.jndiPassword");
+	}
+	
+	public void setJndiPassword(final String password) {
+		setConfigValue("dbaudit.jndiPassword", password);
+	}
+
 	public String getJdbcDriver() {
 		return getConfigValue("dbaudit.jdbcDriver");
 	}
@@ -118,20 +130,20 @@ public class JenkinsConfigurationPage extends AbstractJenkinsPage {
 		setConfigValue("dbaudit.jdbcUrl", url);
 	}
 	
-	public String getUser() {
-		return getConfigValue("dbaudit.username");
+	public String getJdbcUser() {
+		return getConfigValue("dbaudit.jdbcUser");
 	}
 	
-	public void setUser(final String user) {
-		setConfigValue("dbaudit.username", user);
+	public void setJdbcUser(final String user) {
+		setConfigValue("dbaudit.jdbcUser", user);
 	}
 	
-	public String getPassword() {
-		return getConfigValue("dbaudit.password");
+	public String getJdbcPassword() {
+		return getConfigValue("dbaudit.jdbcPassword");
 	}
 	
-	public void setPassword(final String password) {
-		setConfigValue("dbaudit.password", password);
+	public void setJdbcPassword(final String password) {
+		setConfigValue("dbaudit.jdbcPassword", password);
 	}
 	
 	public void saveChanges() {

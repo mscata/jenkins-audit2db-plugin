@@ -241,8 +241,6 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin,
 	public void configure(final StaplerRequest req, final JSONObject formData)
 			throws IOException, ServletException, FormException {
 		super.configure(req, formData);
-		this.username = formData.getString("username");
-		this.password = formData.getString("password");
 
 		final JSONObject datasourceDetails = formData.getJSONObject("datasource");
 		this.useJndi = datasourceDetails.getBoolean("value");
@@ -250,15 +248,17 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin,
 		if (this.useJndi) {
 			try {
 				this.jndiName = datasourceDetails.getString("jndiName");
-//					datasource = getJndiDatasource(this.jndiName);
+				this.username = datasourceDetails.getString("jndiUser");
+				this.password = datasourceDetails.getString("jndiPassword");
 			} catch (final Exception e) {
-				throw new FormException(e.getMessage(), "jndiName");
+				throw new FormException(e.getMessage(), e, "jndiName");
 			}
 		} else {
 			try {
 				this.jdbcDriver = datasourceDetails.getString("jdbcDriver");
 				this.jdbcUrl = datasourceDetails.getString("jdbcUrl");
-//					datasource = getJdbcDatasource(this.jdbcDriver, this.jdbcUrl);
+				this.username = datasourceDetails.getString("jdbcUser");
+				this.password = datasourceDetails.getString("jdbcPassword");
 			} catch (final Exception e) {
 				throw new FormException(e.getMessage(), e, "jdbcDriver");
 			}
@@ -283,8 +283,8 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin,
 
 	public FormValidation doTestJndiConnection(
 			@QueryParameter("jndiName") final String jndiName,
-			@QueryParameter("username") final String username,
-			@QueryParameter("password") final String password)
+			@QueryParameter("jndiUser") final String username,
+			@QueryParameter("jndiPassword") final String password)
 			throws IOException, ServletException {
 		
 		FormValidation retval = FormValidation.ok("Connection Successful");
@@ -304,8 +304,8 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin,
 	public FormValidation doTestJdbcConnection(
 			@QueryParameter("jdbcDriver") final String jdbcDriver,
 			@QueryParameter("jdbcUrl") final String jdbcUrl,
-			@QueryParameter("username") final String username,
-			@QueryParameter("password") final String password)
+			@QueryParameter("jdbcUser") final String username,
+			@QueryParameter("jdbcPassword") final String password)
 			throws IOException, ServletException {
 		
 		FormValidation retval = FormValidation.ok("Connection Successful");
