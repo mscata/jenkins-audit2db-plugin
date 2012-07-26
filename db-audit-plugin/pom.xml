@@ -3,14 +3,14 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.446</version>
+		<version>1.457</version>
 	</parent>
 	<groupId>jenkins.plugins</groupId>
 	<artifactId>dbaudit</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>Database Audit Plugin</name>
-	<description>This plugin provides database audit functionality to Jenkins.  This allows recording build information to database, including the build parameters if any, and the user who started the build.</description>
+	<description>This plugin provides database audit functionality to Jenkins.  It allows recording build information to database, including the build parameters (if any), and the user who started the build (if logged in).</description>
 	<url>https://github.com/mscata/jenkins-db-plugin.git</url>
 	<licenses>
 		<license>
@@ -23,6 +23,13 @@
 		<developerConnection>https://github.com/mscata/jenkins-db-plugin.git</developerConnection>
 		<url>https://github.com/mscata/jenkins-db-plugin.git</url>
 	</scm>
+	<distributionManagement>
+		<site>
+			<id>github-project-site</id>
+			<name>GitHub</name>
+			<url>gitsite:git@github.com/mscata/jenkins-db-plugin</url>
+		</site>
+	</distributionManagement>
 	<properties>
 		<version.hibernate>3.5.3-Final</version.hibernate>
 		<version.springframework>3.1.1.RELEASE</version.springframework>
@@ -40,6 +47,11 @@
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
 			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>javassist</groupId>
@@ -63,6 +75,17 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>${version.hibernate}</version>
 			<scope>compile</scope>
+			<exclusions>
+			     <!-- IMPORTANT:
+			         Dom4J causes a conflict with a custom
+			         version of it that gets used by the
+			         Jenkins test harness.  
+			     -->
+			     <exclusion>
+			         <groupId>dom4j</groupId>
+			         <artifactId>dom4j</artifactId>
+			     </exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -116,13 +139,54 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.jenkins-ci.tools</groupId>
+				<artifactId>maven-hpi-plugin</artifactId>
+				<configuration>
+					<executions>
+						<execution>
+							<id>integration</id>
+							<phase>pre-integration-test</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.4</version><!--$NO-MVN-MAN-VER$ -->
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/test/selenium/**/*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>integration</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/test/selenium/**/*.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

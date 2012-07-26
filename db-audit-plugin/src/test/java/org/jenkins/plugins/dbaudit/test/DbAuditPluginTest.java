@@ -1,20 +1,17 @@
 /**
  * 
  */
-package org.jenkins.plugins.dbaudit;
+package org.jenkins.plugins.dbaudit.test;
 
 import javax.sql.DataSource;
 
 import junit.framework.Assert;
 
+import org.jenkins.plugins.dbaudit.DbAuditPlugin;
 import org.jenkins.plugins.dbaudit.internal.DbAuditPluginImpl;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.mock.jndi.SimpleNamingContextBuilder;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Unit tests for the {@link DbAuditPluginImpl} class.

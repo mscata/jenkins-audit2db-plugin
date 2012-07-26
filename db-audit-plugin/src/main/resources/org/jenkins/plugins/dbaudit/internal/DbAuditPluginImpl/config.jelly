@@ -5,14 +5,8 @@
 	<f:section title="Database Audit Plugin">
 		<f:radioBlock title="${%Use JNDI Datasource}" name="dbaudit.datasource" value="true" checked="${it.isUseJndi()}">
 			<f:entry title="${%Datasource name}" field="jndiName" help="${rootURL}/plugin/dbaudit/help/jndiDatasource.html">
-				<f:textbox name="dbaudit.jndiName" value="${it.jndiDatasourceName}"/> 
+				<f:textbox name="dbaudit.jndiName" value="${it.jndiName}"/> 
 		  	</f:entry>
-			<f:entry title="${%User}" field="username">
-				<f:textbox name="dbaudit.username" value="${it.username}" />
-			</f:entry>
-			<f:entry title="${%Password}" field="password">
-				<f:password name="dbaudit.password" value="${it.password}" />
-			</f:entry>
 			<f:validateButton title="${%Test Connection}" progress="${%Connecting...}"
 				method="testJndiConnection" with="jndiName,username,password" />
 		</f:radioBlock>
@@ -23,14 +17,14 @@
 			<f:entry title="${%Url}" field="jdbcUrl" help="${rootURL}/plugin/dbaudit/help/jdbcUrl.html">
 				<f:textbox name="dbaudit.jdbcUrl" value="${it.jdbcUrl}"/> 
 		  	</f:entry>
-			<f:entry title="${%User}" field="username">
-				<f:textbox name="dbaudit.username" value="${it.username}" />
-			</f:entry>
-			<f:entry title="${%Password}" field="password">
-				<f:password name="dbaudit.password" value="${it.password}" />
-			</f:entry>
 			<f:validateButton title="${%Test Connection}" progress="${%Connecting...}"
 				method="testJdbcConnection" with="jdbcDriver,jdbcUrl,username,password" />
 		</f:radioBlock>
+        <f:entry title="${%User}" field="username">
+            <f:textbox name="dbaudit.username" value="${it.username}" />
+        </f:entry>
+        <f:entry title="${%Password}" field="password">
+            <f:password name="dbaudit.password" value="${it.password}" />
+        </f:entry>
 	</f:section>
 </j:jelly>

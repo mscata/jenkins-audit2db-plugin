@@ -10,8 +10,6 @@ import hudson.model.Descriptor.FormException;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.sql.DataSource;
@@ -37,7 +35,7 @@ import org.springframework.orm.hibernate3.AbstractSessionFactoryBean;
  * 
  */
 public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin,
-		Describable<DbAuditPluginImpl> {
+		Describable<DbAuditPlugin> {
 	private final static Logger LOGGER = LoggerFactory
 			.getLogger(DbAuditPluginImpl.class);
 	private static DataSource datasource;
@@ -53,8 +51,9 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin,
 	private String username;
 	private String password;
 
-	public static final Descriptor<DbAuditPluginImpl> PluginDescriptor = new Descriptor<DbAuditPluginImpl>() {
-		public final String DISPLAY_NAME = "Database Audit Plugin";
+	public static final Descriptor<DbAuditPlugin> PluginDescriptor = 
+		new Descriptor<DbAuditPlugin>() {
+		public final String DISPLAY_NAME = "Audit to Database Plugin";
 
 		@Override
 		public String getDisplayName() {
@@ -188,8 +187,9 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin,
 			final Object jndiObject = jndi.lookup(jndiName);
 			if (!DataSource.class.isAssignableFrom(jndiObject.getClass())) {
 				throw new ClassCastException(String.format(
-						"JNDI connection is not of the right type: found %s",
-						jndiObject.getClass().getName()));
+						"JNDI connection is not of the right type: found %s, expected %s",
+						jndiObject.getClass().getName(),
+						DataSource.class.getName()));
 			}
 
 			datasource = (DataSource) jndiObject;
@@ -241,29 +241,36 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin,
 	public void configure(final StaplerRequest req, final JSONObject formData)
 			throws IOException, ServletException, FormException {
 		super.configure(req, formData);
-		final JSONObject datasourceDetails = formData
-				.getJSONObject("datasource");
-		this.username = datasourceDetails.getString("username");
-		this.password = datasourceDetails.getString("password");
+		this.username = formData.getString("username");
+		this.password = formData.getString("password");
+
+		final JSONObject datasourceDetails = formData.getJSONObject("datasource");
 		this.useJndi = datasourceDetails.getBoolean("value");
 
 		if (this.useJndi) {
-			this.jndiName = datasourceDetails.getString("jndiName");
-			datasource = getJndiDatasource(this.jndiName);
+			try {
+				this.jndiName = datasourceDetails.getString("jndiName");
+//					datasource = getJndiDatasource(this.jndiName);
+			} catch (final Exception e) {
+				throw new FormException(e.getMessage(), "jndiName");
+			}
 		} else {
-			this.jdbcDriver = datasourceDetails.getString("jdbcDriver");
-			this.jdbcUrl = datasourceDetails.getString("jdbcUrl");
-			datasource = getJdbcDatasource(this.jdbcDriver, this.jdbcUrl);
+			try {
+				this.jdbcDriver = datasourceDetails.getString("jdbcDriver");
+				this.jdbcUrl = datasourceDetails.getString("jdbcUrl");
+//					datasource = getJdbcDatasource(this.jdbcDriver, this.jdbcUrl);
+			} catch (final Exception e) {
+				throw new FormException(e.getMessage(), e, "jdbcDriver");
+			}
 		}
-
 		save();
 	}
 
-	public static Descriptor<DbAuditPluginImpl> getPlugindescriptor() {
+	public static Descriptor<DbAuditPlugin> getPlugindescriptor() {
 		return PluginDescriptor;
 	}
 
-	public Descriptor<DbAuditPluginImpl> getDescriptor() {
+	public Descriptor<DbAuditPlugin> getDescriptor() {
 		return PluginDescriptor;
 	}
 
@@ -312,30 +319,6 @@ public class DbAuditPluginImpl extends Plugin implements DbAuditPlugin,
 			retval = FormValidation.error(msg);
 		}
 
-		return retval;
-	}
-	
-	public FormValidation doCheckJdbcDriver(
-			@QueryParameter("jdbcDriver") final String jdbcDriver) {
-		FormValidation retval = FormValidation.ok();
-		if (!isUseJndi()) {
-			if ((null == jdbcDriver) || jdbcDriver.isEmpty()) {
-				retval = FormValidation.error("JDBC driver must be provided");
-			}
-		}
-		
-		return retval;
-	}
-	
-	public FormValidation doCheckJdbcUrl(
-			@QueryParameter("jdbcUrl") final String jdbcUrl) {
-		FormValidation retval = FormValidation.ok();
-		if (!isUseJndi()) {
-			if ((null == jdbcUrl) || jdbcUrl.isEmpty()) {
-				retval = FormValidation.error("JDBC URL must be provided");
-			}
-		}
-		
 		return retval;
 	}
 }

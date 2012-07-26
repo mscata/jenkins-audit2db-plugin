@@ -3,7 +3,7 @@
  */
 package org.jenkins.plugins.dbaudit;
 
-import java.sql.Connection;
+import hudson.model.Describable;
 
 import javax.sql.DataSource;
 
@@ -11,24 +11,24 @@ import javax.sql.DataSource;
  * @author Marco Scata
  *
  */
-public interface DbAuditPlugin {
+public interface DbAuditPlugin extends Describable<DbAuditPlugin> {
 	/**
-	 * @return whether to use a JNDI datasource or not.
+	 * @return whether to use a JNDI data source or not.
 	 */
 	boolean isUseJndi();
 	
 	/**
-	 * @param useJndi whether to use a JNDI datasource or not.
+	 * @param useJndi whether to use a JNDI data source or not.
 	 */
 	void setUseJndi(boolean useJndi);
 	
 	/**
-	 * @return the name of the JNDI datasource.
+	 * @return the name of the JNDI data source.
 	 */
 	String getJndiName();
 	
 	/**
-	 * @param datasource a valid JNDI datasource.
+	 * @param datasource a valid JNDI data source.
 	 */
 	void setJndiName(String datasource);
 	
@@ -53,12 +53,12 @@ public interface DbAuditPlugin {
 	void setJdbcUrl(String url);
 	
 	/**
-	 * @return the user for the specified datasource.
+	 * @return the user for the specified data source.
 	 */
 	String getUsername();
 	
 	/**
-	 * @param username a valid user for the specified datasource.
+	 * @param username a valid user for the specified data source.
 	 */
 	void setUsername(String username);
 	
@@ -68,12 +68,12 @@ public interface DbAuditPlugin {
 	void setPassword(String password);
 	
 	/**
-	 * @return <code>true</code> if the datasource is reachable.
+	 * @return <code>true</code> if the data source is reachable.
 	 */
 	boolean testDatasourceConnection();
 	
 	/**
-	 * @return the datasource for the audit database.
+	 * @return the data source for the audit database.
 	 */
 	DataSource getDatasource();
 }
