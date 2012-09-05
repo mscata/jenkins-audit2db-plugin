@@ -3,39 +3,24 @@
  */
 package org.jenkins.plugins.dbaudit.internal;
 
-import java.io.IOException;
-
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
-import hudson.model.Descriptor;
-import hudson.model.Descriptor.FormException;
+import hudson.model.AbstractBuild;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
-import hudson.util.FormValidation;
 
-import javax.servlet.ServletException;
+import java.io.IOException;
+
 import javax.sql.DataSource;
 
-import jenkins.model.Jenkins;
-
-import net.sf.json.JSONObject;
-
-import org.jenkins.plugins.dbaudit.DbAuditPlugin;
 import org.jenkins.plugins.dbaudit.DbAuditPublisher;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.hibernate3.AbstractSessionFactoryBean;
 
 /**
@@ -78,13 +63,13 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
 		return BuildStepMonitor.NONE;
 	}
 
-	private AbstractSessionFactoryBean getSessionFactory() {
-		if ((null == sessionFactory) && (appContext != null)) {
-			sessionFactory = (AbstractSessionFactoryBean) appContext
-					.getBean("sessionFactory");
-		}
-		return sessionFactory;
-	}
+//	private AbstractSessionFactoryBean getSessionFactory() {
+//		if ((null == sessionFactory) && (appContext != null)) {
+//			sessionFactory = (AbstractSessionFactoryBean) appContext
+//					.getBean("sessionFactory");
+//		}
+//		return sessionFactory;
+//	}
 
 	@DataBoundConstructor
 	public DbAuditPublisherImpl() { 

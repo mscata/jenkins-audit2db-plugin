@@ -4,21 +4,13 @@
 package org.jenkins.plugins.dbaudit.test;
 
 import hudson.util.FormValidation;
-
-import javax.sql.DataSource;
-
 import junit.framework.Assert;
 
-import org.jenkins.plugins.dbaudit.DbAuditPlugin;
 import org.jenkins.plugins.dbaudit.DbAuditPublisher;
 import org.jenkins.plugins.dbaudit.DbAuditPublisherDescriptor;
-import org.jenkins.plugins.dbaudit.internal.DbAuditPluginImpl;
 import org.jenkins.plugins.dbaudit.internal.DbAuditPublisherImpl;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hudson.test.HudsonTestCase;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.mock.jndi.SimpleNamingContextBuilder;
 
 /**
  * Unit tests for the {@link DbAuditPluginImpl} class.
@@ -27,7 +19,7 @@ import org.springframework.mock.jndi.SimpleNamingContextBuilder;
  *
  */
 public class DbAuditPluginTest extends HudsonTestCase {
-	private static final String jndiName = "jdbc/dbauditplugin";
+//	private static final String jndiName = "jdbc/dbauditplugin";
 	private static final String jdbcDriver = "org.hsqldb.jdbc.JDBCDriver";
 	private static final String jdbcUrl = "jdbc:hsqldb:mem:test";
 	
@@ -40,16 +32,22 @@ public class DbAuditPluginTest extends HudsonTestCase {
 	
 	@Test
 	public void testingValidJdbcDatasourceShouldBeSuccessful() throws Exception {
-
-//		final DbAuditPlugin plugin = new DbAuditPluginImpl(
-//				false, null, jdbcDriver, jdbcUrl, "SA", "");
 		final DbAuditPublisher publisher = new DbAuditPublisherImpl();
 		final DbAuditPublisherDescriptor descriptor = (DbAuditPublisherDescriptor) publisher.getDescriptor();
 		
-		
 		final FormValidation testResult = descriptor.doTestJdbcConnection(
 				jdbcDriver, jdbcUrl, "SA", "");
-		Assert.assertEquals("Failed connection", FormValidation.Kind.OK, testResult.kind);
+		Assert.assertEquals("Unexpected connection error.", FormValidation.Kind.OK, testResult.kind);
+	}
+	
+	@Test
+	public void testingInvalidJdbcDatasourceShouldFail() throws Exception {
+		final DbAuditPublisher publisher = new DbAuditPublisherImpl();
+		final DbAuditPublisherDescriptor descriptor = (DbAuditPublisherDescriptor) publisher.getDescriptor();
+		
+		final FormValidation testResult = descriptor.doTestJdbcConnection(
+				jdbcDriver, jdbcUrl, "SA", "wrong-password!!!");
+		Assert.assertEquals("Unexpected successful connection.", FormValidation.Kind.ERROR, testResult.kind);
 	}
 	
 //	@Test

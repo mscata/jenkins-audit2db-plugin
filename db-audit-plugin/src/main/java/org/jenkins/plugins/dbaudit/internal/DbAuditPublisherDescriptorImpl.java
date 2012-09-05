@@ -3,6 +3,11 @@
  */
 package org.jenkins.plugins.dbaudit.internal;
 
+import hudson.model.AbstractProject;
+import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.Publisher;
+import hudson.util.FormValidation;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -10,22 +15,12 @@ import javax.sql.DataSource;
 
 import net.sf.json.JSONObject;
 
-import org.jenkins.plugins.dbaudit.DbAuditPlugin;
 import org.jenkins.plugins.dbaudit.DbAuditPublisherDescriptor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-
-import hudson.Extension;
-import hudson.model.AbstractProject;
-import hudson.model.Descriptor;
-import hudson.model.Descriptor.FormException;
-import hudson.tasks.BuildStepDescriptor;
-import hudson.tasks.Notifier;
-import hudson.tasks.Publisher;
-import hudson.util.FormValidation;
 
 /**
  * @author Marco Scata

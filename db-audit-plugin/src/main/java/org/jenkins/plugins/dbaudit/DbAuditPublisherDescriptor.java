@@ -1,7 +1,5 @@
 package org.jenkins.plugins.dbaudit;
 
-import hudson.model.Describable;
-import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
