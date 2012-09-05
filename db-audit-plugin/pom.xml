@@ -19,9 +19,9 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>https://github.com/mscata/jenkins-db-plugin.git</connection>
-		<developerConnection>https://github.com/mscata/jenkins-db-plugin.git</developerConnection>
-		<url>https://github.com/mscata/jenkins-db-plugin.git</url>
+		<connection>scm:git:https://github.com/mscata/jenkins-db-plugin.git</connection>
+		<developerConnection>scm:git:https://github.com/mscata/jenkins-db-plugin.git</developerConnection>
+		<url>scm:git:https://github.com/mscata/jenkins-db-plugin.git</url>
 	</scm>
 	<distributionManagement>
 		<site>
@@ -31,8 +31,9 @@
 		</site>
 	</distributionManagement>
 	<properties>
-		<version.hibernate>3.5.3-Final</version.hibernate>
-		<version.springframework>3.1.1.RELEASE</version.springframework>
+		<version.hibernate>3.5.6-Final</version.hibernate>
+		<version.springframework>2.5</version.springframework>
+		<version.hsqldb>2.0.0</version.hsqldb>
 	</properties>
 	<developers>
 		<developer>
@@ -47,16 +48,19 @@
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
 			<version>2.2</version>
+            <scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.0.1</version>
+            <scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.8.0.GA</version>
+            <scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -70,6 +74,12 @@
 			<version>${version.hibernate}</version>
 			<scope>compile</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-commons-annotations</artifactId>
+            <version>3.2.0.Final</version>
+            <scope>compile</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
@@ -88,16 +98,16 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-annotations</artifactId>
-			<version>${version.hibernate}</version>
-			<scope>compile</scope>
+		    <groupId>org.hibernate.javax.persistence</groupId>
+		    <artifactId>hibernate-jpa-2.0-api</artifactId>
+		    <version>1.0.0.Final</version>
+		    <scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
-			<version>2.0.0</version>
-			<scope>compile</scope>
+			<version>${version.hsqldb}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -138,6 +148,47 @@
 	</dependencies>
 	<build>
 		<plugins>
+		    <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-doap-plugin</artifactId>
+		        <executions>
+		            <execution>
+		                <id>site</id>
+		                <phase>pre-site</phase>
+		                <goals>
+		                    <goal>generate</goal>
+		                </goals>
+		            </execution>
+		        </executions>
+		        <configuration>
+		            <doapFile>${project.reporting.outputDirectory}/doap.rdf</doapFile>
+		            <asfExtOptions>
+		                <included>false</included>
+		            </asfExtOptions>
+		        </configuration>
+		    </plugin>
+		    <!--  
+		    <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-dependency-plugin</artifactId>
+		        <executions>
+		            <execution>
+		                <id>initialize-classpath</id>
+		                <phase>compile</phase>
+		                <goals>
+		                    <goal>copy-dependencies</goal>
+		                </goals>
+		                <configuration>
+		                    <outputDirectory>${project.build.directory}/work/webapp/WEB-INF/lib</outputDirectory>
+		                    <overWriteReleases>false</overWriteReleases>
+		                    <overWriteSnapshots>false</overWriteSnapshots>
+		                    <overWriteIfNewer>false</overWriteIfNewer>
+		                    <excludeTransitive>true</excludeTransitive>
+                        </configuration>
+                    </execution>
+                </executions>
+		    </plugin>
+		    -->
 			<plugin>
 				<groupId>org.jenkins-ci.tools</groupId>
 				<artifactId>maven-hpi-plugin</artifactId>
@@ -166,7 +217,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<excludes>
-						<exclude>**/test/selenium/**/*.java</exclude>
+						<exclude>**/test/htmlunit/**/*.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -182,7 +233,7 @@
 						</goals>
 						<configuration>
 							<includes>
-								<include>**/test/selenium/**/*.java</include>
+								<include>**/test/htmlunit/**/*.java</include>
 							</includes>
 						</configuration>
 					</execution>
@@ -273,11 +324,11 @@
 											<goal>validate</goal>
 										</goals>
 									</pluginExecutionFilter>
-									<action>
-										<execute />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
+                                    <action>
+                                        <execute />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>
 										<artifactId>maven-resources-plugin</artifactId>
@@ -287,6 +338,19 @@
 											<goal>default-test-resources</goal>
 										</goals>
 									</pluginExecutionFilter>
+                                    <action>
+                                        <execute />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+								    <pluginExecutionFilter>
+								        <groupId>org.apache.maven.plugins</groupId>
+								        <artifactId>maven-dependency-plugin</artifactId>
+								        <versionRange>[2.0,)</versionRange>
+								        <goals>
+								            <goal>copy-dependencies</goal>
+								        </goals>
+								    </pluginExecutionFilter>
 									<action>
 										<execute />
 									</action>

@@ -146,7 +146,7 @@ public class JenkinsConfigurationPage extends AbstractJenkinsPage {
 		setConfigValue("dbaudit.jdbcPassword", password);
 	}
 	
-	public void saveChanges() {
+	public HtmlElement getSaveButton() {
 		final List<HtmlElement> buttons = configForm.getElementsByTagName("button");
 		HtmlElement saveButton = null;
 		// find the save button (it has no predictable id)
@@ -156,13 +156,20 @@ public class JenkinsConfigurationPage extends AbstractJenkinsPage {
 				break;
 			}
 		}
+		return saveButton;
+	}
+	
+	public void saveChanges() {
+		final HtmlElement saveButton = getSaveButton();
 		
-		if (saveButton != null) {
-			try {
-				saveButton.click();
-			} catch (final IOException e) {
-				throw new RuntimeException(e);
-			}
+		if (null == saveButton) {
+			throw new RuntimeException("Save button not found on config form!");
+		}
+		
+		try {
+			saveButton.click();
+		} catch (final IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }
