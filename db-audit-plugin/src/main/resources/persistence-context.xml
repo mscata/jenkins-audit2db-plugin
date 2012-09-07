@@ -26,7 +26,7 @@
         <!-- property name="dataSource" ref="dataSource" / -->
         <property name="annotatedPackages">
             <list>
-                <value>org.jenkins.plugins.dbaudit.internal.model</value>
+                <value>org.jenkins.plugins.audit2db.internal.model</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -40,7 +40,7 @@
         </property>
     </bean>
     
-    <bean id="buildDetailsRepository" class="org.jenkins.plugins.dbaudit.internal.data.BuildDetailsHibernateRepository">
+    <bean id="buildDetailsRepository" class="org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository">
         <constructor-arg ref="sessionFactory" />
     </bean>
 </beans>

@@ -24,7 +24,7 @@
 	
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
 		<!-- property name="dataSource" ref="dataSource" / -->
-		<property name="packagesToScan" value="org.jenkins.plugins.dbaudit.internal.model" />
+		<property name="packagesToScan" value="org.jenkins.plugins.audit2db.internal.model" />
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.hbm2ddl.auto">create-drop</prop>
@@ -36,7 +36,7 @@
 		</property>
 	</bean>
 	
-	<bean id="buildDetailsRepository" class="org.jenkins.plugins.dbaudit.internal.data.BuildDetailsHibernateRepository">
+	<bean id="buildDetailsRepository" class="org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository">
 		<constructor-arg ref="sessionFactory" />
 	</bean>
 </beans>

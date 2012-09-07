@@ -3,13 +3,12 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.457</version>
+		<version>1.460</version>
 	</parent>
-	<groupId>jenkins.plugins</groupId>
-	<artifactId>dbaudit</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<artifactId>audit2db</artifactId>
+	<version>0.2-SNAPSHOT</version>
 	<packaging>hpi</packaging>
-	<name>Database Audit Plugin</name>
+	<name>Audit to Database Plugin</name>
 	<description>This plugin provides database audit functionality to Jenkins.  It allows recording build information to database, including the build parameters (if any), and the user who started the build (if logged in).</description>
 	<url>https://github.com/mscata/jenkins-db-plugin.git</url>
 	<licenses>
@@ -31,6 +30,7 @@
 		</site>
 	</distributionManagement>
 	<properties>
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.hibernate>3.5.6-Final</version.hibernate>
 		<version.springframework>2.5</version.springframework>
 		<version.hsqldb>2.0.0</version.hsqldb>
@@ -107,7 +107,7 @@
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>${version.hsqldb}</version>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -148,6 +148,26 @@
 	</dependencies>
 	<build>
 		<plugins>
+		    <!-- 
+		    <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-dependency-plugin</artifactId>
+		        <version>2.5.1</version>
+		        <executions>
+		            <execution>
+		                <id>copy-direct-dependencies</id>
+		                <phase>process-resources</phase>
+		                <goals>
+		                    <goal>copy-dependencies</goal>
+		                </goals>
+		                <configuration>
+		                    <includeGroupIds>org.hibernate,org.hsqldb</includeGroupIds>
+		                    <outputDirectory>${basedir}/src/main/webapp/WEB-INF/lib</outputDirectory>
+		                </configuration>
+		            </execution>
+		        </executions>
+		    </plugin>
+		     -->
 		    <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-doap-plugin</artifactId>
@@ -167,28 +187,6 @@
 		            </asfExtOptions>
 		        </configuration>
 		    </plugin>
-		    <!--  
-		    <plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-dependency-plugin</artifactId>
-		        <executions>
-		            <execution>
-		                <id>initialize-classpath</id>
-		                <phase>compile</phase>
-		                <goals>
-		                    <goal>copy-dependencies</goal>
-		                </goals>
-		                <configuration>
-		                    <outputDirectory>${project.build.directory}/work/webapp/WEB-INF/lib</outputDirectory>
-		                    <overWriteReleases>false</overWriteReleases>
-		                    <overWriteSnapshots>false</overWriteSnapshots>
-		                    <overWriteIfNewer>false</overWriteIfNewer>
-		                    <excludeTransitive>true</excludeTransitive>
-                        </configuration>
-                    </execution>
-                </executions>
-		    </plugin>
-		    -->
 			<plugin>
 				<groupId>org.jenkins-ci.tools</groupId>
 				<artifactId>maven-hpi-plugin</artifactId>
@@ -397,12 +395,12 @@
 		</profile>
 		<profile>
 			<id>jenkins-ci</id>
-			<distributionManagement>
+			<repositories>
 				<repository>
 					<id>maven.jenkins-ci.org</id>
-					<url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+					<url>http://repo.jenkins-ci.org/public/</url>
 				</repository>
-			</distributionManagement>
+			</repositories>
 		</profile>
 	</profiles>
 </project>
