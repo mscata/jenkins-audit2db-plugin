@@ -3,6 +3,8 @@ package org.jenkins.plugins.audit2db;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.sql.DataSource;
@@ -90,4 +92,5 @@ public interface DbAuditPublisherDescriptor {
 			@QueryParameter("audit2db.jdbcPassword") final String password)
 			throws IOException, ServletException;
 
+	Connection getJdbcConnection() throws SQLException;
 }

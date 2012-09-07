@@ -3,6 +3,11 @@
  */
 package org.jenkins.plugins.audit2db.internal.model;
 
+import hudson.model.AbstractBuild;
+import hudson.model.Cause;
+import hudson.model.CauseAction;
+import hudson.model.Cause.UserIdCause;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -214,5 +219,35 @@ public class BuildDetailsImpl implements BuildDetails {
 		final BuildDetails other = (BuildDetails) obj;
 		
 		return other.hashCode() == this.hashCode();
+	}
+	
+	/**
+	 * Default constructor.
+	 */
+	public BuildDetailsImpl() {}
+	
+	/**
+	 * Constructs a new BuildDetailsImpl object using the details
+	 * of the given Jenkins build.
+	 * 
+	 * @param build a valid Jenkins build object.
+	 */
+	public BuildDetailsImpl(final AbstractBuild<?, ?> build) {
+		this.id = build.getId();
+		this.fullName = build.getDisplayName();
+		this.startDate = build.getTime();
+		final List<CauseAction> actions = build.getActions(CauseAction.class);
+		boolean userFound = false;
+		for (final CauseAction action : actions) {
+			for (final Cause cause : action.getCauses()) {
+				if (cause instanceof UserIdCause) {
+					userFound = true;
+					this.userId = ((UserIdCause)cause).getUserId();
+					this.userName = ((UserIdCause)cause).getUserName();
+					break;
+				}
+			}
+			if (userFound) { break; }
+		}
 	}
 }

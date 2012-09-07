@@ -9,6 +9,8 @@ import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.sql.DataSource;
@@ -220,6 +222,11 @@ public class DbAuditPublisherDescriptorImpl extends
 		return datasource;
 	}
 
+	public Connection getJdbcConnection() throws SQLException {
+		return getJdbcDatasource(jdbcDriver, jdbcUrl).getConnection(
+				jdbcUser, jdbcPassword);
+	}
+	
 	/**
 	 * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#doTestJdbcConnection(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
@@ -235,6 +242,10 @@ public class DbAuditPublisherDescriptorImpl extends
 		
 		try {
 			getJdbcDatasource(jdbcDriver, jdbcUrl).getConnection(username, password);
+			this.jdbcDriver = jdbcDriver;
+			this.jdbcUrl = jdbcUrl;
+			this.jdbcUser = username;
+			this.jdbcPassword = password;
 		} catch (final Exception e) {
 			final String msg = String.format(
 					"Unable to establish connection: %s", e.getMessage());

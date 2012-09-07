@@ -13,14 +13,17 @@ import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 
 import java.io.IOException;
-
-import javax.sql.DataSource;
-
+import org.hibernate.SessionFactory;
 import org.jenkins.plugins.audit2db.DbAuditPublisher;
+import org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor;
+import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
+import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
+import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.orm.hibernate3.AbstractSessionFactoryBean;
 
 /**
@@ -31,21 +34,19 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
 	private final static Logger LOGGER = LoggerFactory
 			.getLogger(DbAuditPublisherImpl.class);
 	
-	private static ApplicationContext appContext;
+	private static ApplicationContext applicationContext;
+	
 	private static AbstractSessionFactoryBean sessionFactory;
 
+	@DataBoundConstructor
+	public DbAuditPublisherImpl() {}
+	
 	@Extension
 	public final static DbAuditPublisherDescriptorImpl descriptor = new DbAuditPublisherDescriptorImpl(DbAuditPublisherImpl.class);
-	
-	public static ApplicationContext getAppContext() {
-		return appContext;
-	}
 	
 	@Override
 	public BuildStepDescriptor<Publisher> getDescriptor() {
 		LOGGER.debug("Retrieving descriptor");
-//		return Jenkins.getInstance().getDescriptorByType(DbAuditPublisherDescriptorImpl.class);
-//		return (DbAuditPublisherDescriptorImpl) super.getDescriptor();
 		return descriptor;
 	}
 	
@@ -63,95 +64,47 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
 		return BuildStepMonitor.NONE;
 	}
 
-//	private AbstractSessionFactoryBean getSessionFactory() {
-//		if ((null == sessionFactory) && (appContext != null)) {
-//			sessionFactory = (AbstractSessionFactoryBean) appContext
-//					.getBean("sessionFactory");
-//		}
-//		return sessionFactory;
-//	}
-
-	@DataBoundConstructor
-	public DbAuditPublisherImpl() { 
-//		final String contextFile = getClass().getResource("/application-context.xml").getFile();
-//		appContext = new FileSystemXmlApplicationContext(
-//				new String[] { contextFile });
+	private AbstractSessionFactoryBean getSessionFactory() {
+		if (null == sessionFactory) {
+			sessionFactory = (AbstractSessionFactoryBean) getAppContext()
+					.getBean("sessionFactory");
+		}
+		return sessionFactory;
 	}
-	
-	/**
-	 * @see DbAuditPublisher#getDatasource()
-	 */
-	public DataSource getDatasource() {
-		return null; //descriptor.getDataSource();
+
+	public ApplicationContext getAppContext() { 
+		if (null == applicationContext) {
+			final String contextFile = getClass().getResource("/application-context.xml").getFile();
+			applicationContext = new FileSystemXmlApplicationContext(
+					new String[] { contextFile });
+		}
+		return applicationContext;
 	}
 	
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) throws InterruptedException, IOException {
-		listener.getLogger().format("build: %s; launcher: %s",
+		
+		listener.getLogger().format("perform: %s; launcher: %s",
 				build.getDisplayName(), launcher.toString());
-		return true;
+		
+		getSessionFactory().setDataSource(
+				((DbAuditPublisherDescriptor)getDescriptor()).getDataSource());
+		
+		final BuildDetailsHibernateRepository repo = new BuildDetailsHibernateRepository(
+				(SessionFactory) getSessionFactory());
+		
+		final BuildDetails details = new BuildDetailsImpl(build);
+		final Object id = repo.saveBuildDetails(details);
+		
+		return (id != null);
 	}
 	
-	/*
-	private DataSource getJndiDatasource(final String jndiName) {
-		final JndiTemplate jndi = new JndiTemplate();
-		try {
-			final Object jndiObject = jndi.lookup(jndiName);
-			if (!DataSource.class.isAssignableFrom(jndiObject.getClass())) {
-				throw new ClassCastException(String.format(
-						"JNDI connection is not of the right type: found %s, expected %s",
-						jndiObject.getClass().getName(),
-						DataSource.class.getName()));
-			}
-
-			datasource = (DataSource) jndiObject;
-		} catch (final Exception e) {
-			final String msg = String.format(
-					"Unable to retrieve JNDI datasource: %s", e.getMessage());
-			LOGGER.error(msg, e);
-			throw new RuntimeException(e);
-		}
-
-		return datasource;
-	}
-
-	private DataSource getJdbcDatasource(final String jdbcDriver,
-			final String jdbcUrl) {
-		datasource = new DriverManagerDataSource(jdbcUrl);
-		((DriverManagerDataSource) datasource).setDriverClassName(jdbcDriver);
-
-		return datasource;
-	}
-
 	@Override
-	public boolean configure(final StaplerRequest req, final JSONObject formData)
-			throws FormException {
-		super.configure(req, formData);
-
-		final JSONObject datasourceDetails = formData.getJSONObject("datasource");
-		this.useJndi = datasourceDetails.getBoolean("value");
-
-		if (this.useJndi) {
-			try {
-				this.jndiName = datasourceDetails.getString("jndiName");
-				this.username = datasourceDetails.getString("jndiUser");
-				this.password = datasourceDetails.getString("jndiPassword");
-			} catch (final Exception e) {
-				throw new FormException(e.getMessage(), e, "jndiName");
-			}
-		} else {
-			try {
-				this.jdbcDriver = datasourceDetails.getString("jdbcDriver");
-				this.jdbcUrl = datasourceDetails.getString("jdbcUrl");
-				this.username = datasourceDetails.getString("jdbcUser");
-				this.password = datasourceDetails.getString("jdbcPassword");
-			} catch (final Exception e) {
-				throw new FormException(e.getMessage(), e, "jdbcDriver");
-			}
-		}
-		save();
-		return super.configure(req, formData);
+	public boolean prebuild(AbstractBuild<?, ?> build, BuildListener listener) {
+		listener.getLogger().format("prebuild: %s;",
+				build.getDisplayName());
+		
+		return true;
 	}
-	*/
 }

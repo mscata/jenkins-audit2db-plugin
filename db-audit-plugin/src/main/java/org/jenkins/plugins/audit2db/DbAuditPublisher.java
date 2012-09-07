@@ -14,11 +14,6 @@ import javax.sql.DataSource;
  */
 public interface DbAuditPublisher {
 	/**
-	 * @return the data source for the audit database.
-	 */
-	DataSource getDatasource();
-	
-	/**
 	 * @return the plugin descriptor.
 	 */
 	BuildStepDescriptor<Publisher> getDescriptor();
