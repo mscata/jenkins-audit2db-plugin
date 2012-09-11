@@ -13,6 +13,8 @@ import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import org.hibernate.SessionFactory;
 import org.jenkins.plugins.audit2db.DbAuditPublisher;
 import org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor;
@@ -20,8 +22,6 @@ import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepositor
 import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.orm.hibernate3.AbstractSessionFactoryBean;
@@ -31,25 +31,36 @@ import org.springframework.orm.hibernate3.AbstractSessionFactoryBean;
  * 
  */
 public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
-	private final static Logger LOGGER = LoggerFactory
-			.getLogger(DbAuditPublisherImpl.class);
+	private final static Logger LOGGER = Logger.getLogger(DbAuditPublisherImpl.class.getName());
 	
 	private static ApplicationContext applicationContext;
 	
 	private static AbstractSessionFactoryBean sessionFactory;
 
+	/**
+	 * Default constructor annotated as data-bound is needed
+	 * to load up the saved xml configuration values.  
+	 */
 	@DataBoundConstructor
 	public DbAuditPublisherImpl() {}
 	
+	/**
+	 * The annotated descriptor will hold and display the 
+	 * configuration info. It doesn't have to be an inner
+	 * class, as most sample plugins seem to suggest.
+	 */
 	@Extension
 	public final static DbAuditPublisherDescriptorImpl descriptor = new DbAuditPublisherDescriptorImpl(DbAuditPublisherImpl.class);
 	
 	@Override
 	public BuildStepDescriptor<Publisher> getDescriptor() {
-		LOGGER.debug("Retrieving descriptor");
+		LOGGER.log(Level.FINE, "Retrieving descriptor");
 		return descriptor;
 	}
 	
+	/**
+	 * @see hudson.tasks.Notifier#needsToRunAfterFinalized()
+	 */
 	@Override
 	public boolean needsToRunAfterFinalized() {
 		// run even after the build is marked as complete

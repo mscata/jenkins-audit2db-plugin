@@ -9,8 +9,12 @@ import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.sql.DataSource;
@@ -20,8 +24,6 @@ import net.sf.json.JSONObject;
 import org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
@@ -31,7 +33,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 //@Extension
 public class DbAuditPublisherDescriptorImpl extends
 		BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
-	private final static Logger LOGGER = LoggerFactory.getLogger(DbAuditPublisherDescriptorImpl.class);
+	private final static Logger LOGGER = Logger.getLogger(DbAuditPublisherDescriptorImpl.class.getName());
 
 	private transient DataSource datasource;
 	
@@ -169,7 +171,7 @@ public class DbAuditPublisherDescriptorImpl extends
 	
 	public DbAuditPublisherDescriptorImpl() {
 		this(DbAuditPublisherImpl.class);
-		LOGGER.debug("init()");
+		LOGGER.log(Level.FINE, "init()");
 	}
 	
 	public DbAuditPublisherDescriptorImpl(Class<? extends DbAuditPublisherImpl>clazz) {
@@ -180,7 +182,7 @@ public class DbAuditPublisherDescriptorImpl extends
 	@Override
 	public boolean configure(final StaplerRequest req, final JSONObject json)
 			throws hudson.model.Descriptor.FormException {
-		LOGGER.debug("configure() <- " + json.toString());
+		LOGGER.log(Level.FINE, "configure() <- " + json.toString());
 		final JSONObject datasourceDetails = json; //.getJSONObject("datasource");
 //		this.useJndi = datasourceDetails.getBoolean("value");
 
@@ -227,6 +229,16 @@ public class DbAuditPublisherDescriptorImpl extends
 				jdbcUser, jdbcPassword);
 	}
 	
+	private void dumpClassloaderUrls() {
+		LOGGER.log(Level.FINE, "Looking into current context classloader.");
+		final URLClassLoader cl = (URLClassLoader) Thread.currentThread().getContextClassLoader();
+		final URL[] urls = cl.getURLs();
+		LOGGER.log(Level.FINE, "Classpath URLs:");
+		for (final URL url : urls) {
+			LOGGER.log(Level.FINE, url.toString());
+		}
+	}
+	
 	/**
 	 * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#doTestJdbcConnection(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
@@ -236,7 +248,9 @@ public class DbAuditPublisherDescriptorImpl extends
 			@QueryParameter("audit2db.jdbcUser") final String username,
 			@QueryParameter("audit2db.jdbcPassword") final String password)
 			throws IOException, ServletException {
-		LOGGER.debug(String.format("doTestJdbcConnection('%s','%s','%s','*****'",
+		dumpClassloaderUrls();
+		LOGGER.log(Level.FINE, String.format(
+				"doTestJdbcConnection('%s','%s','%s','*****'",
 				jdbcDriver, jdbcUrl, username));
 		FormValidation retval = FormValidation.ok("Connection Successful");
 		
@@ -249,7 +263,7 @@ public class DbAuditPublisherDescriptorImpl extends
 		} catch (final Exception e) {
 			final String msg = String.format(
 					"Unable to establish connection: %s", e.getMessage());
-			LOGGER.error(msg, e);
+			LOGGER.log(Level.SEVERE, msg, e);
 			retval = FormValidation.error(msg);
 		}
 

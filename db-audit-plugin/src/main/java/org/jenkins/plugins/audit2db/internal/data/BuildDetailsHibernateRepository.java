@@ -23,9 +23,15 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
  */
 public class BuildDetailsHibernateRepository implements BuildDetailsRepository {
 	private final HibernateTemplate hibernate = new HibernateTemplate();
+	private final SessionFactory sessionFactory;
 	
 	public BuildDetailsHibernateRepository(final SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
 		this.hibernate.setSessionFactory(sessionFactory);
+	}
+	
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
 	}
 	
 	/**

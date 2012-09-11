@@ -8,8 +8,8 @@
 	<artifactId>audit2db</artifactId>
 	<version>0.2-SNAPSHOT</version>
 	<packaging>hpi</packaging>
-	<name>Audit to Database Plugin</name>
-	<description>This plugin provides database audit functionality to Jenkins.  It allows recording build information to database, including the build parameters (if any), and the user who started the build (if logged in).</description>
+	<name>Jenkins Audit to Database Plugin</name>
+	<description>This plugin provides database audit functionality to Jenkins.  It allows recording build information to database, including the build parameters (if any), and the user who started the build.</description>
 	<url>https://github.com/mscata/jenkins-db-plugin.git</url>
 	<licenses>
 		<license>
@@ -31,9 +31,16 @@
 	</distributionManagement>
 	<properties>
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <version.cglib>2.2</version.cglib>
+	    <version.commons-io>1.4</version.commons-io>
 		<version.hibernate>3.5.6-Final</version.hibernate>
-		<version.springframework>2.5</version.springframework>
+		<version.hibernate-annotations>3.2.0.Final</version.hibernate-annotations>
+		<version.hibernate-jpa>1.0.0.Final</version.hibernate-jpa>
 		<version.hsqldb>2.0.0</version.hsqldb>
+		<version.javassist>3.8.0.GA</version.javassist>
+		<version.junit>4.4</version.junit>
+		<version.mockito>1.9.0</version.mockito>
+		<version.springframework>2.5</version.springframework>
 	</properties>
 	<developers>
 		<developer>
@@ -47,44 +54,39 @@
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
-			<version>2.2</version>
-            <scope>compile</scope>
+			<version>${version.cglib}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.0.1</version>
-            <scope>compile</scope>
+			<version>${version.commons-io}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.8.0.GA</version>
-            <scope>compile</scope>
+			<version>${version.javassist}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.9</version>
+			<version>${version.junit}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-annotations</artifactId>
 			<version>${version.hibernate}</version>
-			<scope>compile</scope>
 		</dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-commons-annotations</artifactId>
-            <version>3.2.0.Final</version>
-            <scope>compile</scope>
+            <version>${version.hibernate-annotations}</version>
         </dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${version.hibernate}</version>
-			<scope>compile</scope>
 			<exclusions>
 			     <!-- IMPORTANT:
 			         Dom4J causes a conflict with a custom
@@ -100,38 +102,33 @@
 		<dependency>
 		    <groupId>org.hibernate.javax.persistence</groupId>
 		    <artifactId>hibernate-jpa-2.0-api</artifactId>
-		    <version>1.0.0.Final</version>
-		    <scope>compile</scope>
+		    <version>${version.hibernate-jpa}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>${version.hsqldb}</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.9.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.5.8</version>
+			<version>${version.mockito}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>${version.springframework}</version>
-			<scope>compile</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${version.springframework}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 			<version>${version.springframework}</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -143,7 +140,6 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
 			<version>${version.springframework}</version>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -289,7 +285,9 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.1</version><!--$NO-MVN-MAN-VER$ -->
 				<configuration>
+				    <!-- 
 					<mavenExecutorId>forked-path</mavenExecutorId>
+				     -->
 					<goals>deploy</goals>
 				</configuration>
 			</plugin>
@@ -301,6 +299,14 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
+		        <plugin>
+		          <groupId>org.jenkins-ci.tools</groupId>
+		          <artifactId>maven-hpi-plugin</artifactId>
+		          <extensions>true</extensions>
+		          <configuration>
+		              <pluginFirstClassLoader>true</pluginFirstClassLoader>
+		          </configuration>
+		        </plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
@@ -395,6 +401,9 @@
 		</profile>
 		<profile>
 			<id>jenkins-ci</id>
+			<activation>
+			    <activeByDefault>true</activeByDefault>
+			</activation>
 			<repositories>
 				<repository>
 					<id>maven.jenkins-ci.org</id>
@@ -403,4 +412,13 @@
 			</repositories>
 		</profile>
 	</profiles>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.6.1</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

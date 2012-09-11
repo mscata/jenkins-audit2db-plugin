@@ -8,6 +8,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
 import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
 import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
@@ -15,9 +17,12 @@ import org.jenkins.plugins.audit2db.internal.model.BuildParameterImpl;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.model.BuildParameter;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/application-context.xml")
 public class BuildDetailsHibernateRepositoryTests {
+	private static final DataSource DATASOURCE = new DriverManagerDataSource(
+			"org.hsqldb.jdbc.JDBCDriver",
+			"jdbc:hsqldb:mem:test",
+			"SA",
+			""
+	);
+	
 	@Autowired
 	private BuildDetailsRepository buildDetailsRepository;
 	
