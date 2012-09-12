@@ -14,6 +14,6 @@ public interface BuildParameter {
 	void setName(String name);
 	String getValue();
 	void setValue(String value);
-	String getBuildId();
-	void setBuildId(String buildId);
+	BuildDetails getBuildDetails();
+	void setBuildDetails(BuildDetails buildId);
 }

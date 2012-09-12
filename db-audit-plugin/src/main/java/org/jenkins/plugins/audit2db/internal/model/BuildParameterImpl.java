@@ -6,11 +6,16 @@ package org.jenkins.plugins.audit2db.internal.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.model.BuildParameter;
 
 /**
+ * Data class for build parameters.
+ * 
  * @author Marco Scata
  *
  */
@@ -19,17 +24,17 @@ public class BuildParameterImpl implements BuildParameter {
 	private Long id;
 	private String name;
 	private String value;
-	private String buildId;
+	private BuildDetails buildDetails;
 	
 	public BuildParameterImpl() {
 		super();
 	}
 	
-	public BuildParameterImpl(final Long id, final String name, final String value, final String buildId) {
+	public BuildParameterImpl(final Long id, final String name, final String value, final BuildDetails buildDetails) {
 		this.id = id;
 		this.name = name;
 		this.value = value;
-		this.buildId = buildId;
+		this.buildDetails = buildDetails;
 	}
 	
 	/**
@@ -46,7 +51,7 @@ public class BuildParameterImpl implements BuildParameter {
 	 * @see org.jenkins.plugins.audit2db.model.BuildParameter#setId(java.lang.Long)
 	 */
 	@Override
-	public void setId(Long id) {
+	public void setId(final Long id) {
 		this.id = id;
 	}
 
@@ -63,7 +68,7 @@ public class BuildParameterImpl implements BuildParameter {
 	 * @see org.jenkins.plugins.audit2db.model.BuildParameter#setName(java.lang.String)
 	 */
 	@Override
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -80,25 +85,26 @@ public class BuildParameterImpl implements BuildParameter {
 	 * @see org.jenkins.plugins.audit2db.model.BuildParameter#setValue(java.lang.String)
 	 */
 	@Override
-	public void setValue(String value) {
+	public void setValue(final String value) {
 		this.value = value;
 	}
 
 	/**
-	 * @see org.jenkins.plugins.audit2db.model.BuildParameter#getBuildId()
+	 * @see org.jenkins.plugins.audit2db.model.BuildParameter#getBuildDetails()
 	 */
-	@Column(nullable=false, unique=false)
+	@ManyToOne(targetEntity=BuildDetailsImpl.class)
+	@JoinColumn(nullable=false, unique=false)
 	@Override
-	public String getBuildId() {
-		return buildId;
+	public BuildDetails getBuildDetails() {
+		return buildDetails;
 	}
 
 	/**
-	 * @see org.jenkins.plugins.audit2db.model.BuildParameter#setBuildId(java.lang.String)
+	 * @see org.jenkins.plugins.audit2db.model.BuildParameter#setBuildDetails(java.lang.String)
 	 */
 	@Override
-	public void setBuildId(String buildId) {
-		this.buildId = buildId;
+	public void setBuildDetails(final BuildDetails buildDetails) {
+		this.buildDetails = buildDetails;
 	}
 
 	/**
@@ -109,7 +115,7 @@ public class BuildParameterImpl implements BuildParameter {
 	@Transient
 	private String getInternalId() {
 		return String.format("%s/%s", 
-				this.buildId, this.name);
+				this.buildDetails.getId(), this.name);
 	}
 	
 	@Override
@@ -124,7 +130,7 @@ public class BuildParameterImpl implements BuildParameter {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		// fail-fast logic
 		if (null == obj) { return false; }
 		if (!(obj instanceof BuildParameter)) { return false; }

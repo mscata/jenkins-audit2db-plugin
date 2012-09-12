@@ -23,6 +23,8 @@ import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.model.BuildParameter;
 
 /**
+ * Data class for build details.
+ * 
  * @author Marco Scata
  *
  */
@@ -52,7 +54,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#setId(java.lang.String)
 	 */
 	@Override
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -69,7 +71,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#setName(java.lang.String)
 	 */
 	@Override
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -86,7 +88,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#setFullName(java.lang.String)
 	 */
 	@Override
-	public void setFullName(String fullName) {
+	public void setFullName(final String fullName) {
 		this.fullName = fullName;
 	}
 
@@ -103,7 +105,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#setStartDate(java.util.Date)
 	 */
 	@Override
-	public void setStartDate(Date start) {
+	public void setStartDate(final Date start) {
 		this.startDate = start;
 	}
 
@@ -120,7 +122,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#setEndDate(java.util.Date)
 	 */
 	@Override
-	public void setEndDate(Date end) {
+	public void setEndDate(final Date end) {
 		this.endDate = end;
 	}
 
@@ -137,7 +139,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#setDuration(java.lang.Long)
 	 */
 	@Override
-	public void setDuration(Long duration) {
+	public void setDuration(final Long duration) {
 		this.duration = duration;
 	}
 
@@ -154,7 +156,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#setUserId(java.lang.String)
 	 */
 	@Override
-	public void setUserId(String userId) {
+	public void setUserId(final String userId) {
 		this.userId = userId;
 	}
 
@@ -171,7 +173,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#setUserName(java.lang.String)
 	 */
 	@Override
-	public void setUserName(String userName) {
+	public void setUserName(final String userName) {
 		this.userName = userName;
 
 	}
@@ -179,7 +181,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	/**
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#getParameters()
 	 */
-	@OneToMany(cascade=CascadeType.ALL, targetEntity=BuildParameterImpl.class)
+	@OneToMany(cascade=CascadeType.ALL, targetEntity=BuildParameterImpl.class, mappedBy="buildDetails")
 	@Column(nullable=true, unique=false)
 	@Override
 	public List<BuildParameter> getParameters() {
@@ -190,7 +192,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#setParameters(java.util.List)
 	 */
 	@Override
-	public void setParameters(List<BuildParameter> params) {
+	public void setParameters(final List<BuildParameter> params) {
 		if (null != params) {
 			// need a temporary array otherwise hibernate
 			// will clear the property bag too
@@ -211,7 +213,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		// fail-fast logic
 		if (null == obj) { return false; }
 		if (!(obj instanceof BuildDetails)) { return false; }
@@ -227,6 +229,40 @@ public class BuildDetailsImpl implements BuildDetails {
 	public BuildDetailsImpl() {}
 	
 	/**
+	 * Constructs a new object with the specified properties.
+	 * 
+	 * @param id the build id.
+	 * @param name the build name.
+	 * @param fullName the build full name.
+	 * @param startDate the build start date.
+	 * @param endDate the build end date.
+	 * @param duration the build duration.
+	 * @param userId the id of the user who started the build.
+	 * @param userName the name of the user who started the build.
+	 * @param parameters the build parameters (if any).
+	 */
+	public BuildDetailsImpl(
+			final String id, 
+			final String name, 
+			final String fullName, 
+			final Date startDate, 
+			final Date endDate, 
+			final long duration, 
+			final String userId, 
+			final String userName, 
+			final List<BuildParameter> parameters) {
+		this.id = id;
+		this.name = name;
+		this.fullName = fullName;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.duration = duration;
+		this.userId = userId;
+		this.userName = userName;
+		this.parameters.addAll(parameters);
+	}
+	
+	/**
 	 * Constructs a new BuildDetailsImpl object using the details
 	 * of the given Jenkins build.
 	 * 
@@ -234,8 +270,10 @@ public class BuildDetailsImpl implements BuildDetails {
 	 */
 	public BuildDetailsImpl(final AbstractBuild<?, ?> build) {
 		this.id = build.getId();
-		this.fullName = build.getDisplayName();
+		this.name = build.getDisplayName();
+		this.fullName = build.getFullDisplayName();
 		this.startDate = build.getTime();
+		
 		final List<CauseAction> actions = build.getActions(CauseAction.class);
 		boolean userFound = false;
 		for (final CauseAction action : actions) {

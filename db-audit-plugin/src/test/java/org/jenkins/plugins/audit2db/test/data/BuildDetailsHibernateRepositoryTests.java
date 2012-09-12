@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 
 import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
 import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
+import org.jenkins.plugins.audit2db.internal.data.HibernateUtil;
 import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
 import org.jenkins.plugins.audit2db.internal.model.BuildParameterImpl;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
@@ -33,19 +34,12 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Marco Scata
  *
  */
-@Transactional
+//@Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/application-context.xml")
+//@ContextConfiguration(locations="/application-context.xml")
 public class BuildDetailsHibernateRepositoryTests {
-	private static final DataSource DATASOURCE = new DriverManagerDataSource(
-			"org.hsqldb.jdbc.JDBCDriver",
-			"jdbc:hsqldb:mem:test",
-			"SA",
-			""
-	);
-	
-	@Autowired
-	private BuildDetailsRepository buildDetailsRepository;
+	private final BuildDetailsRepository buildDetailsRepository = new BuildDetailsHibernateRepository(
+			HibernateUtil.getSessionFactory());
 	
 	private BuildDetails getBuildDetails() {
 		final BuildDetails build = new BuildDetailsImpl();
@@ -60,7 +54,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
 		final List<BuildParameter> params = new ArrayList<BuildParameter>();
 		params.add(new BuildParameterImpl(
-				Long.valueOf(123), "PARAM NAME", "PARAM VALUE", build.getId()));
+				Long.valueOf(123), "PARAM NAME", "PARAM VALUE", build));
 		
 		build.setParameters(params);
 		

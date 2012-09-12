@@ -41,6 +41,7 @@
 		<version.junit>4.4</version.junit>
 		<version.mockito>1.9.0</version.mockito>
 		<version.springframework>2.5</version.springframework>
+		<version.sqljdbc>3.0</version.sqljdbc>
 	</properties>
 	<developers>
 		<developer>
@@ -108,6 +109,11 @@
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>${version.hsqldb}</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.microsoft.jdbc.sqlserver</groupId>
+		    <artifactId>sqljdbc</artifactId>
+		    <version>${version.sqljdbc}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -328,35 +334,8 @@
 											<goal>validate</goal>
 										</goals>
 									</pluginExecutionFilter>
-                                    <action>
-                                        <execute />
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-resources-plugin</artifactId>
-										<versionRange>[2.0,)</versionRange>
-										<goals>
-											<goal>default-resources</goal>
-											<goal>default-test-resources</goal>
-										</goals>
-									</pluginExecutionFilter>
-                                    <action>
-                                        <execute />
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-								    <pluginExecutionFilter>
-								        <groupId>org.apache.maven.plugins</groupId>
-								        <artifactId>maven-dependency-plugin</artifactId>
-								        <versionRange>[2.0,)</versionRange>
-								        <goals>
-								            <goal>copy-dependencies</goal>
-								        </goals>
-								    </pluginExecutionFilter>
 									<action>
-										<execute />
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>

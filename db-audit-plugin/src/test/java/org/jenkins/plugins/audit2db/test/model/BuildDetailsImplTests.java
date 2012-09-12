@@ -36,7 +36,7 @@ public class BuildDetailsImplTests {
 
 		final List<BuildParameter> params = new ArrayList<BuildParameter>();
 		params.add(new BuildParameterImpl(
-				Long.valueOf(123), "PARAM NAME", "PARAM VALUE", build.getId()));
+				Long.valueOf(123), "PARAM NAME", "PARAM VALUE", build));
 		
 		build.setParameters(params);
 		

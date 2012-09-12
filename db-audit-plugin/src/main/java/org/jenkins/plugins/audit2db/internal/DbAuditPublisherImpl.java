@@ -13,12 +13,16 @@ import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import org.hibernate.SessionFactory;
 import org.jenkins.plugins.audit2db.DbAuditPublisher;
 import org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor;
+import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
 import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
+import org.jenkins.plugins.audit2db.internal.data.HibernateUtil;
 import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -32,10 +36,16 @@ import org.springframework.orm.hibernate3.AbstractSessionFactoryBean;
  */
 public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
 	private final static Logger LOGGER = Logger.getLogger(DbAuditPublisherImpl.class.getName());
+
+	// must be transient or it will be serialised in the job config
+	private transient BuildDetailsHibernateRepository repository;
 	
-	private static ApplicationContext applicationContext;
-	
-	private static AbstractSessionFactoryBean sessionFactory;
+	public BuildDetailsRepository getRepository() {
+		if (null == repository) {
+			repository = new BuildDetailsHibernateRepository(getSessionFactory());
+		}
+		return repository;
+	}
 
 	/**
 	 * Default constructor annotated as data-bound is needed
@@ -75,23 +85,14 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
 		return BuildStepMonitor.NONE;
 	}
 
-	private AbstractSessionFactoryBean getSessionFactory() {
-		if (null == sessionFactory) {
-			sessionFactory = (AbstractSessionFactoryBean) getAppContext()
-					.getBean("sessionFactory");
-		}
-		return sessionFactory;
+	private SessionFactory getSessionFactory() {
+		final Properties props = HibernateUtil.getExtraProperties(
+		descriptor.getJdbcDriver(), descriptor.getJdbcUrl(), 
+		descriptor.getJdbcUser(), descriptor.getJdbcPassword());
+		
+		return HibernateUtil.getSessionFactory(props);
 	}
 
-	public ApplicationContext getAppContext() { 
-		if (null == applicationContext) {
-			final String contextFile = getClass().getResource("/application-context.xml").getFile();
-			applicationContext = new FileSystemXmlApplicationContext(
-					new String[] { contextFile });
-		}
-		return applicationContext;
-	}
-	
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) throws InterruptedException, IOException {
@@ -99,16 +100,13 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
 		listener.getLogger().format("perform: %s; launcher: %s",
 				build.getDisplayName(), launcher.toString());
 		
-		getSessionFactory().setDataSource(
-				((DbAuditPublisherDescriptor)getDescriptor()).getDataSource());
+		final BuildDetails details = getRepository().getBuildDetailsById(build.getId());
+		details.setDuration(build.getDuration());
+		details.setEndDate(new Date(
+				details.getStartDate().getTime() + details.getDuration()));
+		getRepository().updateBuildDetails(details);
 		
-		final BuildDetailsHibernateRepository repo = new BuildDetailsHibernateRepository(
-				(SessionFactory) getSessionFactory());
-		
-		final BuildDetails details = new BuildDetailsImpl(build);
-		final Object id = repo.saveBuildDetails(details);
-		
-		return (id != null);
+		return true;
 	}
 	
 	@Override
@@ -116,6 +114,9 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
 		listener.getLogger().format("prebuild: %s;",
 				build.getDisplayName());
 		
-		return true;
+		final BuildDetails details = new BuildDetailsImpl(build);
+		final Object id = getRepository().saveBuildDetails(details);
+		
+		return (id != null);
 	}
 }

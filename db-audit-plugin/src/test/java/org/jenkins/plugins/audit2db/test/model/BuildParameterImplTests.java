@@ -3,9 +3,13 @@
  */
 package org.jenkins.plugins.audit2db.test.model;
 
+import java.util.Date;
+
 import junit.framework.Assert;
 
+import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
 import org.jenkins.plugins.audit2db.internal.model.BuildParameterImpl;
+import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.model.BuildParameter;
 import org.junit.Test;
 
@@ -16,8 +20,12 @@ import org.junit.Test;
  *
  */
 public class BuildParameterImplTests {
+	private final BuildDetails details = new BuildDetailsImpl(
+			"BUILDID", "BUILD NAME", "BUILD_FULLNAME", new Date(),
+			new Date(), 10L, "USERID", "USERNAME", null);
+	
 	private final BuildParameter expected = new BuildParameterImpl(
-			Long.valueOf(123), "PARAM NAME", "PARAM VALUE", "BUILD ID");
+			Long.valueOf(123), "PARAM NAME", "PARAM VALUE", details);
 	
 	@Test
 	public void differentAttributesShouldPreserveEquality(){
@@ -25,7 +33,7 @@ public class BuildParameterImplTests {
 				expected.getId() + 100, 
 				expected.getName(),
 				expected.getValue() + "DIFFERENT", 
-				expected.getBuildId());
+				expected.getBuildDetails());
 		Assert.assertEquals("Broken equality", expected, actual);
 	}
 	
@@ -35,7 +43,7 @@ public class BuildParameterImplTests {
 				expected.getId(), 
 				expected.getName() + "DIFFERENT",
 				expected.getValue(), 
-				expected.getBuildId());
+				expected.getBuildDetails());
 		Assert.assertFalse("Broken inequality logic", actual.equals(expected));
 	}
 	
@@ -45,7 +53,7 @@ public class BuildParameterImplTests {
 				expected.getId(), 
 				expected.getName(),
 				expected.getValue(), 
-				expected.getBuildId() + "DIFFERENT");
+				null);
 		Assert.assertFalse("Broken inequality logic", actual.equals(expected));
 	}
 	

@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -21,7 +22,10 @@ import javax.sql.DataSource;
 
 import net.sf.json.JSONObject;
 
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor;
+import org.jenkins.plugins.audit2db.internal.data.HibernateUtil;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -255,16 +259,20 @@ public class DbAuditPublisherDescriptorImpl extends
 		FormValidation retval = FormValidation.ok("Connection Successful");
 		
 		try {
-			getJdbcDatasource(jdbcDriver, jdbcUrl).getConnection(username, password);
+			final Properties props = HibernateUtil.getExtraProperties(
+					jdbcDriver, jdbcUrl, username, password);
+					
+			final Session session = HibernateUtil.getSessionFactory(props).getCurrentSession();
+			final Transaction tx = session.beginTransaction();
+			tx.rollback();
+
 			this.jdbcDriver = jdbcDriver;
 			this.jdbcUrl = jdbcUrl;
 			this.jdbcUser = username;
 			this.jdbcPassword = password;
 		} catch (final Exception e) {
-			final String msg = String.format(
-					"Unable to establish connection: %s", e.getMessage());
-			LOGGER.log(Level.SEVERE, msg, e);
-			retval = FormValidation.error(msg);
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			retval = FormValidation.error(e.getMessage());
 		}
 
 		return retval;
