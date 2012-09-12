@@ -23,12 +23,6 @@ public class DbAuditPluginTest extends HudsonTestCase {
 	private static final String jdbcDriver = "org.hsqldb.jdbc.JDBCDriver";
 	private static final String jdbcUrl = "jdbc:hsqldb:mem:test";
 	
-//	private DataSource getDatasource() {
-//		final DriverManagerDataSource retval = new DriverManagerDataSource();
-//		retval.setDriverClassName(jdbcDriver);
-//		retval.setUrl(jdbcUrl);
-//		return retval;
-//	}
 	
 	@Test
 	public void testingValidJdbcDatasourceShouldBeSuccessful() throws Exception {

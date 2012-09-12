@@ -34,12 +34,13 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Marco Scata
  *
  */
-//@Transactional
-@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations="/application-context.xml")
 public class BuildDetailsHibernateRepositoryTests {
 	private final BuildDetailsRepository buildDetailsRepository = new BuildDetailsHibernateRepository(
-			HibernateUtil.getSessionFactory());
+			HibernateUtil.getSessionFactory(
+					HibernateUtil.getExtraProperties(
+							"org.hsqldb.jdbc.JDBCDriver", 
+							"jdbc:hsqldb:mem:test", 
+							"SA", "")));
 	
 	private BuildDetails getBuildDetails() {
 		final BuildDetails build = new BuildDetailsImpl();

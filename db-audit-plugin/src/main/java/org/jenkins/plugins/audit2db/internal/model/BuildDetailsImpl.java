@@ -259,7 +259,9 @@ public class BuildDetailsImpl implements BuildDetails {
 		this.duration = duration;
 		this.userId = userId;
 		this.userName = userName;
-		this.parameters.addAll(parameters);
+		if ((parameters != null) && !parameters.isEmpty()) {
+			this.parameters.addAll(parameters);
+		}
 	}
 	
 	/**
@@ -287,5 +289,8 @@ public class BuildDetailsImpl implements BuildDetails {
 			}
 			if (userFound) { break; }
 		}
+		
+		//TODO: store params info
+		build.getBuildVariables();
 	}
 }
