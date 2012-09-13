@@ -6,9 +6,9 @@ package org.jenkins.plugins.audit2db;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Publisher;
 
-import javax.sql.DataSource;
-
 /**
+ * Interface for the plugin publisher.
+ * 
  * @author Marco Scata
  *
  */

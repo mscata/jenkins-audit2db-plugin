@@ -22,11 +22,11 @@ import org.junit.Test;
 public class BuildParameterImplTests {
 	private final BuildDetails details = new BuildDetailsImpl(
 			"BUILDID", "BUILD NAME", "BUILD_FULLNAME", new Date(),
-			new Date(), 10L, "USERID", "USERNAME", null);
+			new Date(), 10L, "USERID", "USERNAME", null, null);
 
 	private final BuildDetails otherDetails = new BuildDetailsImpl(
 			"BUILDIDXXX", "BUILD NAME", "BUILD_FULLNAME", new Date(),
-			new Date(), 10L, "USERID", "USERNAME", null);
+			new Date(), 10L, "USERID", "USERNAME", null, null);
 
 	private final BuildParameter expected = new BuildParameterImpl(
 			Long.valueOf(123), "PARAM NAME", "PARAM VALUE", details);

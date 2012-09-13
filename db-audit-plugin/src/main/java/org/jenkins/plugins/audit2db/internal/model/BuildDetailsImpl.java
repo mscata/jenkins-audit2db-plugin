@@ -17,9 +17,12 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.jenkins.plugins.audit2db.model.BuildDetails;
+import org.jenkins.plugins.audit2db.model.BuildNode;
 import org.jenkins.plugins.audit2db.model.BuildParameter;
 
 /**
@@ -39,6 +42,7 @@ public class BuildDetailsImpl implements BuildDetails {
 	private String userId;
 	private String userName;
 	private final List<BuildParameter> parameters = new ArrayList<BuildParameter>();
+	private BuildNode node = new BuildNodeImpl();
 
 	/**
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#getId()
@@ -201,10 +205,28 @@ public class BuildDetailsImpl implements BuildDetails {
 			Collections.addAll(this.parameters, tempParams);
 		}
 	}
+	
+	/**
+	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#getNode()
+	 */
+	@ManyToOne(targetEntity=BuildNodeImpl.class)
+	@JoinColumn(nullable=false, unique=false)
+	@Override
+	public BuildNode getNode() {
+		return node;
+	}
+
+	/**
+	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#setNode(BuildNode)
+	 */
+	@Override
+	public void setNode(final BuildNode node) {
+		this.node = node;
+	}
 
 	@Override
 	public String toString() {
-		return String.format("%s [%s]");
+		return String.format("%s [%s]", this.fullName, this.id);
 	}
 	
 	@Override
@@ -250,7 +272,8 @@ public class BuildDetailsImpl implements BuildDetails {
 			final long duration, 
 			final String userId, 
 			final String userName, 
-			final List<BuildParameter> parameters) {
+			final List<BuildParameter> parameters,
+			final BuildNode node) {
 		this.id = id;
 		this.name = name;
 		this.fullName = fullName;
@@ -262,6 +285,7 @@ public class BuildDetailsImpl implements BuildDetails {
 		if ((parameters != null) && !parameters.isEmpty()) {
 			this.parameters.addAll(parameters);
 		}
+		this.node = node;
 	}
 	
 	/**

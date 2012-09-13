@@ -4,6 +4,8 @@
 package org.jenkins.plugins.audit2db.model;
 
 /**
+ * Data model to map build parameters.
+ * 
  * @author Marco Scata
  *
  */

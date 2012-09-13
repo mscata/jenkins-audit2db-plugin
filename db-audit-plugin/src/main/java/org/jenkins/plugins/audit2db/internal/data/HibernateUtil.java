@@ -7,12 +7,9 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
-import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
-import org.jenkins.plugins.audit2db.internal.model.BuildParameterImpl;
 
 /**
  * Utility class for Hibernate access.

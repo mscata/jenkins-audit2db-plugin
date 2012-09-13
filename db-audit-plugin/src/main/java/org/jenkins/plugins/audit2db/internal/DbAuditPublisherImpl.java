@@ -15,20 +15,17 @@ import hudson.tasks.Publisher;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.hibernate.SessionFactory;
 import org.jenkins.plugins.audit2db.DbAuditPublisher;
-import org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor;
 import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
 import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
 import org.jenkins.plugins.audit2db.internal.data.HibernateUtil;
 import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.orm.hibernate3.AbstractSessionFactoryBean;
 
 /**
  * @author Marco Scata

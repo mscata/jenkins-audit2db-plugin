@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Data model to map build details.
+ * 
  * @author Marco Scata
  *
  */
@@ -29,4 +31,6 @@ public interface BuildDetails {
 	void setUserName(String userName);
 	List<BuildParameter> getParameters();
 	void setParameters(List<BuildParameter> params);
+	BuildNode getNode();
+	void setNode(BuildNode node);
 }
