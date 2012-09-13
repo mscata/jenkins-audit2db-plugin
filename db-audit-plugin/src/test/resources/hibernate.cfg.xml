@@ -22,5 +22,7 @@
 			class="org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl" />
 		<mapping
 			class="org.jenkins.plugins.audit2db.internal.model.BuildParameterImpl" />
+        <mapping
+            class="org.jenkins.plugins.audit2db.internal.model.BuildNodeImpl" />
 	</session-factory>
 </hibernate-configuration>

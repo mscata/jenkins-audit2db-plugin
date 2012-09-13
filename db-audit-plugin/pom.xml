@@ -31,6 +31,9 @@
 	</distributionManagement>
 	<properties>
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <version.jdk>1.6</version.jdk>
+	    
+	    <!-- Versions of project dependencies -->
 	    <version.cglib>2.2</version.cglib>
 	    <version.commons-io>1.4</version.commons-io>
 		<version.hibernate>3.5.6-Final</version.hibernate>
@@ -42,6 +45,13 @@
 		<version.mockito>1.9.0</version.mockito>
 		<version.springframework>2.5</version.springframework>
 		<version.sqljdbc>3.0</version.sqljdbc>
+		<version.slf4j>1.6.1</version.slf4j>
+		
+		<!-- Versions of Maven plugins -->
+		<version.maven-dependency-plugin>2.5.1</version.maven-dependency-plugin>
+		<version.maven-cobertura-plugin>2.5.1</version.maven-cobertura-plugin>
+		<version.maven-pmd-plugin>2.5</version.maven-pmd-plugin>
+		<version.maven-release-plugin>2.1</version.maven-release-plugin>
 	</properties>
 	<developers>
 		<developer>
@@ -153,22 +163,7 @@
 		    <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-dependency-plugin</artifactId>
-		        <version>2.5.1</version><!--$NO-MVN-MAN-VER$ -->
-		    <!-- 
-		        <executions>
-		            <execution>
-		                <id>copy-direct-dependencies</id>
-		                <phase>process-resources</phase>
-		                <goals>
-		                    <goal>copy-dependencies</goal>
-		                </goals>
-		                <configuration>
-		                    <includeGroupIds>org.hibernate,org.hsqldb</includeGroupIds>
-		                    <outputDirectory>${basedir}/src/main/webapp/WEB-INF/lib</outputDirectory>
-		                </configuration>
-		            </execution>
-		        </executions>
-		     -->
+		        <version>${version.maven-dependency-plugin}</version><!--$NO-MVN-MAN-VER$ -->
 		    </plugin>
 		    <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
@@ -208,10 +203,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>${version.jdk}</source>
+					<target>${version.jdk}</target>
 				</configuration>
 			</plugin>
+			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -239,44 +235,39 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.6</version><!--$NO-MVN-MAN-VER$ -->
-				<configuration>
-					<failsOnError>true</failsOnError>
-					<violationSeverity>warning</violationSeverity>
-					<propertyExpansion>basedir=${basedir}</propertyExpansion>
-					<consoleOutput>true</consoleOutput>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
+			-->
+            <plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>cobertura-maven-plugin</artifactId>
+		        <executions>
+		            <execution>
+		                <phase>compile</phase>
+		                <goals>
+		                    <goal>clean</goal>
+		                </goals>
+		            </execution>
+		        </executions>
+		        <configuration>
+		            <instrumentation>
+		                <ignores>
+		                    <ignore>org.jenkins.plugins.audit2db.*.java</ignore>
+                            <ignore>org.jenkins.plugins.audit2db.data.*.java</ignore>
+                            <ignore>org.jenkins.plugins.audit2db.model.*.java</ignore>
+		                </ignores>
+		                <excludes>
+		                    <exclude>org/jenkins/plugins/audit2db/*.class</exclude>
+                            <exclude>org/jenkins/plugins/audit2db/data/*.class</exclude>
+                            <exclude>org/jenkins/plugins/audit2db/model/*.class</exclude>
+		                </excludes>
+		            </instrumentation>
+		        </configuration>
+		    </plugin>
+      		<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.5</version><!--$NO-MVN-MAN-VER$ -->
-				<executions>
-					<execution>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>2.3.2</version><!--$NO-MVN-MAN-VER$ -->
+				<version>${version.maven-pmd-plugin}</version><!--$NO-MVN-MAN-VER$ -->
 				<configuration>
-					<effort>Max</effort>
-					<threshold>Medium</threshold>
-					<xmlOutput>true</xmlOutput>
+				    <targetJdk>${version.jdk}</targetJdk>
 				</configuration>
 				<executions>
 					<execution>
@@ -289,18 +280,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.1</version><!--$NO-MVN-MAN-VER$ -->
+				<version>${version.maven-release-plugin}</version><!--$NO-MVN-MAN-VER$ -->
 				<configuration>
 				    <!-- 
 					<mavenExecutorId>forked-path</mavenExecutorId>
 				     -->
 					<goals>deploy</goals>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.0</version><!--$NO-MVN-MAN-VER$ -->
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -338,6 +324,25 @@
 										<ignore/>
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											cobertura-maven-plugin
+										</artifactId>
+										<versionRange>
+											[2.5.1,)
+										</versionRange>
+										<goals>
+											<goal>clean</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -345,6 +350,10 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+    <reporting>
+        <plugins>
+        </plugins>
+    </reporting>
 	<profiles>
 		<profile>
 			<id>hudson-ci</id>
@@ -396,7 +405,7 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.6.1</version>
+				<version>${version.slf4j}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

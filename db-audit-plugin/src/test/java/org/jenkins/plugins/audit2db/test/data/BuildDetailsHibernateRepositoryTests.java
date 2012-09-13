@@ -12,11 +12,14 @@ import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
 import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
 import org.jenkins.plugins.audit2db.internal.data.HibernateUtil;
 import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
+import org.jenkins.plugins.audit2db.internal.model.BuildNodeImpl;
 import org.jenkins.plugins.audit2db.internal.model.BuildParameterImpl;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
+import org.jenkins.plugins.audit2db.model.BuildNode;
 import org.jenkins.plugins.audit2db.model.BuildParameter;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 /**
  * Unit tests for the {@link BuildDetailsHibernateRepository} class.
@@ -32,7 +35,7 @@ public class BuildDetailsHibernateRepositoryTests {
 							"jdbc:hsqldb:mem:test", 
 							"SA", "")));
 	
-	private BuildDetails getBuildDetails() {
+	private BuildDetails createBuildDetails() {
 		final BuildDetails build = new BuildDetailsImpl();
 		build.setDuration(Long.valueOf(60));
 		build.setEndDate(new Date(
@@ -46,24 +49,46 @@ public class BuildDetailsHibernateRepositoryTests {
 		final List<BuildParameter> params = new ArrayList<BuildParameter>();
 		params.add(new BuildParameterImpl(
 				Long.valueOf(123), "PARAM NAME", "PARAM VALUE", build));
-		
 		build.setParameters(params);
+		
+		final BuildNode node = new BuildNodeImpl(
+				"NODE HOSTNAME", "NODE URL", "NODE NAME", 
+				"NODE DESCRIPTION", "NODE LABEL");
+		build.setNode(node);
 		
 		return build;
 	}
 	
 	@Test
 	public void createShouldReturnMatchingId() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		Assert.assertEquals("Unexpected build id", buildId, build.getId());
 	}
 
+	@Test
+	public void createBuildsWithSameNodeShouldReuseNodeEntity() {
+		final BuildDetails build1 = createBuildDetails();
+		build1.setId("BUILD_1");
+		final BuildDetails build2 = createBuildDetails();
+		build2.setId("BUILD_2");
+		
+		buildDetailsRepository.saveBuildDetails(build1);
+		buildDetailsRepository.saveBuildDetails(build2);
+		
+		final HibernateTemplate hibernate = new HibernateTemplate();
+		hibernate.setSessionFactory(
+				((BuildDetailsHibernateRepository)buildDetailsRepository).getSessionFactory());
+		
+		@SuppressWarnings("unchecked")
+		final List<BuildNode> nodes = (List<BuildNode>)hibernate.loadAll(BuildNode.class);
+		Assert.assertEquals("Unexpected number of node entities", 1, nodes.size());
+	}
 	
 	@Test
 	public void retrievalByNonMatchingIdShouldReturnNullEntity() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -74,7 +99,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
 	@Test
 	public void retrievalByMatchingIdShouldReturnSameEntity() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -86,7 +111,7 @@ public class BuildDetailsHibernateRepositoryTests {
 	
 	@Test
 	public void retrievalByNonMatchingDateRangeShouldReturnEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -103,7 +128,7 @@ public class BuildDetailsHibernateRepositoryTests {
 	
 	@Test
 	public void retrievalByMatchingDateRangeShouldReturnNonEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -132,7 +157,7 @@ public class BuildDetailsHibernateRepositoryTests {
 	
 	@Test
 	public void retrievalByNonMatchingDurationRangeShouldReturnEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -146,7 +171,7 @@ public class BuildDetailsHibernateRepositoryTests {
 	
 	@Test
 	public void retrievalByMatchingDurationRangeShouldReturnNonEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -162,7 +187,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
 	@Test
 	public void retrievalByNonMatchingFullNameShouldReturnEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -174,7 +199,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
 	@Test
 	public void retrievalByMatchingFullNameShouldReturnNonEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -188,7 +213,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
 	@Test
 	public void retrievalByNonMatchingNameShouldReturnEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -200,7 +225,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
 	@Test
 	public void retrievalByMatchingNameShouldReturnNonEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -214,7 +239,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
 	@Test
 	public void retrievalByNonMatchingUserIdShouldReturnEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -226,7 +251,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
 	@Test
 	public void retrievalByMatchingUserIdShouldReturnNonEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -240,7 +265,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
 	@Test
 	public void retrievalByNonMatchingUserNameShouldReturnEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -252,7 +277,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
 	@Test
 	public void retrievalByMatchingUserNameShouldReturnNonEmptyList() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		
@@ -266,7 +291,7 @@ public class BuildDetailsHibernateRepositoryTests {
 	
 	@Test
 	public void updatedBuildDetailsShouldBePersisted() {
-		final BuildDetails build = getBuildDetails();
+		final BuildDetails build = createBuildDetails();
 		final Object buildId = buildDetailsRepository.saveBuildDetails(build);
 		Assert.assertNotNull("Unexpected null build id", buildId);
 		

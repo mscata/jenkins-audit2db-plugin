@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.jenkins.plugins.audit2db.model.BuildDetails;
+import org.jenkins.plugins.audit2db.model.BuildNode;
 
 /**
  * @author Marco Scata
@@ -103,4 +104,13 @@ public interface BuildDetailsRepository {
 	 *            the updated build details.
 	 */
 	void updateBuildDetails(BuildDetails details);
+
+	/**
+	 * Retrieves the build node that matches the given url.
+	 * 
+	 * @param url the node url (unique).
+	 * 
+	 * @return the matching node if found, othwise <code>null</code>.
+	 */
+	BuildNode getBuildNodeByUrl(String url);
 }

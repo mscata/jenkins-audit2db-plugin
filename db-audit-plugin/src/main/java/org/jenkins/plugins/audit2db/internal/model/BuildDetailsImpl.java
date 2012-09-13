@@ -16,6 +16,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -209,8 +210,8 @@ public class BuildDetailsImpl implements BuildDetails {
 	/**
 	 * @see org.jenkins.plugins.audit2db.model.BuildDetails#getNode()
 	 */
-	@ManyToOne(targetEntity=BuildNodeImpl.class)
-	@JoinColumn(nullable=false, unique=false)
+	@ManyToOne(targetEntity=BuildNodeImpl.class, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@JoinColumn(nullable=true, unique=false)
 	@Override
 	public BuildNode getNode() {
 		return node;

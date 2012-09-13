@@ -12,7 +12,9 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
+import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
+import org.jenkins.plugins.audit2db.model.BuildNode;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 /**
@@ -35,6 +37,24 @@ public class BuildDetailsHibernateRepository implements BuildDetailsRepository {
 	}
 	
 	/**
+	 * @see org.jenkins.plugins.audit2db.data.BuildDetailsRepository#getBuildNodeByUrl(String)
+	 */
+	@Override
+	public BuildNode getBuildNodeByUrl(final String url) {
+		BuildNode retval = null;
+		
+		final DetachedCriteria criteria = DetachedCriteria.forClass(BuildNode.class);
+		criteria.add(Restrictions.eq("url", url).ignoreCase());
+		
+		@SuppressWarnings("unchecked")
+		final List<BuildNode> nodes = hibernate.findByCriteria(criteria);
+		if ((nodes != null) && !nodes.isEmpty()) {
+			retval = nodes.get(0);
+		}
+		return retval;
+	}
+	
+	/**
 	 * @see org.jenkins.plugins.audit2db.data.BuildDetailsRepository#saveBuildDetails(org.jenkins.plugins.audit2db.model.BuildDetails)
 	 */
 	@Override
@@ -42,24 +62,22 @@ public class BuildDetailsHibernateRepository implements BuildDetailsRepository {
 		if (null == details) {
 			throw new IllegalArgumentException("Invalid build details: cannot be null.");
 		}
+
+		// check if the build node details are already persisted
+		final BuildNode node = getBuildNodeByUrl(details.getNode().getUrl());
+		if (node != null) {
+			details.setNode(node);
+		}
+		
 		return hibernate.save(details);
 	}
 
 	/**
 	 * @see org.jenkins.plugins.audit2db.data.BuildDetailsRepository#getBuildDetailsById(String)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public BuildDetails getBuildDetailsById(final String id) {
-		BuildDetails retval = null;
-		
-		final DetachedCriteria criteria = DetachedCriteria.forClass(BuildDetails.class);
-		criteria.add(Restrictions.eq("id", id));
-		final List<BuildDetails> builds = hibernate.findByCriteria(criteria);
-		if ((builds != null) && !builds.isEmpty()) {
-			retval = builds.get(0);
-		}
-		return retval;
+		return (BuildDetails) hibernate.get(BuildDetailsImpl.class, id);
 	}
 	
 	/**
