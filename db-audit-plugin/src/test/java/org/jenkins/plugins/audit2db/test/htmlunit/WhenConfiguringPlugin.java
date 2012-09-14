@@ -6,15 +6,13 @@ package org.jenkins.plugins.audit2db.test.htmlunit;
 import junit.framework.Assert;
 
 import org.jenkins.plugins.audit2db.test.htmlunit.webpages.JenkinsConfigurationPage;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.jvnet.hudson.test.HudsonTestCase;
 
 /**
- * System tests. 
+ * System tests.
  * Plugin configuration.
  * 
  * NOTE: the names of test methods for classes extending HudsonTestCase
@@ -24,61 +22,59 @@ import org.jvnet.hudson.test.HudsonTestCase;
  *
  */
 public class WhenConfiguringPlugin extends HudsonTestCase {
-	private static JenkinsConfigurationPage page;
-	
-	@Before
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-		page = new JenkinsConfigurationPage(this.getURL().toString());
-		page.load();
-	}
-	
-	@After
-	@Override
-	public void tearDown() throws Exception {
-		page.unload();
-		super.tearDown();
-	}
-	
-//	@Test
-//	public void testShouldSaveJndiDatasourceDetails() {
-//		final String datasourceName = "MyJndiDatasource";
-//		final String user = "MyJndiUser";
-//		final String password = "MyJndiPassword";
-//		
-//		page.setUseJndi(true);
-//		page.setJndiDatasource(datasourceName);
-//		page.setJndiUser(user);
-//		page.setJndiPassword(password);
-//		page.saveChanges();
-//		page.load();
-//		
-//		Assert.assertTrue("The useJndi flag was not set to true.", page.isUseJndi());
-//		Assert.assertEquals("Mismatched datasource name", datasourceName, page.getJndiDatasource());
-//		Assert.assertEquals("Mismatched user", user, page.getJndiUser());
-//		Assert.assertTrue("Mismatched password", page.getJndiPassword().isEmpty());
-//	}
-	
-	@Test
-	public void testShouldSaveJdbcDatasourceDetails() {
-		final String jdbcDriver = "MyJdbcDriver";
-		final String jdbcUrl = "MyJdbcUrl";
-		final String user = "MyJdbcUser";
-		final String password = "MyJdbcPassword";
+    private static JenkinsConfigurationPage page;
 
-//		page.setUseJndi(false);
-		page.setJdbcDriver(jdbcDriver);
-		page.setJdbcUrl(jdbcUrl);
-		page.setJdbcUser(user);
-		page.setJdbcPassword(password);
-		page.saveChanges();
-		page.load();
-		
-//		Assert.assertFalse("The useJndi flag was not set to false.", page.isUseJndi());
-		Assert.assertEquals("Mismatched driver class", jdbcDriver, page.getJdbcDriver());
-		Assert.assertEquals("Mismatched jdbc url", jdbcUrl, page.getJdbcUrl());
-		Assert.assertEquals("Mismatched user", user, page.getJdbcUser());
-		Assert.assertTrue("Mismatched password", page.getJdbcPassword().isEmpty());
-	}
+    @Before
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        page = new JenkinsConfigurationPage(this.getURL().toString());
+        page.load();
+    }
+
+    @After
+    @Override
+    public void tearDown() throws Exception {
+        page.unload();
+        super.tearDown();
+    }
+
+    //	@Test
+    //	public void testShouldSaveJndiDatasourceDetails() {
+    //		final String datasourceName = "MyJndiDatasource";
+    //		final String user = "MyJndiUser";
+    //		final String password = "MyJndiPassword";
+    //
+    //		page.setUseJndi(true);
+    //		page.setJndiDatasource(datasourceName);
+    //		page.setJndiUser(user);
+    //		page.setJndiPassword(password);
+    //		page.saveChanges();
+    //		page.load();
+    //
+    //		Assert.assertTrue("The useJndi flag was not set to true.", page.isUseJndi());
+    //		Assert.assertEquals("Mismatched datasource name", datasourceName, page.getJndiDatasource());
+    //		Assert.assertEquals("Mismatched user", user, page.getJndiUser());
+    //		Assert.assertTrue("Mismatched password", page.getJndiPassword().isEmpty());
+    //	}
+
+    @Test
+    public void testShouldSaveJdbcDatasourceDetails() {
+        final String jdbcDriver = "MyJdbcDriver";
+        final String jdbcUrl = "MyJdbcUrl";
+        final String user = "MyJdbcUser";
+        final String password = "MyJdbcPassword";
+
+        page.setJdbcDriver(jdbcDriver);
+        page.setJdbcUrl(jdbcUrl);
+        page.setJdbcUser(user);
+        page.setJdbcPassword(password);
+        page.saveChanges();
+        page.load();
+
+        Assert.assertEquals("Mismatched driver class", jdbcDriver, page.getJdbcDriver());
+        Assert.assertEquals("Mismatched jdbc url", jdbcUrl, page.getJdbcUrl());
+        Assert.assertEquals("Mismatched user", user, page.getJdbcUser());
+        Assert.assertTrue("Mismatched password", page.getJdbcPassword().isEmpty());
+    }
 }
