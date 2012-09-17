@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jenkins.plugins.audit2db.test.htmlunit.webpages;
+package org.jenkins.plugins.audit2db.test.integration.webpages;
 
 import java.io.IOException;
 

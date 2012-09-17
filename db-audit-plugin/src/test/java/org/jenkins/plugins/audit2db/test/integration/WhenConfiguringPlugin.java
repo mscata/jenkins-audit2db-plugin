@@ -1,11 +1,11 @@
 /**
  * 
  */
-package org.jenkins.plugins.audit2db.test.htmlunit;
+package org.jenkins.plugins.audit2db.test.integration;
 
 import junit.framework.Assert;
 
-import org.jenkins.plugins.audit2db.test.htmlunit.webpages.JenkinsConfigurationPage;
+import org.jenkins.plugins.audit2db.test.integration.webpages.JenkinsConfigurationPage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

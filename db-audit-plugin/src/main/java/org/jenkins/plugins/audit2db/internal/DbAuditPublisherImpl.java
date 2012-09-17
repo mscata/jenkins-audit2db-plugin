@@ -7,8 +7,6 @@ import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
-import hudson.model.Computer;
-import hudson.model.Node;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
@@ -26,9 +24,7 @@ import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
 import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
 import org.jenkins.plugins.audit2db.internal.data.HibernateUtil;
 import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
-import org.jenkins.plugins.audit2db.internal.model.BuildNodeImpl;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
-import org.jenkins.plugins.audit2db.model.BuildNode;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -41,6 +37,7 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
     // must be transient or it will be serialised in the job config
     private transient BuildDetailsHibernateRepository repository;
 
+    @Override
     public BuildDetailsRepository getRepository() {
         if (null == repository) {
             repository = new BuildDetailsHibernateRepository(getSessionFactory());
@@ -94,14 +91,6 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
         return HibernateUtil.getSessionFactory(props);
     }
 
-    private BuildNode resolveBuildNode(final Node node) {
-        final Computer computer = node.toComputer();
-        final BuildNode retval = new BuildNodeImpl(
-                computer.getDisplayName(),computer.getUrl(), node.getNodeName(),
-                node.getNodeDescription(), node.getLabelString());
-        return retval;
-    }
-
     @Override
     public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher,
             final BuildListener listener) throws InterruptedException, IOException {
@@ -113,7 +102,6 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
         details.setDuration(build.getDuration());
         details.setEndDate(new Date(
                 details.getStartDate().getTime() + details.getDuration()));
-        details.setNode(resolveBuildNode(build.getBuiltOn()));
 
         getRepository().updateBuildDetails(details);
 
@@ -124,9 +112,13 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
     public boolean prebuild(final AbstractBuild<?, ?> build, final BuildListener listener) {
         listener.getLogger().format("prebuild: %s;",
                 build.getDisplayName());
-
+        Object id = null;
         final BuildDetails details = new BuildDetailsImpl(build);
-        final Object id = getRepository().saveBuildDetails(details);
+        try {
+            id = getRepository().saveBuildDetails(details);
+        } catch (final Throwable t) {
+            LOGGER.log(Level.SEVERE, t.getMessage(), t);
+        }
 
         return (id != null);
     }

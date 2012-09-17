@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jenkins.plugins.audit2db.test.model;
+package org.jenkins.plugins.audit2db.test;
 
 import junit.framework.Assert;
 

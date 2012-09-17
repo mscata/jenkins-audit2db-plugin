@@ -7,6 +7,8 @@ import hudson.model.AbstractBuild;
 import hudson.model.Cause;
 import hudson.model.Cause.UserIdCause;
 import hudson.model.CauseAction;
+import hudson.model.Computer;
+import hudson.model.Node;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -260,6 +262,14 @@ public class BuildDetailsImpl implements BuildDetails {
         return retval;
     }
 
+    private BuildNode resolveBuildNode(final Node node) {
+        final Computer computer = node.toComputer();
+        final BuildNode retval = new BuildNodeImpl(
+                computer.getDisplayName(),computer.getUrl(), node.getNodeName(),
+                node.getNodeDescription(), node.getLabelString());
+        return retval;
+    }
+
     /**
      * Default constructor.
      */
@@ -329,6 +339,7 @@ public class BuildDetailsImpl implements BuildDetails {
             if (userFound) { break; }
         }
 
-        setParameters(resolveBuildParameters(build.getBuildVariables()));
+        this.parameters.addAll(resolveBuildParameters(build.getBuildVariables()));
+        this.node = resolveBuildNode(build.getBuiltOn());
     }
 }
