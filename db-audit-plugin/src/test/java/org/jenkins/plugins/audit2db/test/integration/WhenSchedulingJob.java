@@ -69,7 +69,7 @@ public class WhenSchedulingJob extends HudsonTestCase {
 
         // check data persistence
         final BuildDetailsRepository repository = plugin.getRepository();
-        final BuildDetails actual = repository.getBuildDetailsById(build.getId());
+        final BuildDetails actual = repository.getBuildDetailsForBuild(build);
         final BuildDetails expected = new BuildDetailsImpl(build);
         Assert.assertEquals("Unexpected build details", expected, actual);
         Assert.assertNotNull("Unexpected null end date", actual.getEndDate());
@@ -98,7 +98,7 @@ public class WhenSchedulingJob extends HudsonTestCase {
 
         // check data persistence
         final BuildDetailsRepository repository = plugin.getRepository();
-        final BuildDetails actual = repository.getBuildDetailsById(build.getId());
+        final BuildDetails actual = repository.getBuildDetailsForBuild(build);
         final BuildDetails expected = new BuildDetailsImpl(build);
         Assert.assertEquals("Unexpected build details", expected, actual);
         Assert.assertNotNull("Unexpected null end date", actual.getEndDate());

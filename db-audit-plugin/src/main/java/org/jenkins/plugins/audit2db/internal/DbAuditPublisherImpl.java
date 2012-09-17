@@ -98,14 +98,22 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
         listener.getLogger().format("perform: %s; launcher: %s",
                 build.getDisplayName(), launcher.toString());
 
-        final BuildDetails details = getRepository().getBuildDetailsById(build.getId());
+        final BuildDetails details = getRepository().getBuildDetailsForBuild(build);
         details.setDuration(build.getDuration());
         details.setEndDate(new Date(
                 details.getStartDate().getTime() + details.getDuration()));
 
-        getRepository().updateBuildDetails(details);
+        boolean result = false;
 
-        return true;
+        try {
+            getRepository().updateBuildDetails(details);
+            LOGGER.log(Level.FINE, "Updated build details with id=" + details.getId());
+            result = true;
+        } catch (final Throwable t) {
+            LOGGER.log(Level.SEVERE, t.getMessage(), t);
+        }
+
+        return result;
     }
 
     @Override
@@ -116,6 +124,7 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
         final BuildDetails details = new BuildDetailsImpl(build);
         try {
             id = getRepository().saveBuildDetails(details);
+            LOGGER.log(Level.FINE, "Saved build details with id=" + id);
         } catch (final Throwable t) {
             LOGGER.log(Level.SEVERE, t.getMessage(), t);
         }

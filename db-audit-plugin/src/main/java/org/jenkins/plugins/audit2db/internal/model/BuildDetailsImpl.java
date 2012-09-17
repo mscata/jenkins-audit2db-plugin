@@ -241,6 +241,7 @@ public class BuildDetailsImpl implements BuildDetails {
     @Override
     public boolean equals(final Object obj) {
         // fail-fast logic
+        if (this == obj) { return true; }
         if (null == obj) { return false; }
         if (!(obj instanceof BuildDetails)) { return false; }
 
@@ -254,7 +255,8 @@ public class BuildDetailsImpl implements BuildDetails {
         if (buildVariables != null) {
             for (final Map.Entry<String, String> buildVariable : buildVariables.entrySet()) {
                 retval.add(new BuildParameterImpl(
-                        Long.valueOf(-1), buildVariable.getKey(),
+                        String.format("%s@%s", this.id, buildVariable.getKey()),
+                        buildVariable.getKey(),
                         buildVariable.getValue(), this));
             }
         }
@@ -320,7 +322,7 @@ public class BuildDetailsImpl implements BuildDetails {
      * @param build a valid Jenkins build object.
      */
     public BuildDetailsImpl(final AbstractBuild<?, ?> build) {
-        this.id = build.getId();
+        //        this.id = build.getId();
         this.name = build.getDisplayName();
         this.fullName = build.getFullDisplayName();
         this.startDate = build.getTime();
@@ -341,5 +343,6 @@ public class BuildDetailsImpl implements BuildDetails {
 
         this.parameters.addAll(resolveBuildParameters(build.getBuildVariables()));
         this.node = resolveBuildNode(build.getBuiltOn());
+        this.id = String.format("%s/%s", this.node, build.getId());
     }
 }

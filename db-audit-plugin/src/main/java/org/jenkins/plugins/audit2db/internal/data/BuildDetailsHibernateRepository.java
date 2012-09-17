@@ -3,6 +3,8 @@
  */
 package org.jenkins.plugins.audit2db.internal.data;
 
+import hudson.model.AbstractBuild;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -79,10 +81,7 @@ public class BuildDetailsHibernateRepository implements BuildDetailsRepository {
             details.setNode(node);
         }
 
-        final Object retval = hibernate.save(details);
-        hibernate.flush();
-
-        return retval;
+        return hibernate.save(details);
     }
 
     /**
@@ -193,7 +192,14 @@ public class BuildDetailsHibernateRepository implements BuildDetailsRepository {
             throw new IllegalArgumentException("Invalid build details: cannot be null.");
         }
         hibernate.update(details);
-        hibernate.flush();
     }
 
+    /**
+     * @see org.jenkins.plugins.audit2db.data.BuildDetailsRepository#getBuildDetailsForBuild(AbstractBuild)
+     */
+    @Override
+    public BuildDetails getBuildDetailsForBuild(final AbstractBuild<?, ?> build) {
+        final String id = new BuildDetailsImpl(build).getId();
+        return getBuildDetailsById(id);
+    }
 }
