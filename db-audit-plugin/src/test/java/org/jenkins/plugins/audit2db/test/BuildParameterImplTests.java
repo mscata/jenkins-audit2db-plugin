@@ -34,30 +34,20 @@ public class BuildParameterImplTests {
     @Test
     public void differentAttributesShouldPreserveEquality(){
         final BuildParameter actual = new BuildParameterImpl(
-                expected.getId() + 100,
-                expected.getName(),
+                expected.getId(),
+                expected.getName() + "DIFFERENT",
                 expected.getValue() + "DIFFERENT",
                 expected.getBuildDetails());
         Assert.assertEquals("Broken equality", expected, actual);
     }
 
     @Test
-    public void differentNameShouldBreakEquality(){
+    public void differentIdShouldBreakEquality(){
         final BuildParameter actual = new BuildParameterImpl(
-                expected.getId(),
-                expected.getName() + "DIFFERENT",
-                expected.getValue(),
-                expected.getBuildDetails());
-        Assert.assertFalse("Broken inequality logic", actual.equals(expected));
-    }
-
-    @Test
-    public void differentBuildIdShouldBreakEquality(){
-        final BuildParameter actual = new BuildParameterImpl(
-                expected.getId(),
+                expected.getId() + "DIFFERENT",
                 expected.getName(),
                 expected.getValue(),
-                otherDetails);
+                expected.getBuildDetails());
         Assert.assertFalse("Broken inequality logic", actual.equals(expected));
     }
 

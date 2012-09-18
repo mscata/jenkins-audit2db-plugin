@@ -9,8 +9,6 @@ import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +43,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     private String jdbcPassword;
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#getUseJndi()
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#getUseJndi()
      */
     @Override
     public boolean getUseJndi() {
@@ -53,7 +51,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#setUseJndi(boolean)
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#setUseJndi(boolean)
      */
     @Override
     public void setUseJndi(final boolean useJndi) {
@@ -61,7 +59,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#getJndiName()
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#getJndiName()
      */
     @Override
     public String getJndiName() {
@@ -69,7 +67,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#setJndiName(java.lang.String)
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#setJndiName(java.lang.String)
      */
     @Override
     public void setJndiName(final String jndiName) {
@@ -77,7 +75,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#getJdbcDriver()
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#getJdbcDriver()
      */
     @Override
     public String getJdbcDriver() {
@@ -85,7 +83,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#setJdbcDriver(java.lang.String)
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#setJdbcDriver(java.lang.String)
      */
     @Override
     public void setJdbcDriver(final String jdbcDriver) {
@@ -93,7 +91,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#getJdbcUrl()
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#getJdbcUrl()
      */
     @Override
     public String getJdbcUrl() {
@@ -101,7 +99,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#setJdbcUrl(java.lang.String)
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#setJdbcUrl(java.lang.String)
      */
     @Override
     public void setJdbcUrl(final String jdbcUrl) {
@@ -109,7 +107,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#getJndiUser()
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#getJndiUser()
      */
     @Override
     public String getJndiUser() {
@@ -117,7 +115,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#setJndiUser(java.lang.String)
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#setJndiUser(java.lang.String)
      */
     @Override
     public void setJndiUser(final String username) {
@@ -132,7 +130,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#setJndiPassword(java.lang.String)
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#setJndiPassword(java.lang.String)
      */
     @Override
     public void setJndiPassword(final String password) {
@@ -140,7 +138,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#getJdbcUser()
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#getJdbcUser()
      */
     @Override
     public String getJdbcUser() {
@@ -148,7 +146,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#setJdbcUser(java.lang.String)
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#setJdbcUser(java.lang.String)
      */
     @Override
     public void setJdbcUser(final String username) {
@@ -163,7 +161,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#setJdbcPassword(java.lang.String)
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#setJdbcPassword(java.lang.String)
      */
     @Override
     public void setJdbcPassword(final String password) {
@@ -217,16 +215,6 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
         return "Audit job info to Database";//Messages.DbAuditPublisher_DisplayName();
     }
 
-    private void dumpClassloaderUrls() {
-        LOGGER.log(Level.FINE, "Looking into current context classloader.");
-        final URLClassLoader cl = (URLClassLoader) Thread.currentThread().getContextClassLoader();
-        final URL[] urls = cl.getURLs();
-        LOGGER.log(Level.FINE, "Classpath URLs:");
-        for (final URL url : urls) {
-            LOGGER.log(Level.FINE, url.toString());
-        }
-    }
-
     /**
      * @see org.jenkins.plugins.audit2db.internal.DbAuditPublisherDescriptor#doTestJdbcConnection(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
@@ -237,7 +225,6 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
             @QueryParameter("audit2db.jdbcUser") final String username,
             @QueryParameter("audit2db.jdbcPassword") final String password)
     throws IOException, ServletException {
-        dumpClassloaderUrls();
         LOGGER.log(Level.FINE, String.format(
                 "doTestJdbcConnection('%s','%s','%s','*****'",
                 jdbcDriver, jdbcUrl, username));
@@ -255,6 +242,29 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
             this.jdbcUrl = jdbcUrl;
             this.jdbcUser = username;
             this.jdbcPassword = password;
+        } catch (final Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            retval = FormValidation.error(e.getMessage());
+        }
+
+        return retval;
+    }
+
+    @Override
+    public FormValidation doGenerateDdl(
+            @QueryParameter("audit2db.jdbcDriver") final String jdbcDriver,
+            @QueryParameter("audit2db.jdbcUrl") final String jdbcUrl,
+            @QueryParameter("audit2db.jdbcUser") final String username,
+            @QueryParameter("audit2db.jdbcPassword") final String password)
+    throws IOException, ServletException {
+        LOGGER.log(Level.FINE, String.format(
+                "doTestJdbcConnection('%s','%s','%s','*****'",
+                jdbcDriver, jdbcUrl, username));
+        FormValidation retval;
+        try {
+            final String ddlText = HibernateUtil.getSchemaDdl(
+                    jdbcDriver, jdbcUrl, username, password);
+            retval = FormValidation.ok(ddlText);
         } catch (final Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             retval = FormValidation.error(e.getMessage());

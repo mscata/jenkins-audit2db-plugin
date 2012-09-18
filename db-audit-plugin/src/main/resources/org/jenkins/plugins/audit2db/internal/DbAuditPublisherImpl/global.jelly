@@ -37,10 +37,10 @@
 	    <f:invisibleEntry>
 	       <f:textbox name="audit2db.useJndi" value="false"/>
 	    </f:invisibleEntry>
-        <f:entry title="${%JDBC Driver class}" field="jdbcDriver" help="${rootURL}/plugin/dbaudit/help/jdbcDriver.html">
+        <f:entry title="${%JDBC Driver class}" field="jdbcDriver" help="${rootURL}/plugin/audit2db/help/jdbcDriver.html">
             <f:textbox name="audit2db.jdbcDriver" value="${it.jdbcDriver}"/> 
         </f:entry>
-        <f:entry title="${%JDBC Url}" field="jdbcUrl" help="${rootURL}/plugin/dbaudit/help/jdbcUrl.html">
+        <f:entry title="${%JDBC Url}" field="jdbcUrl" help="${rootURL}/plugin/audit2db/help/jdbcUrl.html">
             <f:textbox name="audit2db.jdbcUrl" value="${it.jdbcUrl}"/> 
         </f:entry>
         <f:entry title="${%User}" field="jdbcUser">
@@ -51,5 +51,13 @@
         </f:entry>
         <f:validateButton title="${%Test Connection}" progress="${%Connecting...}"
                method="testJdbcConnection" with="audit2db.jdbcDriver,audit2db.jdbcUrl,audit2db.jdbcUser,audit2db.jdbcPassword" />
+        <f:advanced>
+            <f:validateButton title="${%Show DDL}" progress="${%Processing...}"
+                method="generateDdl" with="audit2db.jdbcDriver,audit2db.jdbcUrl,audit2db.jdbcUser,audit2db.jdbcPassword" />
+            <!-- 
+            <f:textarea name="audit2db.ddlText" field="ddlText" 
+                value="${it.ddlText}" readonly="readonly" />
+             -->
+        </f:advanced>
 	</f:section>
 </j:jelly>

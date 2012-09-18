@@ -39,6 +39,7 @@
 		<version.hibernate>3.5.6-Final</version.hibernate>
 		<version.hibernate-annotations>3.2.0.Final</version.hibernate-annotations>
 		<version.hibernate-jpa>1.0.0.Final</version.hibernate-jpa>
+		<version.c3p0>0.9.1.2</version.c3p0>
 		<version.hsqldb>2.0.0</version.hsqldb>
 		<version.javassist>3.8.0.GA</version.javassist>
 		<version.junit>4.4</version.junit>
@@ -115,15 +116,27 @@
 		    <artifactId>hibernate-jpa-2.0-api</artifactId>
 		    <version>${version.hibernate-jpa}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-c3p0</artifactId>
+            <version>${version.hibernate}</version>
+        </dependency>
+		<dependency>
+		    <groupId>c3p0</groupId>
+		    <artifactId>c3p0</artifactId>
+		    <version>${version.c3p0}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>${version.hsqldb}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 		    <groupId>com.microsoft.jdbc.sqlserver</groupId>
 		    <artifactId>sqljdbc</artifactId>
 		    <version>${version.sqljdbc}</version>
+            <scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -207,16 +220,19 @@
 					<target>${version.jdk}</target>
 				</configuration>
 			</plugin>
-			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<excludes>
-						<exclude>**/test/htmlunit/**/*.java</exclude>
-					</excludes>
+                    <includes>
+                        <include>**/audit2db/test/**/*.java</include>
+                    </includes>
 				</configuration>
 			</plugin>
+			<!-- 
+					<excludes>
+						<exclude>**/audit2db/test/integration/**/*.java</exclude>
+					</excludes>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
@@ -229,7 +245,7 @@
 						</goals>
 						<configuration>
 							<includes>
-								<include>**/test/htmlunit/**/*.java</include>
+								<include>**/audit2db/test/integration/**/*.java</include>
 							</includes>
 						</configuration>
 					</execution>
