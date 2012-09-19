@@ -83,6 +83,11 @@ public interface DbAuditPublisherDescriptor {
     void setJdbcUser(final String username);
 
     /**
+     * @return the password for the specified user.
+     */
+    String getJdbcPassword();
+
+    /**
      * @param password
      *            the password for the JDBC datasource.
      */

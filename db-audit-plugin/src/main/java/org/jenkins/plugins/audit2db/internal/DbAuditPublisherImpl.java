@@ -95,8 +95,8 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
     public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher,
             final BuildListener listener) throws InterruptedException, IOException {
 
-        listener.getLogger().format("perform: %s; launcher: %s",
-                build.getDisplayName(), launcher.toString());
+        LOGGER.log(Level.FINE, String.format("perform: %s; launcher: %s",
+                build.getDisplayName(), launcher.toString()));
 
         final BuildDetails details = getRepository().getBuildDetailsForBuild(build);
         details.setDuration(build.getDuration());
@@ -118,8 +118,9 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
 
     @Override
     public boolean prebuild(final AbstractBuild<?, ?> build, final BuildListener listener) {
-        listener.getLogger().format("prebuild: %s;",
-                build.getDisplayName());
+        LOGGER.log(Level.FINE, String.format("prebuild: %s;",
+                build.getDisplayName()));
+
         Object id = null;
         final BuildDetails details = new BuildDetailsImpl(build);
         try {

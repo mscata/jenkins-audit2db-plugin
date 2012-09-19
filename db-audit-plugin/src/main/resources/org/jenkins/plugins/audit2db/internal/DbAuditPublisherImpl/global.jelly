@@ -52,12 +52,9 @@
         <f:validateButton title="${%Test Connection}" progress="${%Connecting...}"
                method="testJdbcConnection" with="audit2db.jdbcDriver,audit2db.jdbcUrl,audit2db.jdbcUser,audit2db.jdbcPassword" />
         <f:advanced>
-            <f:validateButton title="${%Show DDL}" progress="${%Processing...}"
+            <f:description>${%GenerateDdlDescription}</f:description>
+            <f:validateButton title="${%Generate DDL}" progress="${%Processing...}"
                 method="generateDdl" with="audit2db.jdbcDriver,audit2db.jdbcUrl,audit2db.jdbcUser,audit2db.jdbcPassword" />
-            <!-- 
-            <f:textarea name="audit2db.ddlText" field="ddlText" 
-                value="${it.ddlText}" readonly="readonly" />
-             -->
         </f:advanced>
 	</f:section>
 </j:jelly>

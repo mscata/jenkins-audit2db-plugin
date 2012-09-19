@@ -20,6 +20,7 @@ import net.sf.json.JSONObject;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor;
+import org.jenkins.plugins.audit2db.Messages;
 import org.jenkins.plugins.audit2db.internal.data.HibernateUtil;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -154,9 +155,10 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
     }
 
     /**
-     * @return the password for the specified user.
+     * @see org.jenkins.plugins.audit2db.DbAuditPublisherDescriptor#getJdbcPassword()
      */
-    String getJdbcPassword() {
+    @Override
+    public String getJdbcPassword() {
         return jdbcPassword;
     }
 
@@ -212,7 +214,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
 
     @Override
     public String getDisplayName() {
-        return "Audit job info to Database";//Messages.DbAuditPublisher_DisplayName();
+        return Messages.DbAuditPublisherDescriptor_DisplayName();
     }
 
     /**
@@ -228,7 +230,8 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
         LOGGER.log(Level.FINE, String.format(
                 "doTestJdbcConnection('%s','%s','%s','*****'",
                 jdbcDriver, jdbcUrl, username));
-        FormValidation retval = FormValidation.ok("Connection Successful");
+        FormValidation retval = FormValidation.ok(
+                Messages.DbAuditPublisherDescriptor_ConnectionOk());
 
         try {
             final Properties props = HibernateUtil.getExtraProperties(
@@ -258,7 +261,7 @@ BuildStepDescriptor<Publisher> implements DbAuditPublisherDescriptor {
             @QueryParameter("audit2db.jdbcPassword") final String password)
     throws IOException, ServletException {
         LOGGER.log(Level.FINE, String.format(
-                "doTestJdbcConnection('%s','%s','%s','*****'",
+                "doGenerateDdl('%s','%s','%s','*****'",
                 jdbcDriver, jdbcUrl, username));
         FormValidation retval;
         try {

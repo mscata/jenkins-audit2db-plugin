@@ -27,10 +27,10 @@ public class HibernateUtil {
     private final static Logger LOGGER = Logger.getLogger(HibernateUtil.class.getName());
 
     private static Configuration getConfig(final Properties extraProperties) throws HibernateException {
-        LOGGER.log(Level.INFO, "Loading configuration file");
+        LOGGER.log(Level.INFO, Messages.HibernateUtil_LoadConfig());
         final Configuration config = new AnnotationConfiguration().configure();
         if ((extraProperties != null) && !extraProperties.isEmpty()) {
-            LOGGER.log(Level.FINE, "Setting extra properties.");
+            LOGGER.log(Level.FINE, Messages.HibernateUtil_SettingExtraProps());
             LOGGER.log(Level.FINE, extraProperties.toString());
             config.addProperties(extraProperties);
         }
@@ -46,7 +46,7 @@ public class HibernateUtil {
             retval = config.buildSessionFactory();
         } catch (final Exception e) {
             // Make sure you log the exception, as it might be swallowed
-            LOGGER.log(Level.SEVERE, "Initial SessionFactory creation failed.", e);
+            LOGGER.log(Level.SEVERE, Messages.HibernateUtil_FailedSessionFactory(), e);
             throw new RuntimeException(e);
         }
 
@@ -92,8 +92,10 @@ public class HibernateUtil {
         generator.execute(true, false, false, true);
 
         final Scanner scanner = new Scanner(tempDdlFile);
+        //using a non-matching delimiter will read the whole file
         scanner.useDelimiter("\\Z");
-        retval = scanner.next();
+        retval = String.format(Messages.HibernateUtil_GeneratedNote(),
+                dialect, scanner.next());
         tempDdlFile.delete();
 
         return retval;

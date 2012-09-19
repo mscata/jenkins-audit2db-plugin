@@ -341,8 +341,8 @@ public class BuildDetailsImpl implements BuildDetails {
             if (userFound) { break; }
         }
 
-        this.parameters.addAll(resolveBuildParameters(build.getBuildVariables()));
         this.node = resolveBuildNode(build.getBuiltOn());
         this.id = String.format("%s/%s", this.node, build.getId());
+        this.parameters.addAll(resolveBuildParameters(build.getBuildVariables()));
     }
 }

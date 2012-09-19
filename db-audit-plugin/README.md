@@ -23,6 +23,29 @@ will be created the first time you run the plugin inside Jenkins, so if
 you can't see it (and assuming you have actually already installed the
 audit to databasep plugin), then try restarting Jenkins.
 
+This plugin has been tested with the following JDBC drivers:
+
+    -- org.hsqldb.jdbc.JDBCDriver
+    -- oracle.jdbc.driver.OracleDriver
+    -- com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+Now [add the plugin][3] to your Jenkins installation, but before you
+can use it we need to set up the audit database. In the Jenkins
+configuration page, enter the JDBC connection details for your audit
+database and test the connection. If the connection is successful
+click on the `Advanced` button. Another button will appear. This
+will allow you to generate the data definition script to set up
+the audit database. If you have any DBAs, it is a good idea to pass
+this script over to them now. It is also a good idea to discuss in 
+detail your audit reporting requirements with your DBAs, so that they 
+can configure the appropriate indexes on the audit tables and help
+you build your reporting queries.
+
+Note
+----
+If you want to use Windows integrated authentication with the
+SQL Server JDBC driver, then read carefully [this article][2].
+
 Contributing
 ------------
 Contributions are always welcome. Here's how:
@@ -35,3 +58,5 @@ Contributions are always welcome. Here's how:
 6. Wait. Good things will come.
 
 [1]: http://github.com/github/markup/pulls
+[2]: http://blogs.msdn.com/b/jdbcteam/archive/2007/06/18/com-microsoft-sqlserver-jdbc-sqlserverexception-this-driver-is-not-configured-for-integrated-authentication.aspx?PageIndex=2
+[3]: https://wiki.jenkins-ci.org/display/JENKINS/Plugins#Plugins-Howtoinstallplugins
