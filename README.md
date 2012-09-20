@@ -25,9 +25,11 @@ audit to databasep plugin), then try restarting Jenkins.
 
 This plugin has been tested with the following JDBC drivers:
 
-    -- org.hsqldb.jdbc.JDBCDriver
-    -- oracle.jdbc.driver.OracleDriver
-    -- com.microsoft.sqlserver.jdbc.SQLServerDriver
+    org.hsqldb.jdbc.JDBCDriver
+    
+    oracle.jdbc.driver.OracleDriver
+    
+    com.microsoft.sqlserver.jdbc.SQLServerDriver
 
 Now [add the plugin][3] to your Jenkins installation, but before you
 can use it we need to set up the audit database. In the Jenkins

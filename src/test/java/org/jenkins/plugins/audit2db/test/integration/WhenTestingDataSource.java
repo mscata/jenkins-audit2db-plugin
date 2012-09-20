@@ -26,7 +26,7 @@ public class WhenTestingDataSource extends HudsonTestCase {
     private static final String jdbcPassword = "";
 
     @Test
-    public void testValidJdbcDatasourceShouldBeSuccessful() throws Exception {
+    public void testValidJdbcDatasourceShouldSucceed() throws Exception {
         final DbAuditPublisher publisher = new DbAuditPublisherImpl();
         final DbAuditPublisherDescriptor descriptor = (DbAuditPublisherDescriptor) publisher.getDescriptor();
 
@@ -53,6 +53,16 @@ public class WhenTestingDataSource extends HudsonTestCase {
         final FormValidation testResult = descriptor.doTestJdbcConnection(
                 "WrongDriver", jdbcUrl, jdbcUser, jdbcPassword);
         Assert.assertEquals("Unexpected successful connection.", FormValidation.Kind.ERROR, testResult.kind);
+    }
+    
+    @Test
+    public void testGeneratingDdlWithValidJdbcDetailsShouldSucceed() throws Exception {
+        final DbAuditPublisher publisher = new DbAuditPublisherImpl();
+        final DbAuditPublisherDescriptor descriptor = (DbAuditPublisherDescriptor) publisher.getDescriptor();
+
+        final FormValidation testResult = descriptor.doGenerateDdl(
+                jdbcDriver, jdbcUrl, jdbcUser, jdbcPassword);
+        Assert.assertEquals("Unexpected connection error.", FormValidation.Kind.OK, testResult.kind);
     }
 
     //	@Test

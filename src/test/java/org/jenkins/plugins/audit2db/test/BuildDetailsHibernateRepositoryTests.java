@@ -25,21 +25,17 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
  * Unit tests for the {@link BuildDetailsHibernateRepository} class.
  * 
  * @author Marco Scata
- *
+ * 
  */
 public class BuildDetailsHibernateRepositoryTests {
     private final BuildDetailsRepository buildDetailsRepository = new BuildDetailsHibernateRepository(
-            HibernateUtil.getSessionFactory(
-                    HibernateUtil.getExtraProperties(
-                            "org.hsqldb.jdbc.JDBCDriver",
-                            "jdbc:hsqldb:mem:test",
-                            "SA", "")));
+            HibernateUtil.getSessionFactory(HibernateUtil
+                    .getExtraProperties("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:test", "SA", "")));
 
     private BuildDetails createBuildDetails() {
         final BuildDetails build = new BuildDetailsImpl();
         build.setDuration(Long.valueOf(60));
-        build.setEndDate(new Date(
-                build.getStartDate().getTime() + (build.getDuration() * 1000)));
+        build.setEndDate(new Date(build.getStartDate().getTime() + (build.getDuration() * 1000)));
         build.setFullName("BUILD FULL NAME");
         build.setId("BUILD ID");
         build.setName("BUILD NAME");
@@ -47,13 +43,10 @@ public class BuildDetailsHibernateRepositoryTests {
         build.setUserName("BUILD USER NAME");
 
         final List<BuildParameter> params = new ArrayList<BuildParameter>();
-        params.add(new BuildParameterImpl(
-                "PARAM_ID", "PARAM NAME", "PARAM VALUE", build));
+        params.add(new BuildParameterImpl("PARAM_ID", "PARAM NAME", "PARAM VALUE", build));
         build.setParameters(params);
 
-        final BuildNode node = new BuildNodeImpl(
-                "NODE HOSTNAME", "NODE URL", "NODE NAME",
-                "NODE DESCRIPTION", "NODE LABEL");
+        final BuildNode node = new BuildNodeImpl("NODE HOSTNAME", "NODE URL", "NODE NAME", "NODE DESCRIPTION", "NODE LABEL");
         build.setNode(node);
 
         return build;
@@ -78,8 +71,7 @@ public class BuildDetailsHibernateRepositoryTests {
         buildDetailsRepository.saveBuildDetails(build2);
 
         final HibernateTemplate hibernate = new HibernateTemplate();
-        hibernate.setSessionFactory(
-                ((BuildDetailsHibernateRepository)buildDetailsRepository).getSessionFactory());
+        hibernate.setSessionFactory(((BuildDetailsHibernateRepository) buildDetailsRepository).getSessionFactory());
 
         @SuppressWarnings("unchecked")
         final List<BuildNode> nodes = hibernate.loadAll(BuildNode.class);
@@ -92,8 +84,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Object buildId = buildDetailsRepository.saveBuildDetails(build);
         Assert.assertNotNull("Unexpected null build id", buildId);
 
-        final BuildDetails retrievedBuild = buildDetailsRepository.getBuildDetailsById(
-                build.getId() + "NOMATCH");
+        final BuildDetails retrievedBuild = buildDetailsRepository.getBuildDetailsById(build.getId() + "NOMATCH");
         Assert.assertNull("Unexpected null build", retrievedBuild);
     }
 
@@ -103,8 +94,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Object buildId = buildDetailsRepository.saveBuildDetails(build);
         Assert.assertNotNull("Unexpected null build id", buildId);
 
-        final BuildDetails retrievedBuild = buildDetailsRepository.getBuildDetailsById(
-                build.getId());
+        final BuildDetails retrievedBuild = buildDetailsRepository.getBuildDetailsById(build.getId());
         Assert.assertNotNull("Unexpected null build", build);
         Assert.assertEquals("Mismatching build details found", build, retrievedBuild);
     }
@@ -120,8 +110,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Calendar end = Calendar.getInstance();
         end.set(1918, 10, 11, 11, 0, 0);
 
-        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByDateRange(
-                start.getTime(), end.getTime());
+        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByDateRange(start.getTime(), end.getTime());
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertTrue("Unexpected non-empty list of builds", builds.isEmpty());
     }
@@ -138,8 +127,7 @@ public class BuildDetailsHibernateRepositoryTests {
         start.setTime(new Date(build.getStartDate().getTime() - 10000));
         end.setTime(new Date(build.getStartDate().getTime() + 10000));
 
-        List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByDateRange(
-                start.getTime(), end.getTime());
+        List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByDateRange(start.getTime(), end.getTime());
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
         Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
@@ -148,8 +136,7 @@ public class BuildDetailsHibernateRepositoryTests {
         start.setTime(new Date(build.getEndDate().getTime() - 10000));
         end.setTime(new Date(build.getEndDate().getTime() + 10000));
 
-        builds = buildDetailsRepository.getBuildDetailsByDateRange(
-                start.getTime(), end.getTime());
+        builds = buildDetailsRepository.getBuildDetailsByDateRange(start.getTime(), end.getTime());
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
         Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
@@ -191,8 +178,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Object buildId = buildDetailsRepository.saveBuildDetails(build);
         Assert.assertNotNull("Unexpected null build id", buildId);
 
-        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByFullName(
-                build.getFullName() + "NOMATCH");
+        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByFullName(build.getFullName() + "NOMATCH");
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertTrue("Unexpected non-empty list of builds", builds.isEmpty());
     }
@@ -203,8 +189,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Object buildId = buildDetailsRepository.saveBuildDetails(build);
         Assert.assertNotNull("Unexpected null build id", buildId);
 
-        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByFullName(
-                build.getFullName().toLowerCase());
+        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByFullName(build.getFullName().toLowerCase());
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
         Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
@@ -217,8 +202,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Object buildId = buildDetailsRepository.saveBuildDetails(build);
         Assert.assertNotNull("Unexpected null build id", buildId);
 
-        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByName(
-                build.getName() + "NOMATCH");
+        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByName(build.getName() + "NOMATCH");
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertTrue("Unexpected non-empty list of builds", builds.isEmpty());
     }
@@ -229,8 +213,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Object buildId = buildDetailsRepository.saveBuildDetails(build);
         Assert.assertNotNull("Unexpected null build id", buildId);
 
-        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByName(
-                build.getName().toLowerCase());
+        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByName(build.getName().toLowerCase());
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
         Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
@@ -243,8 +226,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Object buildId = buildDetailsRepository.saveBuildDetails(build);
         Assert.assertNotNull("Unexpected null build id", buildId);
 
-        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByUserId(
-                build.getUserId() + "NOMATCH");
+        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByUserId(build.getUserId() + "NOMATCH");
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertTrue("Unexpected non-empty list of builds", builds.isEmpty());
     }
@@ -255,8 +237,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Object buildId = buildDetailsRepository.saveBuildDetails(build);
         Assert.assertNotNull("Unexpected null build id", buildId);
 
-        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByUserId(
-                build.getUserId().toLowerCase());
+        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByUserId(build.getUserId().toLowerCase());
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
         Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
@@ -269,8 +250,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Object buildId = buildDetailsRepository.saveBuildDetails(build);
         Assert.assertNotNull("Unexpected null build id", buildId);
 
-        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByUserName(
-                build.getUserName() + "NOMATCH");
+        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByUserName(build.getUserName() + "NOMATCH");
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertTrue("Unexpected non-empty list of builds", builds.isEmpty());
     }
@@ -281,8 +261,7 @@ public class BuildDetailsHibernateRepositoryTests {
         final Object buildId = buildDetailsRepository.saveBuildDetails(build);
         Assert.assertNotNull("Unexpected null build id", buildId);
 
-        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByUserName(
-                build.getUserName().toLowerCase());
+        final List<BuildDetails> builds = buildDetailsRepository.getBuildDetailsByUserName(build.getUserName().toLowerCase());
         Assert.assertNotNull("Unexpected null list of builds", builds);
         Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
         Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
@@ -310,5 +289,25 @@ public class BuildDetailsHibernateRepositoryTests {
         Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
         Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
         Assert.assertEquals("Mismatching build details found", build, builds.get(0));
+    }
+
+    @Test
+    public void updateNullBuildDetailsShouldFail() {
+        try {
+            buildDetailsRepository.updateBuildDetails(null);
+            Assert.fail("Unexpcted repository update for null object");
+        } catch (final Exception e) {
+            Assert.assertEquals("Unexpected exception type", IllegalArgumentException.class, e.getClass());
+        }
+    }
+
+    @Test
+    public void saveNullBuildDetailsShouldFail() {
+        try {
+            buildDetailsRepository.saveBuildDetails(null);
+            Assert.fail("Unexpected repository save for null object");
+        } catch (final Exception e) {
+            Assert.assertEquals("Unexpected exception type", IllegalArgumentException.class, e.getClass());
+        }
     }
 }
