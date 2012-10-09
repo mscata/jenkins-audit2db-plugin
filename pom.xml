@@ -136,6 +136,7 @@
 			<version>${version.hsqldb}</version>
 			<scope>test</scope>
 		</dependency>
+		<!--  
 		<dependency>
 		    <groupId>com.microsoft.jdbc.sqlserver</groupId>
 		    <artifactId>sqljdbc</artifactId>
@@ -148,6 +149,7 @@
             <version>${version.ojdbc14}</version>
             <scope>test</scope>
         </dependency>
+		-->
         
         <dependency>
 			<groupId>org.mockito</groupId>
