@@ -12,14 +12,12 @@ import org.junit.Test;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 /**
- * System tests.
- * Plugin configuration.
+ * System tests. Plugin configuration.
  * 
- * NOTE: the names of test methods for classes extending HudsonTestCase
- * must begin with the word 'test'.
+ * NOTE: the names of test methods for classes extending HudsonTestCase must begin with the word 'test'.
  * 
  * @author Marco Scata
- *
+ * 
  */
 public class WhenConfiguringPlugin extends HudsonTestCase {
     private static JenkinsConfigurationPage page;
@@ -39,24 +37,24 @@ public class WhenConfiguringPlugin extends HudsonTestCase {
         super.tearDown();
     }
 
-    //	@Test
-    //	public void testShouldSaveJndiDatasourceDetails() {
-    //		final String datasourceName = "MyJndiDatasource";
-    //		final String user = "MyJndiUser";
-    //		final String password = "MyJndiPassword";
+    // @Test
+    // public void testShouldSaveJndiDatasourceDetails() {
+    // final String datasourceName = "MyJndiDatasource";
+    // final String user = "MyJndiUser";
+    // final String password = "MyJndiPassword";
     //
-    //		page.setUseJndi(true);
-    //		page.setJndiDatasource(datasourceName);
-    //		page.setJndiUser(user);
-    //		page.setJndiPassword(password);
-    //		page.saveChanges();
-    //		page.load();
+    // page.setUseJndi(true);
+    // page.setJndiDatasource(datasourceName);
+    // page.setJndiUser(user);
+    // page.setJndiPassword(password);
+    // page.saveChanges();
+    // page.load();
     //
-    //		Assert.assertTrue("The useJndi flag was not set to true.", page.isUseJndi());
-    //		Assert.assertEquals("Mismatched datasource name", datasourceName, page.getJndiDatasource());
-    //		Assert.assertEquals("Mismatched user", user, page.getJndiUser());
-    //		Assert.assertTrue("Mismatched password", page.getJndiPassword().isEmpty());
-    //	}
+    // Assert.assertTrue("The useJndi flag was not set to true.", page.isUseJndi());
+    // Assert.assertEquals("Mismatched datasource name", datasourceName, page.getJndiDatasource());
+    // Assert.assertEquals("Mismatched user", user, page.getJndiUser());
+    // Assert.assertTrue("Mismatched password", page.getJndiPassword().isEmpty());
+    // }
 
     @Test
     public void testShouldSaveJdbcDatasourceDetails() {
@@ -75,6 +73,6 @@ public class WhenConfiguringPlugin extends HudsonTestCase {
         Assert.assertEquals("Mismatched driver class", jdbcDriver, page.getJdbcDriver());
         Assert.assertEquals("Mismatched jdbc url", jdbcUrl, page.getJdbcUrl());
         Assert.assertEquals("Mismatched user", user, page.getJdbcUser());
-        Assert.assertTrue("Mismatched password", page.getJdbcPassword().isEmpty());
+        Assert.assertEquals("Mismatched password", password, page.getJdbcPassword());
     }
 }

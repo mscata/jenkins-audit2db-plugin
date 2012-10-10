@@ -1,4 +1,7 @@
 /bin
-/target/generated*
+/target/generated-sources
 /.settings
 /work
+/target/classes
+/target/test-classes
+/target/work
