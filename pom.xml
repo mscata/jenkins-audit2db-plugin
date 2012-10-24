@@ -6,7 +6,7 @@
 		<version>1.460</version>
 	</parent>
 	<artifactId>audit2db</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Audit to Database Plugin</name>
 	<description>This plugin provides database audit functionality to Jenkins.  It allows recording build information to database, including the build parameters (if any), and the user who started the build.</description>
@@ -18,9 +18,10 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>scm:git:https://github.com/mscata/jenkins-db-plugin.git</connection>
-		<developerConnection>scm:git:https://github.com/mscata/jenkins-db-plugin.git</developerConnection>
-		<url>scm:git:https://github.com/mscata/jenkins-db-plugin.git</url>
+		<connection>scm:git:https://github.com/mscata/jenkins-audit2db-plugin.git</connection>
+		<developerConnection>scm:git:https://github.com/mscata/jenkins-audit2db-plugin.git</developerConnection>
+		<url>https://github.com/mscata/jenkins-audit2db-plugin</url>
+		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
 		<site>
@@ -392,4 +393,12 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<issueManagement>
+		<url>https://github.com/mscata/jenkins-audit2db-plugin/issues</url>
+		<system>GitHub</system>
+	</issueManagement>
+	<ciManagement>
+		<system>CloudBees</system>
+		<url>https://buildhive.cloudbees.com/job/mscata/job/jenkins-audit2db-plugin/</url>
+	</ciManagement>
 </project>
