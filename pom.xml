@@ -10,7 +10,7 @@
 	<packaging>hpi</packaging>
 	<name>Jenkins Audit to Database Plugin</name>
 	<description>This plugin provides database audit functionality to Jenkins.  It allows recording build information to database, including the build parameters (if any), and the user who started the build.</description>
-	<url>https://github.com/mscata/jenkins-db-plugin.git</url>
+	<url>https://wiki.jenkins-ci.org/display/JENKINS/Audit+To+Database+Plugin</url>
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -65,6 +65,18 @@
 		</developer>
 	</developers>
 	<dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${version.slf4j}</version><!--$NO-MVN-MAN-VER$-->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>${version.slf4j}</version><!--$NO-MVN-MAN-VER$-->
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
@@ -140,7 +152,7 @@
 		<!--  
 		<dependency>
 		    <groupId>com.microsoft.jdbc.sqlserver</groupId>
-		    <artifactId>sqljdbc</artifactId>
+		    <artifactId>sqljdbc4</artifactId>
 		    <version>${version.sqljdbc}</version>
             <scope>test</scope>
 		</dependency>
@@ -305,7 +317,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -324,7 +336,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -384,15 +396,6 @@
 			</repositories>
 		</profile>
 	</profiles>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>${version.slf4j}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 	<issueManagement>
 		<url>https://github.com/mscata/jenkins-audit2db-plugin/issues</url>
 		<system>GitHub</system>
