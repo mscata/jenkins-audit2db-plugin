@@ -22,7 +22,7 @@
 		                <td><a href="${report.urlName}"><img alt="" src="${imagesURL}/48x48/document.gif" /></a></td>
 		                <td><a href="${report.urlName}">${report.displayName}</a></td>
 		                <td>${report.reportDescription}</td>
-		                <td>${report.reportInfo}</td>
+		                <td>${report.reportDisplayedInfo}</td>
 		            </tr>
 		        </j:forEach>
 			</table>

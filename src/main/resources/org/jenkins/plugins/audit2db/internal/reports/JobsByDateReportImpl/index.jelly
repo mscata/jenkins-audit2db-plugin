@@ -1,35 +1,43 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	<link href="${rootURL}/plugin/audit2db/css/screen.css" type="text/css" rel="stylesheet" media="screen"/>
+    <link href="${rootURL}/plugin/audit2db/css/print.css" type="text/css" rel="stylesheet" media="print"/>
     <l:layout title="${%Jobs By Date}">
         <l:main-panel>
-	        <form name="datePickerForm" action="fetchData" method="GET">
-	        <table class="pane">
-	           <tr>
-	               <td>Start Date:</td>
-	               <td><input type="text" name="startDate" value="${it.startDate}"/></td>
-	           </tr>
-               <tr>
-                   <td>End Date:</td>
-                   <td><input type="text" name="endDate" value="${it.endDate}"/></td>
-               </tr>
-	        </table>
-	           <input type="submit" value="Apply Filter" />
+            <div class="report-filter">
+		        <form name="datePickerForm" action="applyFilter" method="GET">
+		        <table class="pane">
+		           <tr>
+		               <td>Start Date:</td>
+		               <td><input type="text" name="startDate" value="${it.startDate}"/></td>
+		           </tr>
+	               <tr>
+	                   <td>End Date:</td>
+	                   <td><input type="text" name="endDate" value="${it.endDate}"/></td>
+	               </tr>
+		        </table>
+	            <input type="submit" value="Apply Filter" />
 		    </form>
-            <h1>${%Jenkins Audit Report} - ${%Jobs By Date}</h1>
+            </div>
+            <div class="report-title">${%Jenkins Audit Report} - ${it.displayName}</div>
             <hr/>
             <div>${%reportDescription}</div>
+            <!--  
 			<p>
 				<st:nbsp />
 			</p>
-            <h2>${%Jenkins Server}: ${it.jenkinsHostname}</h2>
-            <h3>${%Date Range:} ${it.startDate} to ${it.endDate} (${%inclusive})</h3>
-            <h3>${%Generated On:} ${it.dateGenerated}</h3>
+            -->
+            <div class="report-header">${%Jenkins Server}: ${it.jenkinsHostname}</div>
+            <div class="report-subheader">${%Date Range:} ${it.startDate} to ${it.endDate} (${%inclusive})</div>
+            <div class="report-subheader">${%Generated On:} ${it.dateGenerated}</div>
             <!--  
             -->
             <j:set var="projectExecutions" value="${it.projectExecutions}" />
             <j:choose>
 	            <j:when test="${empty(projectExecutions)}">
-	                <div class="warning">${%noData}</div>
+	                <p>
+    	                <div class="warning">${%noData}</div>
+	                </p>
 	            </j:when>
 	            <j:otherwise>
 	                <st:include page="report-body.jelly"/>

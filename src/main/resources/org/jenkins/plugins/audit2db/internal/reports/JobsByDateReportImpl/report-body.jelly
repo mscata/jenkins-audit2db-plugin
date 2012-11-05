@@ -2,9 +2,8 @@
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 	<!-- projectExecutions comes from index.jelly -->
 	<j:forEach var="execution" items="${projectExecutions}">
-		<hr />
 		<div>
-			<h4>${execution.key}</h4>
+			<div class="report-groupheader">${execution.key}</div>
 		</div>
 		<table class="pane bigtable">
 			<tr>

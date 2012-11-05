@@ -23,7 +23,7 @@ Describable<DbAuditReport> {
     /**
      * @return a list of information parts exposed by ths report.
      */
-    String getReportInfo();
+    String getReportDisplayedInfo();
 
     /**
      * @return the build details repository.

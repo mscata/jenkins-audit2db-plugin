@@ -133,7 +133,7 @@ public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsB
 
     @Override
     public String getDisplayName() {
-	return Messages.DbAuditReportsJobsByDate_DisplayName();
+	return Messages.DbAuditReportsJobsByDate_ReportTitle();
     }
 
     @Override
@@ -142,7 +142,7 @@ public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsB
     }
 
     /**
-     * Called by Stapler as default view.
+     * Applies the filter selected by the user through the UI.
      * 
      * @param request
      *            the Stapler request object.
@@ -151,12 +151,12 @@ public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsB
      * @throws IOException
      * @throws ServletException
      */
-    public void doFetchData(final StaplerRequest request,
+    public void doApplyFilter(final StaplerRequest request,
 	    final StaplerResponse response) throws ServletException,
 	    IOException {
 	final String startDateStr = request.getParameter("startDate");
 	final String endDateStr = request.getParameter("endDate");
-	LOGGER.log(Level.FINEST, String.format("-> doIndex('%s','%s')",
+	LOGGER.log(Level.FINEST, String.format("-> doApplyFilter('%s','%s')",
 		startDateStr, endDateStr));
 	if ((startDate != null) && (endDate != null)) {
 	    try {
@@ -179,7 +179,7 @@ public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsB
     }
 
     @Override
-    public String getReportInfo() {
-	return Messages.DbAuditReportsJobsByDate_ReportInfo();
+    public String getReportDisplayedInfo() {
+	return Messages.DbAuditReportsJobsByDate_ReportDisplayedInfo();
     }
 }
