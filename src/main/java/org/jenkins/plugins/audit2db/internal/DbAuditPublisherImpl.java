@@ -33,7 +33,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
     private final static Logger LOGGER = Logger
-	    .getLogger(DbAuditPublisherImpl.class.getName());
+    .getLogger(DbAuditPublisherImpl.class.getName());
 
     // must be transient or it will be serialised in the job config
     private transient BuildDetailsHibernateRepository repository;
@@ -87,7 +87,7 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
 	return BuildStepMonitor.NONE;
     }
 
-    private SessionFactory getSessionFactory() {
+    public static SessionFactory getSessionFactory() {
 	final Properties props = HibernateUtil.getExtraProperties(
 		descriptor.getJdbcDriver(), descriptor.getJdbcUrl(),
 		descriptor.getJdbcUser(), descriptor.getJdbcPassword());
@@ -98,7 +98,7 @@ public class DbAuditPublisherImpl extends Notifier implements DbAuditPublisher {
     @Override
     public boolean perform(final AbstractBuild<?, ?> build,
 	    final Launcher launcher, final BuildListener listener)
-	    throws InterruptedException, IOException {
+    throws InterruptedException, IOException {
 
 	LOGGER.log(
 		Level.FINE,

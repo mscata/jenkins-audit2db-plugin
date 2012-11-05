@@ -140,30 +140,6 @@
 		    <artifactId>c3p0</artifactId>
 		    <version>${version.c3p0}</version>
 		</dependency>
-		<!--
-		  JDBC DRIVERS Used for testing only 
-		-->
-		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<version>${version.hsqldb}</version>
-			<scope>test</scope>
-		</dependency>
-		<!--  
-		<dependency>
-		    <groupId>com.microsoft.jdbc.sqlserver</groupId>
-		    <artifactId>sqljdbc4</artifactId>
-		    <version>${version.sqljdbc}</version>
-            <scope>test</scope>
-		</dependency>
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc14</artifactId>
-            <version>${version.ojdbc14}</version>
-            <scope>test</scope>
-        </dependency>
-		-->
-        
         <dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
@@ -388,12 +364,51 @@
 			<activation>
 			    <activeByDefault>true</activeByDefault>
 			</activation>
+			<dependencies>
+			    <!--
+                    JDBC DRIVERS Used for testing only 
+                -->
+		        <dependency>
+		            <groupId>org.hsqldb</groupId>
+		            <artifactId>hsqldb</artifactId>
+		            <version>${version.hsqldb}</version>
+		            <scope>test</scope>
+		        </dependency>
+			</dependencies>
 			<repositories>
 				<repository>
 					<id>maven.jenkins-ci.org</id>
 					<url>http://repo.jenkins-ci.org/public/</url>
 				</repository>
 			</repositories>
+		</profile>
+		<profile>
+		    <id>microsoft</id>
+            <dependencies>
+                <!--
+                    JDBC DRIVERS Used for testing only 
+                -->
+                <dependency>
+                    <groupId>com.microsoft.jdbc.sqlserver</groupId>
+                    <artifactId>sqljdbc4</artifactId>
+                    <version>${version.sqljdbc}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+		</profile>
+		<profile>
+            <id>oracle</id>
+            <dependencies>
+                <!--
+                    JDBC DRIVERS Used for testing only 
+                -->
+                <dependency>
+                    <groupId>com.oracle</groupId>
+                    <artifactId>ojdbc14</artifactId>
+                    <version>${version.ojdbc14}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
 		</profile>
 	</profiles>
 	<issueManagement>
