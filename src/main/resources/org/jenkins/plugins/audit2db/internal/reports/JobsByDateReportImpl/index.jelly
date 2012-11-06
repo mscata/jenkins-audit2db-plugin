@@ -2,7 +2,7 @@
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 	<link href="${rootURL}/plugin/audit2db/css/screen.css" type="text/css" rel="stylesheet" media="screen"/>
     <link href="${rootURL}/plugin/audit2db/css/print.css" type="text/css" rel="stylesheet" media="print"/>
-    <l:layout title="${%Jobs By Date}">
+    <l:layout title="${it.displayName}" permission="${app.ADMINISTER}">
         <l:main-panel>
             <div class="report-title">${%Jenkins Audit Report} - ${it.displayName}</div>
             <div class="report-filter">

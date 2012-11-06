@@ -1,6 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <l:layout title="${h.ifThenElse(app==it,'%Audit Reports',it.viewName)}">
+    <l:layout title="${h.ifThenElse(app==it,'%Audit Reports',it.viewName)}" permission="${app.ADMINISTER}">
         <!--  
         sidepanel.jelly cannot be found !!!
         <st:include page="sidepanel.jelly" it="${it.owner}" />
