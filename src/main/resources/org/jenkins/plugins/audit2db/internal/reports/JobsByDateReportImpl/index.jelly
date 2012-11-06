@@ -4,6 +4,7 @@
     <link href="${rootURL}/plugin/audit2db/css/print.css" type="text/css" rel="stylesheet" media="print"/>
     <l:layout title="${%Jobs By Date}">
         <l:main-panel>
+            <div class="report-title">${%Jenkins Audit Report} - ${it.displayName}</div>
             <div class="report-filter">
 		        <form name="datePickerForm" action="applyFilter" method="GET">
 		        <table class="pane">
@@ -19,7 +20,6 @@
 	            <input type="submit" value="Apply Filter" />
 		    </form>
             </div>
-            <div class="report-title">${%Jenkins Audit Report} - ${it.displayName}</div>
             <hr/>
             <div>${%reportDescription}</div>
             <!--  

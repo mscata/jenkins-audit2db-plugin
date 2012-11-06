@@ -5,7 +5,7 @@
 		<div>
 			<div class="report-groupheader">${execution.key}</div>
 		</div>
-		<table class="pane bigtable">
+		<table class="report-table">
 			<tr>
 				<th>${%Executed On}</th>
 				<th>${%Started}</th>
@@ -17,12 +17,13 @@
 			<j:forEach var="details" items="${execution.value}">
 				<tr>
 					<td>${details.node.name}</td>
-					<td>${details.startDate}</td>
-					<td>${details.endDate}</td>
+					<!-- Cut the milliseconds part of the dates -->
+					<td>${details.startDate.toString().substring(0, 19)}</td>
+					<td>${details.endDate.toString().substring(0, 19)}</td>
 					<td>${details.result}</td>
 					<td>${details.userId}</td>
 					<td>
-						<table>
+						<table class="report-paramtable">
 							<j:forEach var="param" items="${details.parameters}">
 								<tr>
 									<td>${param.name}</td>
