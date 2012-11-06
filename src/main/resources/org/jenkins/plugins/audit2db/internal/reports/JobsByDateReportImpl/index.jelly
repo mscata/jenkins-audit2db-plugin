@@ -27,7 +27,7 @@
 				<st:nbsp />
 			</p>
             -->
-            <div class="report-header">${%Jenkins Server}: ${it.jenkinsHostname}</div>
+            <div class="report-header">${%Jenkins Server}: ${it.jenkinsHostname} (${it.jenkinsIpAddr})</div>
             <div class="report-subheader">${%Date Range:} ${it.startDate} to ${it.endDate} (${%inclusive})</div>
             <div class="report-subheader">${%Generated On:} ${it.dateGenerated}</div>
             <!--  

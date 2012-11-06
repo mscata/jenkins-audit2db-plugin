@@ -1,5 +1,9 @@
 @import "screen.css";
 
+#main-table{
+    background-image: none !important;
+}
+
 #header {
     display: none;
 }
@@ -15,62 +19,3 @@
 .report-filter {
     display: none;
 }
-
-/*
-#main-panel .report-title {
-	font-size: xx-large;
-	font-weight: bold;
-	color: rgb(23,54,93);
-}
-
-#main-panel .report-header {
-	color: rgb(54,95,145);
-	font-size: x-large;
-	padding-top: 1em;
-	padding-bottom: 0.5em;
-}
-
-#main-panel .report-subheader {
-	color: rgb(79,129,189);
-    font-size: large;
-    font-style: italic;
-}
-
-#main-panel .report-groupheader {
-    color: rgb(54,95,145);
-    font-size: x-large;
-    padding-top: 1em;
-}
-
-#main-panel .report-table {
-    page-break-inside: avoid;
-	border: 1px solid;
-    border-collapse: collapse;
-    white-space: nowrap;
-}
-
-#main-panel .report-table TH {
-    color: white;
-    background-color: rgb(54,95,145);
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-}
-
-#main-panel .report-table TR {
-    border: 1px solid;
-}
-
-#main-panel .report-table TD {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    text-align: center;
-}
-
-#main-panel .report-paramtable TD {
-    padding-top: 0em;
-    padding-bottom: 0em;
-    text-align: justify;
-}
-*/

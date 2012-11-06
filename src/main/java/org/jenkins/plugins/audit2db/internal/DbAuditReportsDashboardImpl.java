@@ -83,6 +83,13 @@ public class DbAuditReportsDashboardImpl implements DbAuditReportsDashboard {
      */
     public ContextMenu doContextMenu(final StaplerRequest request,
 	    final StaplerResponse response) throws Exception {
-	return new ContextMenu().addAll(getAllReports());
+	final ContextMenu retval = new ContextMenu();
+	for (final DbAuditReport report : getAllReports()) {
+	    retval.add(
+		    String.format("%s/%s/", this.getUrlName(),
+			    report.getUrlName()),
+			    report.getDisplayName());
+	}
+	return retval;
     }
 }
