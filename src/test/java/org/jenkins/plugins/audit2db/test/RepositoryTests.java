@@ -18,20 +18,20 @@ public class RepositoryTests {
     }
 
     protected BuildDetails createRandomBuildDetails() {
-	final long salt = new Date().getTime() - (long) (Math.random() * 10000);
+	final long salt = new Date().getTime();
 	final BuildDetails build = new BuildDetailsImpl();
 	build.setDuration(Long.valueOf(60 + (long) (Math.random() * 60)));
 	build.setEndDate(new Date(build.getStartDate().getTime()
 		+ (build.getDuration() * 1000)));
-	build.setFullName("BUILD FULL NAME" + salt);
-	build.setId("BUILD ID" + salt);
-	build.setName("BUILD NAME" + salt);
-	build.setUserId("BUILD USER ID" + salt);
-	build.setUserName("BUILD USER NAME" + salt);
+	build.setFullName("BUILD FULL NAME " + salt);
+	build.setId("BUILD ID " + salt);
+	build.setName("BUILD NAME " + salt);
+	build.setUserId("BUILD USER ID " + salt);
+	build.setUserName("BUILD USER NAME " + salt);
 
 	final List<BuildParameter> params = new ArrayList<BuildParameter>();
-	params.add(new BuildParameterImpl("PARAM_ID" + salt, "PARAM NAME"
-		+ salt, "PARAM VALUE" + salt, build));
+	params.add(new BuildParameterImpl("PARAM_ID " + salt, "PARAM NAME"
+		+ salt, "PARAM VALUE " + salt, build));
 	build.setParameters(params);
 
 	final BuildNode node = new BuildNodeImpl("NODE ADDRESS",
