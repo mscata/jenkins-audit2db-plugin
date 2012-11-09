@@ -3,13 +3,13 @@
  */
 package org.jenkins.plugins.audit2db.test.integration;
 
-import junit.framework.Assert;
-
 import org.jenkins.plugins.audit2db.test.integration.webpages.JenkinsConfigurationPage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hudson.test.HudsonTestCase;
+
+import com.gargoylesoftware.htmlunit.WebAssert;
 
 /**
  * System tests. Plugin configuration.
@@ -25,16 +25,16 @@ public class WhenConfiguringPlugin extends HudsonTestCase {
     @Before
     @Override
     public void setUp() throws Exception {
-        super.setUp();
-        page = new JenkinsConfigurationPage(this.getURL().toString());
-        page.load();
+	super.setUp();
+	page = new JenkinsConfigurationPage(createWebClient());
+	page.load();
     }
 
     @After
     @Override
     public void tearDown() throws Exception {
-        page.unload();
-        super.tearDown();
+	page.unload();
+	super.tearDown();
     }
 
     // @Test
@@ -58,21 +58,25 @@ public class WhenConfiguringPlugin extends HudsonTestCase {
 
     @Test
     public void testShouldSaveJdbcDatasourceDetails() {
-        final String jdbcDriver = "MyJdbcDriver";
-        final String jdbcUrl = "MyJdbcUrl";
-        final String user = "MyJdbcUser";
-        final String password = "MyJdbcPassword";
+	final String jdbcDriver = "MyJdbcDriver";
+	final String jdbcUrl = "MyJdbcUrl";
+	final String user = "MyJdbcUser";
+	final String password = "MyJdbcPassword";
 
-        page.setJdbcDriver(jdbcDriver);
-        page.setJdbcUrl(jdbcUrl);
-        page.setJdbcUser(user);
-        page.setJdbcPassword(password);
-        page.saveChanges();
-        page.load();
+	page.setJdbcDriver(jdbcDriver);
+	page.setJdbcUrl(jdbcUrl);
+	page.setJdbcUser(user);
+	page.setJdbcPassword(password);
+	page.saveChanges();
+	page.load();
 
-        Assert.assertEquals("Mismatched driver class", jdbcDriver, page.getJdbcDriver());
-        Assert.assertEquals("Mismatched jdbc url", jdbcUrl, page.getJdbcUrl());
-        Assert.assertEquals("Mismatched user", user, page.getJdbcUser());
-        Assert.assertEquals("Mismatched password", password, page.getJdbcPassword());
+	WebAssert.assertInputContainsValue(page.getPage(),
+		JenkinsConfigurationPage.AUDIT2DB_JDBC_DRIVER, jdbcDriver);
+	WebAssert.assertInputContainsValue(page.getPage(),
+		JenkinsConfigurationPage.AUDIT2DB_JDBC_URL, jdbcUrl);
+	WebAssert.assertInputContainsValue(page.getPage(),
+		JenkinsConfigurationPage.AUDIT2DB_JDBC_USER, user);
+	WebAssert.assertInputContainsValue(page.getPage(),
+		JenkinsConfigurationPage.AUDIT2DB_JDBC_PASSWORD, password);
     }
 }
