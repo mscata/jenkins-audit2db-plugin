@@ -276,7 +276,7 @@ extends AbstractHibernateRepository implements BuildDetailsRepository {
 	}
 	criteria = criteria
 	.add(Restrictions.and(Restrictions.ge("startDate", fromDate),
-		Restrictions.le("endDate", toDate)))
+			Restrictions.le("endDate", toDate)))
 		.addOrder(Property.forName("startDate").asc())
 		.createCriteria("node")
 		.add(Restrictions.ilike("masterHostName", masterHostName));
