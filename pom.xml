@@ -213,6 +213,7 @@
             <plugin>
 		        <groupId>org.codehaus.mojo</groupId>
 		        <artifactId>cobertura-maven-plugin</artifactId>
+		        <version>${version.maven-cobertura-plugin}</version><!--$NO-MVN-MAN-VER$-->
 		        <executions>
 		            <execution>
 		                <phase>compile</phase>
@@ -223,7 +224,8 @@
 		        </executions>
 		        <configuration>
 		            <instrumentation>
-		                <!-- Don't worry about localization containers
+		                <!-- 
+		                    Don't worry about localization containers
 		                 -->
 		                <ignores>
 		                    <ignore>org.jenkins.plugins.audit2db.**.Messages.java</ignore>
@@ -324,6 +326,11 @@
 	</build>
     <reporting>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>${version.maven-cobertura-plugin}</version><!--$NO-MVN-MAN-VER$-->
+            </plugin>
         </plugins>
     </reporting>
 	<profiles>
