@@ -1,6 +1,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <l:layout title="${h.ifThenElse(app==it,'%Audit Reports',it.viewName)}" permission="${app.ADMINISTER}">
+    <link href="${rootURL}/plugin/audit2db/css/screen.css" type="text/css" rel="stylesheet" media="screen"/>
+    <link href="${rootURL}/plugin/audit2db/css/print.css" type="text/css" rel="stylesheet" media="print"/>
+    <l:layout title="${h.ifThenElse(app==it,'%Audit Reports',it.viewName)}" permission="${app.getPlugin('audit2db').RUN}">
         <!--  
         sidepanel.jelly cannot be found !!!
         <st:include page="sidepanel.jelly" it="${it.owner}" />
@@ -8,6 +10,7 @@
         <l:main-panel>
             <!--  
             -->
+            <div class="report-title">${%Jenkins Audit Reports}</div>
 			<table class="pane bigtable" id="auditReportsList">
 				<tr>
 					<th>

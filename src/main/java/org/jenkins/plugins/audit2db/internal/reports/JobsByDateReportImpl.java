@@ -19,7 +19,10 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
+import jenkins.model.Jenkins;
+
 import org.jenkins.plugins.audit2db.Messages;
+import org.jenkins.plugins.audit2db.internal.DbAuditPlugin;
 import org.jenkins.plugins.audit2db.internal.DbAuditUtil;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.reports.DbAuditReport;
@@ -48,25 +51,46 @@ public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsB
 	}
     }
 
-    private Date startDate;
-    private Date endDate;
-
-    public JobsByDateReportImpl() {
+    private Date getDefaultStartDate() {
 	final Calendar cal = Calendar.getInstance();
-	// end date = tonight
-	cal.set(Calendar.HOUR_OF_DAY, 23);
-	cal.set(Calendar.MINUTE, 59);
-	cal.set(Calendar.SECOND, 59);
-	cal.set(Calendar.MILLISECOND, 999);
-	endDate = cal.getTime();
-
 	// start date = first day of this month
 	cal.set(Calendar.DAY_OF_MONTH, 1);
 	cal.set(Calendar.HOUR_OF_DAY, 0);
 	cal.set(Calendar.MINUTE, 0);
 	cal.set(Calendar.SECOND, 0);
 	cal.set(Calendar.MILLISECOND, 0);
-	startDate = cal.getTime();
+
+	return cal.getTime();
+    }
+
+    private Date getDefaultEndDate() {
+	final Calendar cal = Calendar.getInstance();
+	// end date = tonight
+	cal.set(Calendar.HOUR_OF_DAY, 23);
+	cal.set(Calendar.MINUTE, 59);
+	cal.set(Calendar.SECOND, 59);
+	cal.set(Calendar.MILLISECOND, 999);
+
+	return cal.getTime();
+    }
+
+    /**
+     * @param dateString
+     *            a valid date string.
+     * @return the equivalent {@link Date} object, or <code>null</code> if the
+     *         date string cannot be parsed.
+     */
+    private Date stringToDate(final String dateString) {
+	Date retval = null;
+	if ((dateString != null) && !dateString.isEmpty()) {
+	    try {
+		retval = DATE_FORMAT_NOTIME.parse(dateString);
+	    } catch (final ParseException e) {
+		LOGGER.log(Level.WARNING, "Unable to parse date string "
+			+ dateString);
+	    }
+	}
+	return retval;
     }
 
     @Override
@@ -85,37 +109,30 @@ public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsB
     }
 
     @Override
-    public String getStartDate() {
-	return DATE_FORMAT_NOTIME.format(startDate);
-    }
-
-    @Override
-    public void setStartDate(final String date) {
-	try {
-	    this.startDate = DATE_FORMAT_NOTIME.parse(date);
-	} catch (ParseException e) {
-	    e.printStackTrace();
+    public String getStartDateParam(final String dateString) {
+	Date date = stringToDate(dateString);
+	if (null == date) {
+	    date = getDefaultStartDate();
 	}
+	return DATE_FORMAT_NOTIME.format(date);
     }
 
     @Override
-    public String getEndDate() {
-	return DATE_FORMAT_NOTIME.format(endDate);
-    }
-
-    @Override
-    public void setEndDate(final String date) {
-	try {
-	    this.endDate = DATE_FORMAT_NOTIME.parse(date);
-	} catch (ParseException e) {
-	    e.printStackTrace();
+    public String getEndDateParam(final String dateString) {
+	Date date = stringToDate(dateString);
+	if (null == date) {
+	    date = getDefaultEndDate();
 	}
+	return DATE_FORMAT_NOTIME.format(date);
     }
 
     @Override
-    public Map<String, List<BuildDetails>> getProjectExecutions() {
+    public Map<String, List<BuildDetails>> getProjectExecutions(
+	    final String startDateString, final String endDateString) {
+	Jenkins.getInstance().checkPermission(DbAuditPlugin.RUN);
 	final Map<String, List<BuildDetails>> retval = new HashMap<String, List<BuildDetails>>();
-
+	final Date startDate = stringToDate(startDateString);
+	final Date endDate = stringToDate(endDateString);
 	final String jenkinsHost = getJenkinsHostname();
 	final List<String> projectNames = getRepository().getProjectNames(
 		jenkinsHost, startDate, endDate);
@@ -154,23 +171,24 @@ public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsB
     public void doApplyFilter(final StaplerRequest request,
 	    final StaplerResponse response) throws ServletException,
 	    IOException {
+	Jenkins.getInstance().checkPermission(DbAuditPlugin.RUN);
 	final String startDateStr = request.getParameter("startDate");
 	final String endDateStr = request.getParameter("endDate");
 	LOGGER.log(Level.FINEST, String.format("-> doApplyFilter('%s','%s')",
 		startDateStr, endDateStr));
-	if ((startDate != null) && (endDate != null)) {
-	    try {
-		startDate = DATE_FORMAT_NOTIME.parse(startDateStr);
-		endDate = DATE_FORMAT_NOTIME.parse(endDateStr);
-		// getProjectExecutions();
-	    } catch (final ParseException e) {
-		LOGGER.log(Level.WARNING, String.format(
-			"Unable to parse date range from [%s] to [%s]",
-			startDateStr, endDateStr));
-		LOGGER.log(Level.FINE, e.getMessage(), e);
-	    }
-	}
-	response.forwardToPreviousPage(request);
+	// if ((startDate != null) && (endDate != null)) {
+	// try {
+	// startDate = DATE_FORMAT_NOTIME.parse(startDateStr);
+	// endDate = DATE_FORMAT_NOTIME.parse(endDateStr);
+	// // getProjectExecutions();
+	// } catch (final ParseException e) {
+	// LOGGER.log(Level.WARNING, String.format(
+	// "Unable to parse date range from [%s] to [%s]",
+	// startDateStr, endDateStr));
+	// LOGGER.log(Level.FINE, e.getMessage(), e);
+	// }
+	// }
+	// response.forwardToPreviousPage(request);
     }
 
     @Override

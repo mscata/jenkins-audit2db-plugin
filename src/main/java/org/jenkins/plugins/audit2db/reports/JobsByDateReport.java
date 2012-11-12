@@ -3,6 +3,7 @@
  */
 package org.jenkins.plugins.audit2db.reports;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,13 +20,10 @@ public interface JobsByDateReport {
 
     String getDateGenerated();
 
-    String getStartDate();
+    String getStartDateParam(String dateString);
 
-    void setStartDate(String date);
+    String getEndDateParam(String dateString);
 
-    String getEndDate();
-
-    void setEndDate(String date);
-
-    Map<String, List<BuildDetails>> getProjectExecutions();
+    Map<String, List<BuildDetails>> getProjectExecutions(
+	    String startDate, String endDate);
 }

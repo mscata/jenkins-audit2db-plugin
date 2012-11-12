@@ -1,5 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
-	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+	xmlns:fmt="jelly:fmt">
 	<!-- projectExecutions comes from index.jelly -->
 	<j:forEach var="execution" items="${projectExecutions}">
 		<div>
@@ -18,7 +19,7 @@
 				<tr>
 					<td>${details.node.name}</td>
 					<!-- Cut the milliseconds part of the dates -->
-					<td>${details.startDate.toString().substring(0, 19)}</td>
+					<td><fmt:formatDate value="${details.startDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td>${details.endDate.toString().substring(0, 19)}</td>
 					<td>${details.result}</td>
 					<td>${details.userId}</td>

@@ -26,6 +26,10 @@ public abstract class AbstractJenkinsPage {
     private final String urlPath;
     private HtmlPage page;
 
+    public WebClient getWebClient() {
+	return webClient;
+    }
+
     public HtmlPage getPage() {
 	return page;
     }
@@ -33,7 +37,7 @@ public abstract class AbstractJenkinsPage {
     public AbstractJenkinsPage(final WebClient client, final String urlPath) {
 	if (null == client) {
 	    throw new IllegalArgumentException(
-	    "A valid HudsonTestCase.WebClient object must be provided");
+		    "A valid HudsonTestCase.WebClient object must be provided");
 	}
 
 	this.webClient = client;
@@ -50,6 +54,9 @@ public abstract class AbstractJenkinsPage {
 	try {
 	    page = webClient.goTo(urlPath);
 	} catch (final Exception e) {
+	    if (RuntimeException.class.isAssignableFrom(e.getClass())) {
+		throw (RuntimeException) e;
+	    }
 	    throw new IllegalArgumentException("Error loading page", e);
 	}
     }
@@ -59,12 +66,14 @@ public abstract class AbstractJenkinsPage {
 	webClient.closeAllWindows();
     }
 
-    public HtmlElement getElement(final HtmlForm form, final String tagName,
+    public HtmlElement getElement(final HtmlElement container,
+	    final String tagName,
 	    final String textContent) {
 	LOGGER.log(Level.INFO, String.format(
-		"Looking on form '%s' for element '%s' with content '%s'",
-		form.getNameAttribute(), tagName, textContent));
-	final List<HtmlElement> elements = form.getElementsByTagName(tagName);
+		"Looking into container '%s' for element '%s' with content '%s'",
+		container, tagName, textContent));
+	final List<HtmlElement> elements = container
+	.getElementsByTagName(tagName);
 	HtmlElement retval = null;
 	// find the save button (it has no predictable id)
 	for (final HtmlElement element : elements) {

@@ -5,6 +5,7 @@ package org.jenkins.plugins.audit2db.test.integration;
 
 import org.jenkins.plugins.audit2db.test.integration.webpages.JenkinsConfigurationPage;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hudson.test.HudsonTestCase;
@@ -78,5 +79,12 @@ public class WhenConfiguringPlugin extends HudsonTestCase {
 		JenkinsConfigurationPage.AUDIT2DB_JDBC_USER, user);
 	WebAssert.assertInputContainsValue(page.getPage(),
 		JenkinsConfigurationPage.AUDIT2DB_JDBC_PASSWORD, password);
+    }
+
+    @Test
+    public void testSecurityMatrixShouldIncludeAuditReportsPermissions() {
+	Assert.assertTrue(
+		"Audit reports permission options seem to be missing",
+		page.getAuditReportsPermissionColumnNumber() >= 0);
     }
 }

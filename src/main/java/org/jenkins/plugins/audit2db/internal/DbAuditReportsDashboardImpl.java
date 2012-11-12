@@ -30,7 +30,7 @@ public class DbAuditReportsDashboardImpl implements DbAuditReportsDashboard {
 
     @Override
     public String getIconFileName() {
-	if (Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+	if (Jenkins.getInstance().hasPermission(DbAuditPlugin.RUN)) {
 	    return "folder.gif";
 	} else {
 	    return null;
@@ -53,6 +53,7 @@ public class DbAuditReportsDashboardImpl implements DbAuditReportsDashboard {
      * @return the matching report, or <code>null</code> if none is found.
      */
     public DbAuditReport getDynamic(final String name) {
+	Jenkins.getInstance().checkPermission(DbAuditPlugin.RUN);
 	for (final DbAuditReport report : getAllReports()) {
 	    if (report.getUrlName().equals(name)) {
 		return report;
@@ -83,6 +84,7 @@ public class DbAuditReportsDashboardImpl implements DbAuditReportsDashboard {
      */
     public ContextMenu doContextMenu(final StaplerRequest request,
 	    final StaplerResponse response) throws Exception {
+	Jenkins.getInstance().checkPermission(DbAuditPlugin.RUN);
 	final ContextMenu retval = new ContextMenu();
 	for (final DbAuditReport report : getAllReports()) {
 	    retval.add(

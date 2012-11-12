@@ -9,8 +9,13 @@ import java.util.List;
 import org.jvnet.hudson.test.HudsonTestCase.WebClient;
 
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
+import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
+import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
 
 /**
  * @author Marco Scata
@@ -173,5 +178,82 @@ public class JenkinsConfigurationPage extends AbstractJenkinsPage {
 	} catch (final IOException e) {
 	    throw new RuntimeException(e);
 	}
+    }
+
+    private HtmlTable getSecurityMatrix() {
+	// enable security
+	final HtmlElement useSecurity = configForm.getInputByName("_.useSecurity");
+	try {
+	    useSecurity.click();
+	} catch (final IOException e) {
+	    throw new RuntimeException(e);
+	}
+
+	// use matrix-based security
+	final List<HtmlInput> authorizationInputs = configForm
+		.getInputsByName("authorization");
+	HtmlInput useMatrixSecurityRadioBtn = null;
+	for (final HtmlInput input : authorizationInputs) {
+	    if (input.getValueAttribute().equals("3")) {
+		useMatrixSecurityRadioBtn = input;
+		break;
+	    }
+	}
+
+	try {
+	    useMatrixSecurityRadioBtn.click();
+	} catch (IOException e) {
+	    throw new RuntimeException(e);
+	}
+
+	return (HtmlTable) configForm
+	.getElementById("hudson-security-GlobalMatrixAuthorizationStrategy");
+    }
+
+    public int getAuditReportsPermissionColumnNumber() {
+	int retval = -1;
+	// the auth matrix' header is actually the first row
+	final HtmlTableRow firstRow = getSecurityMatrix().getRow(0);
+	for (int cellCtr = 0; cellCtr < firstRow.getCells().size(); cellCtr++) {
+	    final HtmlTableCell cell = firstRow.getCell(cellCtr);
+	    if (cell.getTextContent().equalsIgnoreCase("Audit Reports")) {
+		retval = cellCtr;
+		break;
+	    }
+	}
+	return retval;
+    }
+
+    public int getUserPermissionRowNumber(final String userName) {
+	int retval = -1;
+	final HtmlTable securityMatrix = getSecurityMatrix();
+	for (int rowCtr = 0; rowCtr < securityMatrix.getRowCount(); rowCtr++) {
+	    final HtmlTableRow row = securityMatrix.getRow(rowCtr);
+	    if (row.getAttribute("name").equalsIgnoreCase(userName)) {
+		retval = rowCtr;
+		break;
+	    }
+	}
+	return retval;
+    }
+
+    private HtmlCheckBoxInput getAuditReportsPermissionCheckbox(
+	    final String userName) {
+	final HtmlTableCell cell = getSecurityMatrix().getCellAt(
+		getUserPermissionRowNumber(userName),
+		getAuditReportsPermissionColumnNumber());
+
+	return (HtmlCheckBoxInput) cell.getElementsByTagName("input");
+    }
+
+    public boolean getAuditReportsPermissionState(final String userName) {
+	final HtmlCheckBoxInput input = getAuditReportsPermissionCheckbox(userName);
+	return input.isChecked();
+    }
+
+    public void setAuditReportsPermissionState(final String userName,
+	    final boolean state) {
+	final HtmlCheckBoxInput input = getAuditReportsPermissionCheckbox(userName);
+	input.setChecked(state);
     }
 }
