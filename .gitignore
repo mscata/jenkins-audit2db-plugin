@@ -5,3 +5,7 @@
 /target/classes
 /target/test-classes
 /target/work
+/target
+/pom.xml.releaseBackup
+/release.properties
+/settings.xml
