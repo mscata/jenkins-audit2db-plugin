@@ -76,10 +76,44 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 	.setSessionFactory(((AbstractHibernateRepository) repository)
 		.getSessionFactory());
 
-	@SuppressWarnings("unchecked")
 	final List<BuildNode> nodes = hibernate.loadAll(BuildNode.class);
 	Assert.assertEquals("Unexpected number of node entities", 1,
 		nodes.size());
+    }
+
+    @Test
+    public void retrievingBuildNodeByNullUrlShouldThrowException() {
+	try {
+	    repository.getBuildNodeByUrl(null);
+	    Assert.fail("Unexpected succesful retrieval of node with null URL");
+	} catch (final Exception e) {
+	    Assert.assertEquals("Unexpected exception type",
+		    IllegalArgumentException.class, e.getClass());
+	}
+    }
+
+    @Test
+    public void retrievingBuildNodeByValidUrlShouldSucceed() {
+	final BuildDetails build = createRandomBuildDetails();
+	final Object buildId = repository.saveBuildDetails(build);
+	Assert.assertNotNull("Unexpected null build id", buildId);
+
+	final BuildNode expected = build.getNode();
+	final BuildNode actual = repository
+	.getBuildNodeByUrl(expected.getUrl());
+	Assert.assertNotNull("Unexppected null build node", actual);
+	Assert.assertEquals("Unexpected build node", expected, actual);
+    }
+
+    @Test
+    public void retrievingBuildNodeByNonExistingUrlShouldReturnNull() {
+	final BuildDetails build = createRandomBuildDetails();
+	final Object buildId = repository.saveBuildDetails(build);
+	Assert.assertNotNull("Unexpected null build id", buildId);
+
+	final BuildNode actual = repository
+	.getBuildNodeByUrl("NON_EXISTING_URL");
+	Assert.assertNull("Unexppected non-null build node", actual);
     }
 
     @Test
@@ -140,7 +174,7 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 	.getBuildDetailsByDateRange(start.getTime(), end.getTime());
 	Assert.assertNotNull("Unexpected null list of builds", builds);
 	Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
-	Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
+	Assert.assertEquals("Unexpected number of builds", 1, builds.size());
 	Assert.assertEquals("Mismatching build details found", build,
 		builds.get(0));
 
@@ -151,7 +185,7 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 		start.getTime(), end.getTime());
 	Assert.assertNotNull("Unexpected null list of builds", builds);
 	Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
-	Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
+	Assert.assertEquals("Unexpected number of builds", 1, builds.size());
     }
 
     @Test
@@ -183,7 +217,7 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 	.getBuildDetailsByDurationRange(min, max);
 	Assert.assertNotNull("Unexpected null list of builds", builds);
 	Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
-	Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
+	Assert.assertEquals("Unexpected number of builds", 1, builds.size());
 	Assert.assertEquals("Mismatching build details found", build,
 		builds.get(0));
     }
@@ -211,7 +245,7 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 	.getBuildDetailsByFullName(build.getFullName().toLowerCase());
 	Assert.assertNotNull("Unexpected null list of builds", builds);
 	Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
-	Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
+	Assert.assertEquals("Unexpected number of builds", 1, builds.size());
 	Assert.assertEquals("Mismatching build details found", build,
 		builds.get(0));
     }
@@ -239,7 +273,7 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 	.getBuildDetailsByName(build.getName().toLowerCase());
 	Assert.assertNotNull("Unexpected null list of builds", builds);
 	Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
-	Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
+	Assert.assertEquals("Unexpected number of builds", 1, builds.size());
 	Assert.assertEquals("Mismatching build details found", build,
 		builds.get(0));
     }
@@ -267,7 +301,7 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 	.getBuildDetailsByUserId(build.getUserId().toLowerCase());
 	Assert.assertNotNull("Unexpected null list of builds", builds);
 	Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
-	Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
+	Assert.assertEquals("Unexpected number of builds", 1, builds.size());
 	Assert.assertEquals("Mismatching build details found", build,
 		builds.get(0));
     }
@@ -295,7 +329,38 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 	.getBuildDetailsByUserName(build.getUserName().toLowerCase());
 	Assert.assertNotNull("Unexpected null list of builds", builds);
 	Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
-	Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
+	Assert.assertEquals("Unexpected number of builds", 1, builds.size());
+	Assert.assertEquals("Mismatching build details found", build,
+		builds.get(0));
+    }
+
+    @Test
+    public void retrievalForMasterByMatchingDateRangeShouldReturnNonEmptyList() {
+	final BuildDetails build = createRandomBuildDetails();
+	final Object buildId = repository.saveBuildDetails(build);
+	Assert.assertNotNull("Unexpected null build id", buildId);
+
+	final List<BuildDetails> builds = repository.getBuildDetails(
+		build.getNode().getMasterHostName(), new Date(0), build.getEndDate());
+	Assert.assertNotNull("Unexpected null list of builds", builds);
+	Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
+	Assert.assertEquals("Unexpected number of builds", 1, builds.size());
+	Assert.assertEquals("Mismatching build details found", build,
+		builds.get(0));
+    }
+
+    @Test
+    public void retrievalForMasterAndProjectByMatchingDateRangeShouldReturnNonEmptyList() {
+	final BuildDetails build = createRandomBuildDetails();
+	final Object buildId = repository.saveBuildDetails(build);
+	Assert.assertNotNull("Unexpected null build id", buildId);
+
+	final List<BuildDetails> builds = repository.getBuildDetails(
+		build.getNode().getMasterHostName(), build.getName(),
+		new Date(0), build.getEndDate());
+	Assert.assertNotNull("Unexpected null list of builds", builds);
+	Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
+	Assert.assertEquals("Unexpected number of builds", 1, builds.size());
 	Assert.assertEquals("Mismatching build details found", build,
 		builds.get(0));
     }
@@ -321,7 +386,7 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 	builds = repository.getBuildDetailsByName(newName);
 	Assert.assertNotNull("Unexpected null list of builds", builds);
 	Assert.assertFalse("Unexpected empty list of builds", builds.isEmpty());
-	Assert.assertTrue("Unexpected number of builds", builds.size() == 1);
+	Assert.assertEquals("Unexpected number of builds", 1, builds.size());
 	Assert.assertEquals("Mismatching build details found", build,
 		builds.get(0));
     }
