@@ -135,27 +135,36 @@ extends AbstractHibernateRepository implements BuildDetailsRepository {
 	// semantics of the 'between' criteria can vary across
 	// db providers and we want a predictable inclusive behaviour.
 
-	final Calendar inclusiveStartDate = Calendar.getInstance();
-	inclusiveStartDate.setTime(start);
-	inclusiveStartDate.set(Calendar.HOUR_OF_DAY, 0);
-	inclusiveStartDate.set(Calendar.MINUTE, 0);
-	inclusiveStartDate.set(Calendar.SECOND, 0);
-	inclusiveStartDate.set(Calendar.MILLISECOND, 0);
+	final Date inclusiveStartDate = getInclusiveStartDate(start);
+	final Date inclusiveEndDate = getInclusiveEndDate(end);
 
+	criteria.add(Restrictions.or(Restrictions.and(
+		Restrictions.ge("startDate", inclusiveStartDate),
+		Restrictions.le("startDate", inclusiveEndDate)),
+		Restrictions.and(
+			Restrictions.ge("endDate", inclusiveStartDate), 
+			Restrictions.le("endDate", inclusiveEndDate))));
+	return getHibernateTemplate().findByCriteria(criteria);
+    }
+
+    private Date getInclusiveEndDate(final Date end) {
 	final Calendar inclusiveEndDate = Calendar.getInstance();
 	inclusiveEndDate.setTime(end);
 	inclusiveEndDate.set(Calendar.HOUR_OF_DAY, 23);
 	inclusiveEndDate.set(Calendar.MINUTE, 59);
 	inclusiveEndDate.set(Calendar.SECOND, 59);
 	inclusiveEndDate.set(Calendar.MILLISECOND, 999);
+	return inclusiveEndDate.getTime();
+    }
 
-	criteria.add(Restrictions.or(Restrictions.and(
-		Restrictions.ge("startDate", inclusiveStartDate.getTime()),
-		Restrictions.le("startDate", inclusiveEndDate.getTime())),
-		Restrictions.and(Restrictions.ge("endDate",
-			inclusiveStartDate.getTime()), Restrictions.le(
-				"endDate", inclusiveEndDate.getTime()))));
-	return getHibernateTemplate().findByCriteria(criteria);
+    private Date getInclusiveStartDate(final Date start) {
+	final Calendar inclusiveStartDate = Calendar.getInstance();
+	inclusiveStartDate.setTime(start);
+	inclusiveStartDate.set(Calendar.HOUR_OF_DAY, 0);
+	inclusiveStartDate.set(Calendar.MINUTE, 0);
+	inclusiveStartDate.set(Calendar.SECOND, 0);
+	inclusiveStartDate.set(Calendar.MILLISECOND, 0);
+	return inclusiveStartDate.getTime();
     }
 
     /**
@@ -227,8 +236,8 @@ extends AbstractHibernateRepository implements BuildDetailsRepository {
 
 	final DetachedCriteria criteria = DetachedCriteria
 	.forClass(BuildDetails.class)
-	.add(Restrictions.and(Restrictions.ge("startDate", fromDate),
-		Restrictions.le("endDate", toDate)))
+	.add(Restrictions.and(Restrictions.ge("startDate", getInclusiveStartDate(fromDate)),
+		Restrictions.le("endDate", getInclusiveEndDate(toDate))))
 		.createCriteria("node")
 		.add(Restrictions.ilike("masterHostName", masterHostName));
 
@@ -275,8 +284,9 @@ extends AbstractHibernateRepository implements BuildDetailsRepository {
 	    criteria = criteria.add(Restrictions.ilike("name", projectName));
 	}
 	criteria = criteria
-	.add(Restrictions.and(Restrictions.ge("startDate", fromDate),
-			Restrictions.le("endDate", toDate)))
+		.add(Restrictions.and(Restrictions.ge("startDate",
+			getInclusiveStartDate(fromDate)), Restrictions.le(
+			"endDate", getInclusiveEndDate(toDate))))
 		.addOrder(Property.forName("startDate").asc())
 		.createCriteria("node")
 		.add(Restrictions.ilike("masterHostName", masterHostName));
