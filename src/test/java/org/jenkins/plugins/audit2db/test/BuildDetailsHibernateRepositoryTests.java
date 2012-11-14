@@ -5,9 +5,10 @@ package org.jenkins.plugins.audit2db.test;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
 import org.jenkins.plugins.audit2db.internal.data.AbstractHibernateRepository;
@@ -26,33 +27,16 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
  * 
  */
 public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
-    private final String hostName = "MY_JENKINS";
+    private static final Logger LOGGER = Logger
+	    .getLogger(BuildDetailsHibernateRepositoryTests.class.getName());
 
-    private final BuildDetailsRepository repository = new BuildDetailsHibernateRepository(
+    final String hostName = "MY_JENKINS";
+
+    final BuildDetailsRepository repository = new BuildDetailsHibernateRepository(
 	    HibernateUtil.getSessionFactory(HibernateUtil.getExtraProperties(
 		    "org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:test", "SA",
 	    "")));
 
-    private Map<String, Integer> createRandomDataset() {
-	final Map<String, Integer> retval = new HashMap<String, Integer>();
-
-	final int numOfProjects = 10;
-	final int maxBuildsPerProject = 25;
-	for (int projCtr = 1; projCtr <= numOfProjects; projCtr++) {
-	    final String projectName = "PROJECT_" + projCtr;
-	    final int numOfBuilds = (int) (Math.random() * maxBuildsPerProject) + 1;
-	    for (int buildCtr = 1; buildCtr <= numOfBuilds; buildCtr++) {
-		final BuildDetails buildDetails = createRandomBuildDetails();
-		buildDetails.setId(buildDetails.getId() + buildCtr);
-		buildDetails.setName(projectName);
-		buildDetails.getNode().setMasterHostName(hostName);
-		repository.saveBuildDetails(buildDetails);
-	    }
-	    retval.put(projectName, Integer.valueOf(numOfBuilds));
-	}
-
-	return retval;
-    }
     @Test
     public void createShouldReturnMatchingId() {
 	final BuildDetails build = createRandomBuildDetails();
@@ -161,14 +145,15 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
     @Test
     public void retrievalByMatchingDateRangeShouldReturnNonEmptyList() {
 	final BuildDetails build = createRandomBuildDetails();
+	build.setEndDate(new Date());
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
 	final Calendar start = Calendar.getInstance();
-	final Calendar end = Calendar.getInstance();
+	start.setTime(build.getStartDate());
 
-	start.setTime(new Date(build.getStartDate().getTime() - 10000));
-	end.setTime(new Date(build.getStartDate().getTime() + 10000));
+	final Calendar end = Calendar.getInstance();
+	end.setTime(build.getEndDate());
 
 	List<BuildDetails> builds = repository
 	.getBuildDetailsByDateRange(start.getTime(), end.getTime());
@@ -415,13 +400,21 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 
     @Test
     public void retrievingAllProjectNamesShouldMatchDataset() {
+	final Map<String, List<BuildDetails>> dataset = createRandomDataset(hostName);
+	// persist dataset in a transaction and roll it back at the end of the
+	// test
+	for (final List<BuildDetails> detailsList : dataset.values()) {
+	    for (final BuildDetails details : detailsList) {
+		LOGGER.log(Level.INFO,
+			"Saving build details " + details.getId());
+		repository.saveBuildDetails(details);
+	    }
+	}
+
 	final Calendar fromDate = Calendar.getInstance();
 	fromDate.add(Calendar.YEAR, -1);
 
 	final Calendar toDate = Calendar.getInstance();
-	toDate.add(Calendar.YEAR, 1);
-
-	final Map<String, Integer> dataset = createRandomDataset();
 
 	final List<String> projectNames = repository.getProjectNames(hostName,
 		fromDate.getTime(), toDate.getTime());
@@ -435,7 +428,14 @@ public class BuildDetailsHibernateRepositoryTests extends RepositoryTests {
 
     @Test
     public void retrievingOldProjectNamesShouldReturnEmptyList() {
-	createRandomDataset();
+	final Map<String, List<BuildDetails>> dataset = createRandomDataset(hostName);
+	// persist dataset in a transaction and roll it back at the end of the
+	// test
+	for (final List<BuildDetails> detailsList : dataset.values()) {
+	    for (final BuildDetails details : detailsList) {
+		repository.saveBuildDetails(details);
+	    }
+	}
 
 	final Calendar fromDate = Calendar.getInstance();
 	fromDate.add(Calendar.YEAR, -10);

@@ -6,7 +6,7 @@
 		<version>1.460</version>
 	</parent>
 	<artifactId>audit2db</artifactId>
-	<version>0.3</version>
+	<version>0.3-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Audit to Database Plugin</name>
 	<description>This plugin provides database audit functionality to Jenkins.  It allows recording build information to database, including the build parameters (if any), and the user who started the build.</description>

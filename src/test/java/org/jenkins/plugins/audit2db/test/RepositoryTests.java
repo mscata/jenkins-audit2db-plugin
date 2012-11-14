@@ -2,7 +2,9 @@ package org.jenkins.plugins.audit2db.test;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
 import org.jenkins.plugins.audit2db.internal.model.BuildNodeImpl;
@@ -18,7 +20,7 @@ public class RepositoryTests {
     }
 
     protected BuildDetails createRandomBuildDetails() {
-	final long salt = new Date().getTime();
+	final long salt = System.nanoTime();
 	final BuildDetails build = new BuildDetailsImpl();
 	build.setDuration(Long.valueOf(60 + (long) (Math.random() * 60)));
 	build.setEndDate(new Date(build.getStartDate().getTime()
@@ -40,6 +42,30 @@ public class RepositoryTests {
 	build.setNode(node);
 
 	return build;
+    }
+
+    protected Map<String, List<BuildDetails>> createRandomDataset(
+	    final String hostName) {
+	final Map<String, List<BuildDetails>> retval = new HashMap<String, List<BuildDetails>>();
+
+	final int numOfProjects = 10;
+	final int maxBuildsPerProject = 25;
+	for (int projCtr = 1; projCtr <= numOfProjects; projCtr++) {
+	    final String projectName = "PROJECT_" + projCtr;
+	    final int numOfBuilds = (int) (Math.random() * maxBuildsPerProject) + 1;
+	    final List<BuildDetails> details = new ArrayList<BuildDetails>(
+		    numOfBuilds);
+	    for (int buildCtr = 1; buildCtr <= numOfBuilds; buildCtr++) {
+		final BuildDetails buildDetails = createRandomBuildDetails();
+		buildDetails.setId(buildDetails.getId() + buildCtr);
+		buildDetails.setName(projectName);
+		buildDetails.getNode().setMasterHostName(hostName);
+		details.add(buildDetails);
+	    }
+	    retval.put(projectName, details);
+	}
+
+	return retval;
     }
 
 }
