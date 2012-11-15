@@ -18,9 +18,9 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>scm:git:https://github.com/mscata/jenkins-audit2db-plugin.git</connection>
-		<developerConnection>scm:git:https://github.com/mscata/jenkins-audit2db-plugin.git</developerConnection>
-		<url>https://github.com/mscata/jenkins-audit2db-plugin</url>
+		<connection>http://github.com/mscata/jenkins-audit2db-plugin.git</connection>
+		<developerConnection>scm:git:http://github.com/mscata/jenkins-audit2db-plugin.git</developerConnection>
+		<url>scm:git:http://github.com/mscata/jenkins-audit2db-plugin</url>
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
@@ -54,7 +54,7 @@
 		<version.maven-dependency-plugin>2.5.1</version.maven-dependency-plugin>
 		<version.maven-cobertura-plugin>2.5.1</version.maven-cobertura-plugin>
 		<version.maven-pmd-plugin>2.5</version.maven-pmd-plugin>
-		<version.maven-release-plugin>2.1</version.maven-release-plugin>
+		<version.maven-release-plugin>2.2</version.maven-release-plugin>
 	</properties>
 	<developers>
 		<developer>
@@ -256,10 +256,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<version>${version.maven-release-plugin}</version><!--$NO-MVN-MAN-VER$ -->
 				<configuration>
-				    <!-- 
-					<mavenExecutorId>forked-path</mavenExecutorId>
-				     -->
-					<goals>deploy</goals>
+				    <tagNameFormat>@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
 		</plugins>
