@@ -18,9 +18,9 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>http://github.com/mscata/jenkins-audit2db-plugin.git</connection>
+		<connection>scm:git:http://github.com/mscata/jenkins-audit2db-plugin.git</connection>
 		<developerConnection>scm:git:http://github.com/mscata/jenkins-audit2db-plugin.git</developerConnection>
-		<url>scm:git:http://github.com/mscata/jenkins-audit2db-plugin</url>
+		<url>http://github.com/mscata/jenkins-audit2db-plugin</url>
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
