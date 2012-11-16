@@ -151,6 +151,17 @@
 			<artifactId>spring-orm</artifactId>
 			<version>${version.springframework}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.main</groupId>
+			<artifactId>jenkins-test-harness</artifactId>
+			<version>1.460</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>xml-apis</artifactId>
+					<groupId>xml-apis</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 	<build>
 	    <finalName>${artifactId}</finalName>
