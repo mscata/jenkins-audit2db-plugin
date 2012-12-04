@@ -36,16 +36,6 @@ public class WhenTestingDataSource extends HudsonTestCase {
     }
 
     @Test
-    public void testInvalidJdbcCredentialsShouldFail() throws Exception {
-        final DbAuditPublisher publisher = new DbAuditPublisherImpl();
-        final DbAuditPublisherDescriptor descriptor = (DbAuditPublisherDescriptor) publisher.getDescriptor();
-
-        final FormValidation testResult = descriptor.doTestJdbcConnection(
-                jdbcDriver, jdbcUrl, jdbcUser, "wrong-password!!!");
-        Assert.assertEquals("Unexpected successful connection.", FormValidation.Kind.ERROR, testResult.kind);
-    }
-
-    @Test
     public void testInvalidJdbcDriverShouldFail() throws Exception {
         final DbAuditPublisher publisher = new DbAuditPublisherImpl();
         final DbAuditPublisherDescriptor descriptor = (DbAuditPublisherDescriptor) publisher.getDescriptor();
