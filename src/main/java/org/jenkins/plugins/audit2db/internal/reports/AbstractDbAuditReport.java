@@ -5,6 +5,7 @@ import jenkins.model.Jenkins;
 
 import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
 import org.jenkins.plugins.audit2db.internal.DbAuditPublisherImpl;
+import org.jenkins.plugins.audit2db.internal.DbAuditUtil;
 import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
 import org.jenkins.plugins.audit2db.reports.DbAuditReport;
 
@@ -13,6 +14,16 @@ public abstract class AbstractDbAuditReport implements DbAuditReport {
 
     public AbstractDbAuditReport() {
 	super();
+    }
+
+    @Override
+    public String getJenkinsHostname() {
+	return DbAuditUtil.getHostName();
+    }
+
+    @Override
+    public String getJenkinsIpAddr() {
+	return DbAuditUtil.getIpAddress();
     }
 
     @Override

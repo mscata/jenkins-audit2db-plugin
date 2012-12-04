@@ -23,7 +23,6 @@ import jenkins.model.Jenkins;
 
 import org.jenkins.plugins.audit2db.Messages;
 import org.jenkins.plugins.audit2db.internal.DbAuditPlugin;
-import org.jenkins.plugins.audit2db.internal.DbAuditUtil;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.reports.DbAuditReport;
 import org.jenkins.plugins.audit2db.reports.JobsByDateReport;
@@ -91,16 +90,6 @@ public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsB
 	    }
 	}
 	return retval;
-    }
-
-    @Override
-    public String getJenkinsHostname() {
-	return DbAuditUtil.getHostName();
-    }
-
-    @Override
-    public String getJenkinsIpAddr() {
-	return DbAuditUtil.getIpAddress();
     }
 
     @Override

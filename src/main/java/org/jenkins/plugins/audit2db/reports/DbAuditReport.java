@@ -16,6 +16,21 @@ import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
 public interface DbAuditReport extends ExtensionPoint, Action,
 Describable<DbAuditReport> {
     /**
+     * @return the host name of the Jenkins master.
+     */
+    String getJenkinsHostname();
+
+    /**
+     * @return the IP address of the Jenkins master.
+     */
+    String getJenkinsIpAddr();
+
+    /**
+     * @return the date and time in which the report was generated.
+     */
+    String getDateGenerated();
+
+    /**
      * @return a generic explanation about the report's layout and objectives.
      */
     String getReportDescription();

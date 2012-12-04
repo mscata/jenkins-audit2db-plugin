@@ -13,12 +13,6 @@ import org.jenkins.plugins.audit2db.model.BuildDetails;
  * 
  */
 public interface JobsByDateReport {
-    String getJenkinsHostname();
-
-    String getJenkinsIpAddr();
-
-    String getDateGenerated();
-
     String getStartDateParam(String dateString);
 
     String getEndDateParam(String dateString);
