@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import jenkins.model.Jenkins;
 
@@ -26,8 +25,6 @@ import org.jenkins.plugins.audit2db.reports.JobsByDateReport;
  */
 @Extension
 public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsByDateReport {
-    private final static transient Logger LOGGER = Logger
-    .getLogger(JobsByDateReportImpl.class.getName());
 
     @Extension
     public static final class DescriptorImpl extends Descriptor<DbAuditReport> {
