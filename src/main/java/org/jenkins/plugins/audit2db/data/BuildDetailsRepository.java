@@ -26,6 +26,15 @@ public interface BuildDetailsRepository {
     Object saveBuildDetails(BuildDetails details);
 
     /**
+     * Creates new entities in the repository according to the given list of
+     * build details.
+     * 
+     * @param details
+     *            the collection of details to save.
+     */
+    void saveBuildDetailsList(List<BuildDetails> details);
+
+    /**
      * Retrieves previously saved build details that match the given id.
      * 
      * @param id
@@ -67,8 +76,8 @@ public interface BuildDetailsRepository {
     List<BuildDetails> getBuildDetailsByDateRange(Date start, Date end);
 
     /**
-     * Retrieves previously saved build details whose duration in seconds
-     * falls between the given range. The range is inclusive.
+     * Retrieves previously saved build details whose duration in seconds falls
+     * between the given range. The range is inclusive.
      * 
      * @param min
      *            the minimum duration in seconds.
@@ -110,7 +119,8 @@ public interface BuildDetailsRepository {
     /**
      * Retrieves the build node that matches the given url.
      * 
-     * @param url the node url (unique).
+     * @param url
+     *            the node url (unique).
      * 
      * @return the matching node if found, otherwise <code>null</code>.
      */
@@ -119,7 +129,8 @@ public interface BuildDetailsRepository {
     /**
      * Retrieves the build details for the given Jenkins build.
      * 
-     * @param build a reference to the Jenkins build.
+     * @param build
+     *            a reference to the Jenkins build.
      * @return the relevant build details if found, otherwise <code>null</code>.
      */
     BuildDetails getBuildDetailsForBuild(AbstractBuild<?, ?> build);

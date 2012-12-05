@@ -22,6 +22,7 @@ import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
 import org.jenkins.plugins.audit2db.internal.model.BuildNodeImpl;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.model.BuildNode;
+import org.springframework.transaction.TransactionStatus;
 
 /**
  * Hibernate-based implementation of the {@link BuildDetailsRepository}
@@ -90,6 +91,25 @@ extends AbstractHibernateRepository implements BuildDetailsRepository {
     }
 
     /**
+     * @see org.jenkins.plugins.audit2db.data.BuildDetailsRepository#saveBuildDetailsList(List)
+     */
+    @Override
+    public void saveBuildDetailsList(final List<BuildDetails> details) {
+	final TransactionStatus tx = getTransactionManager().getTransaction(
+		null);
+	try {
+	    for (final BuildDetails detail : details) {
+		saveBuildDetails(detail);
+	    }
+	    getTransactionManager().commit(tx);
+	} catch (final Exception e) {
+	    getTransactionManager().rollback(tx);
+	    LOGGER.log(Level.SEVERE,
+		    "An error occurred while saving the build details.", e);
+	}
+    }
+
+    /**
      * @see org.jenkins.plugins.audit2db.data.BuildDetailsRepository#getBuildDetailsById(String)
      */
     @Override
@@ -142,7 +162,7 @@ extends AbstractHibernateRepository implements BuildDetailsRepository {
 		Restrictions.ge("startDate", inclusiveStartDate),
 		Restrictions.le("startDate", inclusiveEndDate)),
 		Restrictions.and(
-			Restrictions.ge("endDate", inclusiveStartDate), 
+			Restrictions.ge("endDate", inclusiveStartDate),
 			Restrictions.le("endDate", inclusiveEndDate))));
 	return getHibernateTemplate().findByCriteria(criteria);
     }
@@ -284,12 +304,12 @@ extends AbstractHibernateRepository implements BuildDetailsRepository {
 	    criteria = criteria.add(Restrictions.ilike("name", projectName));
 	}
 	criteria = criteria
-		.add(Restrictions.and(Restrictions.ge("startDate",
-			getInclusiveStartDate(fromDate)), Restrictions.le(
+	.add(Restrictions.and(Restrictions.ge("startDate",
+		getInclusiveStartDate(fromDate)), Restrictions.le(
 			"endDate", getInclusiveEndDate(toDate))))
-		.addOrder(Property.forName("startDate").asc())
-		.createCriteria("node")
-		.add(Restrictions.ilike("masterHostName", masterHostName));
+			.addOrder(Property.forName("startDate").asc())
+			.createCriteria("node")
+			.add(Restrictions.ilike("masterHostName", masterHostName));
 
 	try {
 	    @SuppressWarnings("unchecked")
