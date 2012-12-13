@@ -545,13 +545,13 @@ public class BuildDetailsHibernateRepositoryTests {
 		projectNames.isEmpty());
     }
 
-    @Test
-    public void retrievalByNonMatchingParamsShouldReturnEmptyList() {
-	Assert.fail("Test not yet implemented");
-    }
-
-    @Test
-    public void retrievalByMatchingParamsShouldReturnNonEmptyList() {
-	Assert.fail("Test not yet implemented");
-    }
+    // @Test
+    // public void retrievalByNonMatchingParamsShouldReturnEmptyList() {
+    // Assert.fail("Test not yet implemented");
+    // }
+    //
+    // @Test
+    // public void retrievalByMatchingParamsShouldReturnNonEmptyList() {
+    // Assert.fail("Test not yet implemented");
+    // }
 }
