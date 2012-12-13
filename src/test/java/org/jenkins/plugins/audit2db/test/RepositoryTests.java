@@ -19,7 +19,7 @@ public class RepositoryTests {
 	super();
     }
 
-    protected BuildDetails createRandomBuildDetails() {
+    public static BuildDetails createRandomBuildDetails() {
 	final long salt = System.nanoTime();
 	final BuildDetails build = new BuildDetailsImpl();
 	build.setDuration(Long.valueOf(60 + (long) (Math.random() * 60)));
@@ -44,7 +44,7 @@ public class RepositoryTests {
 	return build;
     }
 
-    protected Map<String, List<BuildDetails>> createRandomDataset(
+    public static Map<String, List<BuildDetails>> createRandomDataset(
 	    final String hostName) {
 	final Map<String, List<BuildDetails>> retval = new HashMap<String, List<BuildDetails>>();
 
@@ -53,19 +53,26 @@ public class RepositoryTests {
 	for (int projCtr = 1; projCtr <= numOfProjects; projCtr++) {
 	    final String projectName = "PROJECT_" + projCtr;
 	    final int numOfBuilds = (int) (Math.random() * maxBuildsPerProject) + 1;
-	    final List<BuildDetails> details = new ArrayList<BuildDetails>(
-		    numOfBuilds);
-	    for (int buildCtr = 1; buildCtr <= numOfBuilds; buildCtr++) {
-		final BuildDetails buildDetails = createRandomBuildDetails();
-		buildDetails.setId(buildDetails.getId() + buildCtr);
-		buildDetails.setName(projectName);
-		buildDetails.getNode().setMasterHostName(hostName);
-		details.add(buildDetails);
-	    }
+	    final List<BuildDetails> details = createRandomBuildHistory(
+		    hostName, projectName, numOfBuilds);
 	    retval.put(projectName, details);
 	}
 
 	return retval;
     }
 
+    public static List<BuildDetails> createRandomBuildHistory(
+	    final String hostName, final String projectName,
+	    final int numOfBuilds) {
+	final List<BuildDetails> retval = new ArrayList<BuildDetails>(
+		numOfBuilds);
+	for (int buildCtr = 1; buildCtr <= numOfBuilds; buildCtr++) {
+	    final BuildDetails buildDetails = createRandomBuildDetails();
+	    buildDetails.setId(buildDetails.getId() + buildCtr);
+	    buildDetails.setName(projectName);
+	    buildDetails.getNode().setMasterHostName(hostName);
+	    retval.add(buildDetails);
+	}
+	return retval;
+    }
 }

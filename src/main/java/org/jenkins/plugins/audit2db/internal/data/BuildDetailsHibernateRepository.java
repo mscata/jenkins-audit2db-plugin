@@ -95,6 +95,11 @@ extends AbstractHibernateRepository implements BuildDetailsRepository {
      */
     @Override
     public void saveBuildDetailsList(final List<BuildDetails> details) {
+	if (null == details) {
+	    throw new IllegalArgumentException(
+		    "Invalid build details: cannot be null.");
+	}
+
 	final TransactionStatus tx = getTransactionManager().getTransaction(
 		null);
 	try {
@@ -252,15 +257,38 @@ extends AbstractHibernateRepository implements BuildDetailsRepository {
     @Override
     public List<String> getProjectNames(final String masterHostName,
 	    final Date fromDate, final Date toDate) {
+	return getProjectNames(masterHostName, null, fromDate, toDate);
+    }
+    
+    /**
+     * Retrieves the names of all projects on the given Jenkins master,
+     * filtered by name pattern and date range. The name pattern accepts
+     * wildcards. A <code>null</code> name pattern will match all names.
+     */
+    @Override
+    public List<String> getProjectNames(final String masterHostName, 
+	    final String pattern, final Date fromDate, final Date toDate) {
 	final List<String> retval = new ArrayList<String>();
 
-	final DetachedCriteria criteria = DetachedCriteria
+	DetachedCriteria criteria = DetachedCriteria
 	.forClass(BuildDetails.class)
-	.add(Restrictions.and(Restrictions.ge("startDate", getInclusiveStartDate(fromDate)),
-		Restrictions.le("endDate", getInclusiveEndDate(toDate))))
-		.createCriteria("node")
-		.add(Restrictions.ilike("masterHostName", masterHostName));
-
+	.add(
+		Restrictions.and(
+			Restrictions.ge("startDate", getInclusiveStartDate(fromDate)),
+			Restrictions.le("endDate", getInclusiveEndDate(toDate)))
+	);
+	
+	if ((pattern != null) 
+		&& !pattern.isEmpty() 
+		&& !pattern.trim().equals("*")) {
+	    criteria = criteria.add(Restrictions.ilike("name", pattern));
+	}
+	
+	criteria = criteria.createCriteria("node")
+	.add(
+		Restrictions.ilike("masterHostName", masterHostName)
+	);
+	
 	try {
 	    @SuppressWarnings("unchecked")
 	    final List<BuildDetails> buildDetails = getHibernateTemplate()

@@ -62,3 +62,7 @@
 	text-align: justify;
 	border: none;
 }
+
+#main-panel .setting-input {
+	width: auto;
+}	

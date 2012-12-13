@@ -152,6 +152,24 @@ public interface BuildDetailsRepository {
 	    Date toDate);
 
     /**
+     * Retrieves a list of all the projects registered with the specified
+     * Jenkins master that have had job instances executed between the specified
+     * dates.
+     * 
+     * @param masterHostName
+     *            the host name of the Jenkins master.
+     * @param pattern
+     *            the pattern used to match project names.
+     * @param fromDate
+     *            the start (inclusive) of the date range.
+     * @param toDate
+     *            the end (inclusive) of the date range.
+     * @return a list of project names, never <code>null</code>.
+     */
+    List<String> getProjectNames(String masterHostName, String pattern,
+	    Date fromDate, Date toDate);
+
+    /**
      * Retrieves the build details for all job instances that ran on the
      * specified Jenkins master or all the slaves registered with that master,
      * between two dates for al projects.

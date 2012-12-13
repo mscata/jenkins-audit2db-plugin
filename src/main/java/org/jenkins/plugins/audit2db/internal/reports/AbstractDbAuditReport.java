@@ -34,7 +34,6 @@ public abstract class AbstractDbAuditReport implements DbAuditReport {
     @Override
     public BuildDetailsRepository getRepository() {
 	if (null == repository) {
-	    // DbAuditPublisherImpl.descriptor.load();
 	    repository = new BuildDetailsHibernateRepository(
 		    DbAuditPublisherImpl.getSessionFactory());
 	}
