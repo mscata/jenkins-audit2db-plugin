@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import jenkins.model.Jenkins;
 
@@ -27,9 +26,6 @@ import org.jenkins.plugins.audit2db.reports.JobHistoryReport;
 @Extension
 public class JobHistoryReportImpl extends AbstractDbAuditReport implements
 JobHistoryReport {
-    private final static transient Logger LOGGER = Logger
-    .getLogger(JobHistoryReportImpl.class.getName());
-
     @Extension
     public static final class DescriptorImpl extends Descriptor<DbAuditReport> {
 	@Override
