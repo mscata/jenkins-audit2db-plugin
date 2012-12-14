@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.jenkins.plugins.audit2db.test;
 
@@ -15,6 +15,7 @@ import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepositor
 import org.jenkins.plugins.audit2db.internal.data.HibernateUtil;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.model.BuildNode;
+import org.jenkins.plugins.audit2db.model.BuildParameter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -23,9 +24,9 @@ import org.springframework.transaction.TransactionStatus;
 
 /**
  * Unit tests for the {@link BuildDetailsHibernateRepository} class.
- * 
+ *
  * @author Marco Scata
- * 
+ *
  */
 public class BuildDetailsHibernateRepositoryTests {
     private static final Logger LOGGER = Logger
@@ -545,13 +546,44 @@ public class BuildDetailsHibernateRepositoryTests {
 		projectNames.isEmpty());
     }
 
-    // @Test
-    // public void retrievalByNonMatchingParamsShouldReturnEmptyList() {
-    // Assert.fail("Test not yet implemented");
-    // }
-    //
-    // @Test
-    // public void retrievalByMatchingParamsShouldReturnNonEmptyList() {
-    // Assert.fail("Test not yet implemented");
-    // }
+//    @Test
+//    public void retrievalByNonMatchingParamsShouldReturnEmptyList() {
+//		Assert.fail("Test not yet implemented");
+//    }
+
+    @Test
+    public void retrievalByMatchingParamsShouldReturnNonEmptyList() {
+	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	.createRandomDataset(hostName);
+	// ideally we should persist dataset in a transaction and roll it back
+	// at the end of the test
+	final TransactionStatus tx = txmgr.getTransaction(null);
+	tx.setRollbackOnly();
+
+	for (final List<BuildDetails> detailsList : dataset.values()) {
+	    repository.saveBuildDetailsList(detailsList);
+	}
+
+	final Calendar fromDate = Calendar.getInstance();
+	fromDate.add(Calendar.YEAR, -1);
+
+	final Calendar toDate = Calendar.getInstance();
+
+	final BuildDetails expected = dataset.entrySet().iterator().next()
+	.getValue().get(0);
+	final BuildParameter param = expected.getParameters().get(0);
+
+	final List<BuildDetails> buildDetails = repository
+	.getBuildDetailsByParams(hostName, param.getName(), param.getValue(),
+		fromDate.getTime(), toDate.getTime());
+
+	txmgr.rollback(tx);
+
+	Assert.assertNotNull("Unexpected null list of project names",
+		buildDetails);
+	Assert.assertEquals("Unexpected number of build details retrieved", 1,
+		buildDetails.size());
+	Assert.assertEquals("Unexpected build details retrieved", expected,
+		buildDetails.get(0));
+    }
 }

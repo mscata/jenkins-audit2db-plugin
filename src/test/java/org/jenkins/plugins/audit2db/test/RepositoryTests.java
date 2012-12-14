@@ -32,8 +32,10 @@ public class RepositoryTests {
 	build.setUserName("BUILD USER NAME " + salt);
 
 	final List<BuildParameter> params = new ArrayList<BuildParameter>();
-	params.add(new BuildParameterImpl("PARAM_ID " + salt, "PARAM NAME"
-		+ salt, "PARAM VALUE " + salt, build));
+	params.add(new BuildParameterImpl("PARAM_ID 1 " + salt, "PARAM NAME 1 "
+		+ salt, "PARAM VALUE 1 " + salt, build));
+	params.add(new BuildParameterImpl("PARAM_ID 2 " + salt, "PARAM NAME 2 "
+		+ salt, "PARAM VALUE 2 " + salt, build));
 	build.setParameters(params);
 
 	final BuildNode node = new BuildNodeImpl("NODE ADDRESS",
