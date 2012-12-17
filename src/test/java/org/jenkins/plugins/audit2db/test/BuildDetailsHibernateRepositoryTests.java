@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
@@ -546,10 +547,144 @@ public class BuildDetailsHibernateRepositoryTests {
 		projectNames.isEmpty());
     }
 
-//    @Test
-//    public void retrievalByNonMatchingParamsShouldReturnEmptyList() {
-//		Assert.fail("Test not yet implemented");
-//    }
+    @Test
+    public void retrievalByBlankParamNameShouldReturnNonEmptyList() {
+	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	.createRandomDataset(hostName);
+	// ideally we should persist dataset in a transaction and roll it back
+	// at the end of the test
+	final TransactionStatus tx = txmgr.getTransaction(null);
+	tx.setRollbackOnly();
+
+	for (final List<BuildDetails> detailsList : dataset.values()) {
+	    repository.saveBuildDetailsList(detailsList);
+	}
+
+	final Calendar fromDate = Calendar.getInstance();
+	fromDate.add(Calendar.YEAR, -1);
+
+	final Calendar toDate = Calendar.getInstance();
+
+	// get the first non-parameterised build details from the dataset
+	// this must appear in the returned list
+	BuildDetails expected = null;
+	for (final Entry<String, List<BuildDetails>> entry : dataset.entrySet()) {
+	    expected = entry.getValue().get(0);
+	    if (expected.getParameters().isEmpty()) {
+		break;
+	    }
+	}
+
+	// get the first parameterised build details from the dataset
+	// this one should not appear in the returned list
+	BuildDetails unexpected = null;
+	for (final Entry<String, List<BuildDetails>> entry : dataset.entrySet()) {
+	    unexpected = entry.getValue().get(0);
+	    if (!unexpected.getParameters().isEmpty()) {
+		break;
+	    }
+	}
+
+	final List<BuildDetails> buildDetails = repository
+	.getBuildDetailsByParams(hostName, "", "",
+		fromDate.getTime(), toDate.getTime());
+
+	txmgr.rollback(tx);
+
+	Assert.assertNotNull("Unexpected null list of build details",
+		buildDetails);
+	Assert.assertFalse("Unexpected empty list of build details",
+		buildDetails.isEmpty());
+	Assert.assertTrue("The expected build details was not returned",
+		buildDetails.contains(expected));
+	Assert.assertTrue("The unexpected build details was returned",
+		!buildDetails.contains(unexpected));
+    }
+
+    @Test
+    public void retrievalByNonMatchingParamNameShouldReturnEmptyList() {
+	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	.createRandomDataset(hostName);
+	// ideally we should persist dataset in a transaction and roll it back
+	// at the end of the test
+	final TransactionStatus tx = txmgr.getTransaction(null);
+	tx.setRollbackOnly();
+
+	for (final List<BuildDetails> detailsList : dataset.values()) {
+	    repository.saveBuildDetailsList(detailsList);
+	}
+
+	final Calendar fromDate = Calendar.getInstance();
+	fromDate.add(Calendar.YEAR, -1);
+
+	final Calendar toDate = Calendar.getInstance();
+
+	// get the first parameterised build details from the dataset
+	BuildDetails expected = null;
+	while (dataset.entrySet().iterator().hasNext()) {
+	    expected = dataset.entrySet().iterator().next()
+		.getValue().get(0);
+	    if (!expected.getParameters().isEmpty()) {
+		break;
+	    }
+	}
+
+	final BuildParameter param = expected.getParameters().get(0);
+
+	final List<BuildDetails> buildDetails = repository
+	.getBuildDetailsByParams(hostName, param.getName() + "-WRONGNAME",
+		param.getValue(), fromDate.getTime(), toDate.getTime());
+
+	txmgr.rollback(tx);
+
+	Assert.assertNotNull("Unexpected null list of project names",
+		buildDetails);
+	Assert.assertEquals("Unexpected non-empty list retrieved", 0,
+		buildDetails.size());
+    }
+
+    @Test
+    public void retrievalByNonMatchingParamValueShouldReturnEmptyList() {
+	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	.createRandomDataset(hostName);
+	// ideally we should persist dataset in a transaction and roll it back
+	// at the end of the test
+	final TransactionStatus tx = txmgr.getTransaction(null);
+	tx.setRollbackOnly();
+
+	for (final List<BuildDetails> detailsList : dataset.values()) {
+	    repository.saveBuildDetailsList(detailsList);
+	}
+
+	final Calendar fromDate = Calendar.getInstance();
+	fromDate.add(Calendar.YEAR, -1);
+
+	final Calendar toDate = Calendar.getInstance();
+
+	// get the first parameterised build details from the dataset
+	BuildDetails expected = null;
+	while (dataset.entrySet().iterator().hasNext()) {
+	    expected = dataset.entrySet().iterator().next()
+		.getValue().get(0);
+	    if (!expected.getParameters().isEmpty()) {
+		break;
+	    }
+	}
+
+	final BuildParameter param = expected.getParameters().get(0);
+
+	final List<BuildDetails> buildDetails = repository
+	.getBuildDetailsByParams(hostName, param.getName(),
+		param.getValue() + "-WRONGVALUE",
+		fromDate.getTime(), toDate.getTime());
+
+	txmgr.rollback(tx);
+
+	Assert.assertNotNull("Unexpected null list of project names",
+		buildDetails);
+	Assert.assertEquals("Unexpected non-empty list retrieved", 0,
+		buildDetails.size());
+    }
 
     @Test
     public void retrievalByMatchingParamsShouldReturnNonEmptyList() {
@@ -569,8 +704,16 @@ public class BuildDetailsHibernateRepositoryTests {
 
 	final Calendar toDate = Calendar.getInstance();
 
-	final BuildDetails expected = dataset.entrySet().iterator().next()
-	.getValue().get(0);
+	// get the first parameterised build details from the dataset
+	BuildDetails expected = null;
+	while (dataset.entrySet().iterator().hasNext()) {
+	    expected = dataset.entrySet().iterator().next()
+		.getValue().get(0);
+	    if (!expected.getParameters().isEmpty()) {
+		break;
+	    }
+	}
+
 	final BuildParameter param = expected.getParameters().get(0);
 
 	final List<BuildDetails> buildDetails = repository

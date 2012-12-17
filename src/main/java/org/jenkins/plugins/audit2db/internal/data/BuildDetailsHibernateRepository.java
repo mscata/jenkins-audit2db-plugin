@@ -253,7 +253,7 @@ public class BuildDetailsHibernateRepository extends
 	// we need to specifically state >=startdate AND <=enddate
 	// because the "between" semantics vary between database
 	// implementations and we want to use an inclusive filter every time
-	DetachedCriteria criteria = DetachedCriteria
+	final DetachedCriteria criteria = DetachedCriteria
 		.forClass(BuildDetails.class)
 		.createAlias("node", "node")
 		.add(Restrictions.eq("node.masterHostName", masterHostName))
@@ -262,7 +262,9 @@ public class BuildDetailsHibernateRepository extends
 			Restrictions.le("endDate", getInclusiveEndDate(toDate))))
 		.addOrder(Property.forName("startDate").asc());
 
-	if ((paramName != null) && !paramName.isEmpty()) {
+	if ((null == paramName) || paramName.isEmpty()) {
+	    criteria.add(Restrictions.isEmpty("parameters"));
+	} else {
 	    criteria.createAlias("parameters", "param")
 	    	.add(Restrictions.and(
 		    Restrictions.ilike("param.name", paramName),

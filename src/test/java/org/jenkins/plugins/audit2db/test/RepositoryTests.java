@@ -19,7 +19,7 @@ public class RepositoryTests {
 	super();
     }
 
-    public static BuildDetails createRandomBuildDetails() {
+    public static BuildDetails createRandomBuildDetails(final boolean withParams) {
 	final long salt = System.nanoTime();
 	final BuildDetails build = new BuildDetailsImpl();
 	build.setDuration(Long.valueOf(60 + (long) (Math.random() * 60)));
@@ -31,12 +31,14 @@ public class RepositoryTests {
 	build.setUserId("BUILD USER ID " + salt);
 	build.setUserName("BUILD USER NAME " + salt);
 
-	final List<BuildParameter> params = new ArrayList<BuildParameter>();
-	params.add(new BuildParameterImpl("PARAM_ID 1 " + salt, "PARAM NAME 1 "
-		+ salt, "PARAM VALUE 1 " + salt, build));
-	params.add(new BuildParameterImpl("PARAM_ID 2 " + salt, "PARAM NAME 2 "
-		+ salt, "PARAM VALUE 2 " + salt, build));
-	build.setParameters(params);
+	if (withParams) {
+	    final List<BuildParameter> params = new ArrayList<BuildParameter>();
+	    params.add(new BuildParameterImpl("PARAM_ID 1 " + salt,
+		    "PARAM NAME 1 " + salt, "PARAM VALUE 1 " + salt, build));
+	    params.add(new BuildParameterImpl("PARAM_ID 2 " + salt,
+		    "PARAM NAME 2 " + salt, "PARAM VALUE 2 " + salt, build));
+	    build.setParameters(params);
+	}
 
 	final BuildNode node = new BuildNodeImpl("NODE ADDRESS",
 		"NODE HOSTNAME", "NODE DISPLAYNAME", "NODE URL", "NODE NAME",
@@ -44,6 +46,25 @@ public class RepositoryTests {
 	build.setNode(node);
 
 	return build;
+    }
+
+    public static BuildDetails createRandomBuildDetails() {
+	return createRandomBuildDetails(true);
+    }
+
+    public static List<BuildDetails> createRandomBuildHistory(
+	    final String hostName, final String projectName,
+	    final int numOfBuilds, final boolean withParams) {
+	final List<BuildDetails> retval = new ArrayList<BuildDetails>(
+		numOfBuilds);
+	for (int buildCtr = 1; buildCtr <= numOfBuilds; buildCtr++) {
+	    final BuildDetails buildDetails = createRandomBuildDetails(withParams);
+	    buildDetails.setId(buildDetails.getId() + buildCtr);
+	    buildDetails.setName(projectName);
+	    buildDetails.getNode().setMasterHostName(hostName);
+	    retval.add(buildDetails);
+	}
+	return retval;
     }
 
     public static Map<String, List<BuildDetails>> createRandomDataset(
@@ -55,26 +76,15 @@ public class RepositoryTests {
 	for (int projCtr = 1; projCtr <= numOfProjects; projCtr++) {
 	    final String projectName = "PROJECT_" + projCtr;
 	    final int numOfBuilds = (int) (Math.random() * maxBuildsPerProject) + 1;
+
+	    // half of the projects will have params
+	    final boolean withParams = ((projCtr % 2) == 0);
 	    final List<BuildDetails> details = createRandomBuildHistory(
-		    hostName, projectName, numOfBuilds);
+		    hostName, projectName, numOfBuilds, withParams);
+
 	    retval.put(projectName, details);
 	}
 
-	return retval;
-    }
-
-    public static List<BuildDetails> createRandomBuildHistory(
-	    final String hostName, final String projectName,
-	    final int numOfBuilds) {
-	final List<BuildDetails> retval = new ArrayList<BuildDetails>(
-		numOfBuilds);
-	for (int buildCtr = 1; buildCtr <= numOfBuilds; buildCtr++) {
-	    final BuildDetails buildDetails = createRandomBuildDetails();
-	    buildDetails.setId(buildDetails.getId() + buildCtr);
-	    buildDetails.setName(projectName);
-	    buildDetails.getNode().setMasterHostName(hostName);
-	    retval.add(buildDetails);
-	}
 	return retval;
     }
 }
