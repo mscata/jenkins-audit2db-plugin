@@ -1,11 +1,14 @@
 /**
- * 
+ *
  */
 package org.jenkins.plugins.audit2db.test.integration.webpages;
+
+import java.io.IOException;
 
 import org.jvnet.hudson.test.HudsonTestCase.WebClient;
 
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 /**
  * @author Marco Scata
@@ -32,4 +35,22 @@ public class JobsByDateReportPage extends AbstractJenkinsPage {
     public void setStartDate(final String startDate) {
 	setInputValue(reportFilter, "startDate", startDate);
     }
+
+    public String getEndDate() {
+	return getInputValue(reportFilter, "endDate");
+    }
+
+    public void setEndDate(final String endDate) {
+	setInputValue(reportFilter, "endDate", endDate);
+    }
+
+    public HtmlPage submit() {
+	try {
+	    return (HtmlPage) reportFilter.submit(
+		    reportFilter.getSubmitButton());
+	} catch (final IOException e) {
+	    throw new RuntimeException(e);
+	}
+    }
+
 }

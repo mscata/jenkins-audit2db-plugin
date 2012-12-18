@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.jenkins.plugins.audit2db.test.integration.webpages;
 
@@ -16,7 +16,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 /**
  * @author Marco Scata
- * 
+ *
  */
 public abstract class AbstractJenkinsPage {
     private final static Logger LOGGER = Logger
@@ -41,6 +41,7 @@ public abstract class AbstractJenkinsPage {
 	}
 
 	this.webClient = client;
+	this.webClient.setTimeout(60000);
 
 	if ((null == urlPath) || urlPath.isEmpty()) {
 	    throw new IllegalArgumentException("Page URL path must be provided");

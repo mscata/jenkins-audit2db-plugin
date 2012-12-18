@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
 import org.jenkins.plugins.audit2db.internal.data.AbstractHibernateRepository;
@@ -30,9 +29,6 @@ import org.springframework.transaction.TransactionStatus;
  *
  */
 public class BuildDetailsHibernateRepositoryTests {
-    private static final Logger LOGGER = Logger
-    .getLogger(BuildDetailsHibernateRepositoryTests.class.getName());
-
     final String hostName = "MY_JENKINS";
 
     final BuildDetailsRepository repository = new BuildDetailsHibernateRepository(

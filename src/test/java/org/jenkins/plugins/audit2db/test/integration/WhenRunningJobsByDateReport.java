@@ -1,11 +1,19 @@
 /**
- * 
+ *
  */
 package org.jenkins.plugins.audit2db.test.integration;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
+import org.jenkins.plugins.audit2db.internal.DbAuditPublisherImpl;
+import org.jenkins.plugins.audit2db.internal.DbAuditUtil;
+import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
+import org.jenkins.plugins.audit2db.model.BuildDetails;
+import org.jenkins.plugins.audit2db.reports.JobsByDateReport;
+import org.jenkins.plugins.audit2db.test.RepositoryTests;
 import org.jenkins.plugins.audit2db.test.integration.webpages.JobsByDateReportPage;
 import org.junit.After;
 import org.junit.Before;
@@ -19,12 +27,42 @@ import com.gargoylesoftware.htmlunit.WebAssert;
  *
  */
 public class WhenRunningJobsByDateReport extends HudsonTestCase {
+    private final SimpleDateFormat DATE_FORMAT_NOTIME = new SimpleDateFormat(
+	"yyyy-MM-dd");
+
+    private final String jdbcDriver = "org.hsqldb.jdbc.JDBCDriver";
+    private final String jdbcUrl = "jdbc:hsqldb:mem:test";
+    private final String user = "SA";
+    private final String password = "";
+
+    private final String now;
+    private final String yesterday;
+    private final String tomorrow;
+
     private JobsByDateReportPage page;
+
+    public WhenRunningJobsByDateReport() {
+	final Calendar cal = Calendar.getInstance();
+
+	cal.add(Calendar.DAY_OF_MONTH, -1);
+	yesterday = DATE_FORMAT_NOTIME.format(cal.getTime());
+
+	cal.add(Calendar.DAY_OF_MONTH, 1);
+	now = DATE_FORMAT_NOTIME.format(cal.getTime());
+
+	cal.add(Calendar.DAY_OF_MONTH, 1);
+	tomorrow = DATE_FORMAT_NOTIME.format(cal.getTime());
+    }
 
     @Before
     @Override
     public void setUp() throws Exception {
 	super.setUp();
+	DbAuditPublisherImpl.descriptor.setJdbcDriver(jdbcDriver);
+	DbAuditPublisherImpl.descriptor.setJdbcUrl(jdbcUrl);
+	DbAuditPublisherImpl.descriptor.setJdbcUser(user);
+	DbAuditPublisherImpl.descriptor.setJdbcPassword(password);
+
 	page = new JobsByDateReportPage(createWebClient());
     }
 
@@ -50,9 +88,6 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 	expectedEndDate.set(Calendar.SECOND, 59);
 	expectedEndDate.set(Calendar.MILLISECOND, 999);
 
-	final SimpleDateFormat DATE_FORMAT_NOTIME = new SimpleDateFormat(
-	"yyyy-MM-dd");
-
 	try {
 	    page.load();
 	    WebAssert.assertInputContainsValue(page.getPage(), "startDate",
@@ -61,7 +96,57 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 		    DATE_FORMAT_NOTIME.format(expectedEndDate.getTime()));
 	} catch (final Exception e) {
 	    // expecting successful access
-	    fail("Unexpected failed access. Auditors should have valid permissions.");
+	    fail("Unexpected failed access. Auditors should have valid permissions. " + e.getMessage());
+	}
+    }
+
+    @Test
+    public void testShouldDisplayNoRecordsForNonMatchingSelection() {
+	final JobsByDateReport report = RepositoryTests.getReportExtension(JobsByDateReport.class);
+
+	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
+	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	.createRandomDataset(DbAuditUtil.getHostName());
+	// no need to use transactions because the mem db will be dumped
+	// after each test run
+	for (final List<BuildDetails> detailsList : dataset.values()) {
+	    repository.saveBuildDetailsList(detailsList);
+	}
+
+	try {
+	    page.load();
+	    page.setStartDate(yesterday);
+	    page.setEndDate(yesterday);
+	    WebAssert.assertElementPresent(page.submit(), "noDataDiv");
+	} catch (final Exception e) {
+	    // expecting successful run
+	    e.printStackTrace();
+	    fail("Unexpected error. " + e.getMessage());
+	}
+    }
+
+    @Test
+    public void testShouldDisplaySomeRecordsForMatchingSelection() {
+	final JobsByDateReport report = RepositoryTests.getReportExtension(JobsByDateReport.class);
+
+	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
+	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	.createRandomDataset(DbAuditUtil.getHostName());
+	// no need to use transactions because the mem db will be dumped
+	// after each test run
+	for (final List<BuildDetails> detailsList : dataset.values()) {
+	    repository.saveBuildDetailsList(detailsList);
+	}
+
+	try {
+	    page.load();
+	    page.setStartDate(now);
+	    page.setEndDate(tomorrow);
+	    WebAssert.assertElementNotPresent(page.submit(), "noDataDiv");
+	} catch (final Exception e) {
+	    // expecting successful run
+	    e.printStackTrace();
+	    fail("Unexpected error. " + e.getMessage());
 	}
     }
 }

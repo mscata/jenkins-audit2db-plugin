@@ -1,10 +1,14 @@
 package org.jenkins.plugins.audit2db.test;
 
+import hudson.ExtensionList;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import jenkins.model.Jenkins;
 
 import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
 import org.jenkins.plugins.audit2db.internal.model.BuildNodeImpl;
@@ -12,6 +16,7 @@ import org.jenkins.plugins.audit2db.internal.model.BuildParameterImpl;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.model.BuildNode;
 import org.jenkins.plugins.audit2db.model.BuildParameter;
+import org.jenkins.plugins.audit2db.reports.DbAuditReport;
 
 public class RepositoryTests {
 
@@ -86,5 +91,15 @@ public class RepositoryTests {
 	}
 
 	return retval;
+    }
+
+    public static <T extends DbAuditReport> T getReportExtension(final Class<T> reportClass) {
+	final ExtensionList<DbAuditReport> reportExtensions = Jenkins.getInstance().getExtensionList(DbAuditReport.class);
+	for (final DbAuditReport reportExtension : reportExtensions) {
+	    if (reportClass.isAssignableFrom(reportExtension.getClass())) {
+		return reportClass.cast(reportExtension);
+	    }
+	}
+	throw new RuntimeException("Unable to find extension of type " + reportClass);
     }
 }

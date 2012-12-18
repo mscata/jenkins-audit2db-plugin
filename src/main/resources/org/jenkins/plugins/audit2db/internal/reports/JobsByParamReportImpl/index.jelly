@@ -60,7 +60,7 @@
             <j:choose>
 	            <j:when test="${empty(projectExecutions)}">
 	                <p>
-    	                <div class="warning">${%noData}</div>
+    	                <div id="noDataDiv" class="warning">${%noData}</div>
 	                </p>
 	            </j:when>
 	            <j:otherwise>
