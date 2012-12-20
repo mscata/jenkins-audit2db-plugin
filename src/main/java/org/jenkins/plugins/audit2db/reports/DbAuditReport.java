@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.jenkins.plugins.audit2db.reports;
 
@@ -44,4 +44,9 @@ Describable<DbAuditReport> {
      * @return the build details repository.
      */
     BuildDetailsRepository getRepository();
+
+    /**
+     * @param repository the build details repository.
+     */
+    void setRepository(BuildDetailsRepository repository);
 }

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.jenkins.plugins.audit2db.internal.reports;
 
@@ -21,7 +21,7 @@ import org.jenkins.plugins.audit2db.reports.JobsByDateReport;
 
 /**
  * @author Marco Scata
- * 
+ *
  */
 @Extension
 public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsByDateReport {
@@ -52,7 +52,11 @@ public class JobsByDateReportImpl extends AbstractDbAuditReport implements JobsB
     @Override
     public Map<String, List<BuildDetails>> getProjectExecutions(
 	    final String startDateString, final String endDateString) {
-	Jenkins.getInstance().checkPermission(DbAuditPlugin.RUN);
+	final Jenkins jenkins = Jenkins.getInstance();
+	if (jenkins != null) {
+	    // unit tests won't have a Jenkins instance
+	    jenkins.checkPermission(DbAuditPlugin.RUN);
+	}
 	final Map<String, List<BuildDetails>> retval = new HashMap<String, List<BuildDetails>>();
 	final Date startDate = DbAuditReportUtils.stringToDate(startDateString);
 	final Date endDate = DbAuditReportUtils.stringToDate(endDateString);

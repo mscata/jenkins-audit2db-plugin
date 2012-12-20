@@ -4,9 +4,12 @@
 package org.jenkins.plugins.audit2db.test.integration.webpages;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.jvnet.hudson.test.HudsonTestCase.WebClient;
 
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
@@ -46,8 +49,13 @@ public class JobsByDateReportPage extends AbstractJenkinsPage {
 
     public HtmlPage submit() {
 	try {
+	    final List<HtmlElement> buttons = reportFilter
+	    	.getHtmlElementsByTagName("button");
+
+	    // just trust that the submit button is the last one
+	    // see https://wiki.jenkins-ci.org/display/JENKINS/Unit+Test#UnitTest-Submittingforms
 	    return (HtmlPage) reportFilter.submit(
-		    reportFilter.getSubmitButton());
+		    (HtmlButton) buttons.get(buttons.size() - 1));
 	} catch (final IOException e) {
 	    throw new RuntimeException(e);
 	}

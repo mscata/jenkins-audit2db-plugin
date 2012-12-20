@@ -12,18 +12,18 @@
             <div class="report-title">${%Jenkins Audit Report} - ${it.displayName}</div>
 	            <div class="report-filter">
 			        <form name="reportFilter" method="GET">
-			        <table class="pane">
-			           <tr>
-			               <td>Start Date:</td>
-			               <td><input type="text" name="startDate" value="${startDate}"/></td>
-			           </tr>
-		               <tr>
-		                   <td>End Date:</td>
-		                   <td><input type="text" name="endDate" value="${endDate}"/></td>
-		               </tr>
-			        </table>
-		            <input type="submit" value="Apply Filter" />
-			    </form>
+				        <table class="pane">
+				           <tr>
+				               <td>Start Date:</td>
+				               <td><input type="text" name="startDate" value="${startDate}"/></td>
+				           </tr>
+			               <tr>
+			                   <td>End Date:</td>
+			                   <td><input type="text" name="endDate" value="${endDate}"/></td>
+			               </tr>
+				        </table>
+	                    <input type="submit" name="submit" value="Apply Filter" class="yui-button"/>
+    			    </form>
 	            </div>
             <hr/>
             <div class="report-description">${%reportDescription}</div>
@@ -37,7 +37,7 @@
             <j:choose>
 	            <j:when test="${empty(projectExecutions)}">
 	                <p>
-    	                <div id="noDataDiv" class="warning">${%noData}</div>
+    	                <div id="noDataWarning" class="warning">${%noData}</div>
 	                </p>
 	            </j:when>
 	            <j:otherwise>

@@ -98,7 +98,11 @@ public class JobsByParamReportImpl extends AbstractDbAuditReport implements Jobs
     public Map<String, List<BuildDetails>> getProjectExecutions(
 	    final String paramName, final String paramValue,
 	    final String startDateString,final String endDateString) {
-	Jenkins.getInstance().checkPermission(DbAuditPlugin.RUN);
+	final Jenkins jenkins = Jenkins.getInstance();
+	if (jenkins != null) {
+	    // unit tests won't have a Jenkins instance
+	    jenkins.checkPermission(DbAuditPlugin.RUN);
+	}
 	final Map<String, List<BuildDetails>> retval = new HashMap<String, List<BuildDetails>>();
 	final Date startDate = DbAuditReportUtils.stringToDate(startDateString);
 	final Date endDate = DbAuditReportUtils.stringToDate(endDateString);

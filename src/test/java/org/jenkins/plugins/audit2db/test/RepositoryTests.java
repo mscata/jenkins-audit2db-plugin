@@ -20,8 +20,8 @@ import org.jenkins.plugins.audit2db.reports.DbAuditReport;
 
 public class RepositoryTests {
 
-    public RepositoryTests() {
-	super();
+    private RepositoryTests() {
+	// cannot be instantiated by others
     }
 
     public static BuildDetails createRandomBuildDetails(final boolean withParams) {

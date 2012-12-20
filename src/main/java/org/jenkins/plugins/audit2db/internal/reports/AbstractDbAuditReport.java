@@ -41,6 +41,13 @@ public abstract class AbstractDbAuditReport implements DbAuditReport {
     }
 
     @Override
+    public void setRepository(final BuildDetailsRepository repository) {
+	if (repository != null) {
+	    this.repository = repository;
+	}
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public Descriptor<DbAuditReport> getDescriptor() {
 	return Jenkins.getInstance().getDescriptorOrDie(getClass());
