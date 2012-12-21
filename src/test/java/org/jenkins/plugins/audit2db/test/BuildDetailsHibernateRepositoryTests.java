@@ -31,17 +31,17 @@ import org.springframework.transaction.TransactionStatus;
 public class BuildDetailsHibernateRepositoryTests {
     final String hostName = "MY_JENKINS";
 
-    final BuildDetailsRepository repository = new BuildDetailsHibernateRepository(
+    private final BuildDetailsRepository repository = new BuildDetailsHibernateRepository(
 	    HibernateUtil.getSessionFactory(HibernateUtil.getExtraProperties(
-		    "org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:test", "SA",
-	    "")));
+		    TestUtils.JDBC_DRIVER, TestUtils.JDBC_URL,
+		    TestUtils.JDBC_USER, TestUtils.JDBC_PASS)));
 
     final HibernateTransactionManager txmgr = ((BuildDetailsHibernateRepository) repository)
     .getTransactionManager();
 
     @Test
     public void createShouldReturnMatchingId() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 	Assert.assertEquals("Unexpected build id", buildId, build.getId());
@@ -49,9 +49,9 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void createBuildsWithSameNodeShouldReuseNodeEntity() {
-	final BuildDetails build1 = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build1 = TestUtils.createRandomBuildDetails();
 	build1.setId("BUILD_1");
-	final BuildDetails build2 = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build2 = TestUtils.createRandomBuildDetails();
 	build2.setId("BUILD_2");
 
 	repository.saveBuildDetails(build1);
@@ -79,7 +79,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievingBuildNodeByValidUrlShouldSucceed() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -92,7 +92,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievingBuildNodeByNonExistingUrlShouldReturnNull() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -103,7 +103,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByNonMatchingIdShouldReturnNullEntity() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -114,7 +114,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByMatchingIdShouldReturnSameEntity() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -127,7 +127,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByNonMatchingDateRangeShouldReturnEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -145,7 +145,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByMatchingDateRangeShouldReturnNonEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	build.setEndDate(new Date());
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
@@ -176,7 +176,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByNonMatchingDurationRangeShouldReturnEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -192,7 +192,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByMatchingDurationRangeShouldReturnNonEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -210,7 +210,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByNonMatchingFullNameShouldReturnEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -223,7 +223,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByMatchingFullNameShouldReturnNonEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -238,7 +238,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByNonMatchingNameShouldReturnEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -251,7 +251,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByMatchingNameShouldReturnNonEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -266,7 +266,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByNonMatchingUserIdShouldReturnEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -279,7 +279,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByMatchingUserIdShouldReturnNonEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -294,7 +294,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByNonMatchingUserNameShouldReturnEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -307,7 +307,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByMatchingUserNameShouldReturnNonEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -322,7 +322,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalForMasterByMatchingDateRangeShouldReturnNonEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -338,7 +338,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalForMasterAndProjectByMatchingDateRangeShouldReturnNonEmptyList() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -354,7 +354,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void updatedBuildDetailsShouldBePersisted() {
-	final BuildDetails build = RepositoryTests.createRandomBuildDetails();
+	final BuildDetails build = TestUtils.createRandomBuildDetails();
 	final Object buildId = repository.saveBuildDetails(build);
 	Assert.assertNotNull("Unexpected null build id", buildId);
 
@@ -412,7 +412,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievingAllProjectNamesShouldMatchDataset() {
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(hostName);
 	// ideally we should persist dataset in a transaction and roll it back
 	// at the end of the test
@@ -443,7 +443,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievingMatchingProjectNameShouldReturnValidDataset() {
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(hostName);
 	// ideally we should persist dataset in a transaction and roll it back
 	// at the end of the test
@@ -479,7 +479,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievingMatchingProjectNamePatternShouldReturnValidDataset() {
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(hostName);
 	// ideally we should persist dataset in a transaction and roll it back
 	// at the end of the test
@@ -515,7 +515,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievingOldProjectNamesShouldReturnEmptyList() {
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(hostName);
 	// ideally we should persist dataset in a transaction and roll it back
 	// at the end of the test
@@ -545,7 +545,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByBlankParamNameShouldReturnNonEmptyList() {
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(hostName);
 	// ideally we should persist dataset in a transaction and roll it back
 	// at the end of the test
@@ -599,7 +599,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByNonMatchingParamNameShouldReturnEmptyList() {
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(hostName);
 	// ideally we should persist dataset in a transaction and roll it back
 	// at the end of the test
@@ -641,7 +641,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByNonMatchingParamValueShouldReturnEmptyList() {
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(hostName);
 	// ideally we should persist dataset in a transaction and roll it back
 	// at the end of the test
@@ -684,7 +684,7 @@ public class BuildDetailsHibernateRepositoryTests {
 
     @Test
     public void retrievalByMatchingParamsShouldReturnNonEmptyList() {
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(hostName);
 	// ideally we should persist dataset in a transaction and roll it back
 	// at the end of the test

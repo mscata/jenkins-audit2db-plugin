@@ -15,7 +15,7 @@ import org.jenkins.plugins.audit2db.internal.DbAuditUtil;
 import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.reports.JobsByDateReport;
-import org.jenkins.plugins.audit2db.test.RepositoryTests;
+import org.jenkins.plugins.audit2db.test.TestUtils;
 import org.jenkins.plugins.audit2db.test.integration.webpages.JobsByDateReportPage;
 import org.junit.After;
 import org.junit.Before;
@@ -109,10 +109,10 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 
     @Test
     public void testShouldDisplayNoRecordsForNonMatchingSelection() {
-	final JobsByDateReport report = RepositoryTests.getReportExtension(JobsByDateReport.class);
+	final JobsByDateReport report = TestUtils.getReportExtension(JobsByDateReport.class);
 
 	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(DbAuditUtil.getHostName());
 	// no need to use transactions because the mem db will be dumped
 	// after each test run
@@ -138,10 +138,10 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 
     @Test
     public void testShouldDisplaySomeRecordsForMatchingSelection() {
-	final JobsByDateReport report = RepositoryTests.getReportExtension(JobsByDateReport.class);
+	final JobsByDateReport report = TestUtils.getReportExtension(JobsByDateReport.class);
 
 	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(DbAuditUtil.getHostName());
 	// no need to use transactions because the mem db will be dumped
 	// after each test run

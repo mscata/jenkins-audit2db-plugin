@@ -15,7 +15,7 @@ import org.jenkins.plugins.audit2db.internal.DbAuditUtil;
 import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
 import org.jenkins.plugins.audit2db.reports.JobHistoryReport;
-import org.jenkins.plugins.audit2db.test.RepositoryTests;
+import org.jenkins.plugins.audit2db.test.TestUtils;
 import org.jenkins.plugins.audit2db.test.integration.webpages.JobHistoryReportPage;
 import org.junit.After;
 import org.junit.Before;
@@ -61,10 +61,10 @@ public class WhenRunningJobsHistoryReport extends HudsonTestCase {
     }
 
     private Map<String, List<BuildDetails>> populateTestDataset() {
-	final JobHistoryReport report = RepositoryTests.getReportExtension(JobHistoryReport.class);
+	final JobHistoryReport report = TestUtils.getReportExtension(JobHistoryReport.class);
 
 	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(DbAuditUtil.getHostName());
 	// no need to use transactions because the mem db will be dumped
 	// after each test run
@@ -125,10 +125,10 @@ public class WhenRunningJobsHistoryReport extends HudsonTestCase {
 
     @Test
     public void testShouldDisplayNoRecordsForNonMatchingSelection() {
-	final JobHistoryReport report = RepositoryTests.getReportExtension(JobHistoryReport.class);
+	final JobHistoryReport report = TestUtils.getReportExtension(JobHistoryReport.class);
 
 	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(DbAuditUtil.getHostName());
 	// no need to use transactions because the mem db will be dumped
 	// after each test run
@@ -155,10 +155,10 @@ public class WhenRunningJobsHistoryReport extends HudsonTestCase {
 
     @Test
     public void testShouldDisplaySomeRecordsForMatchingSelection() {
-	final JobHistoryReport report = RepositoryTests.getReportExtension(JobHistoryReport.class);
+	final JobHistoryReport report = TestUtils.getReportExtension(JobHistoryReport.class);
 
 	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
-	final Map<String, List<BuildDetails>> dataset = RepositoryTests
+	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(DbAuditUtil.getHostName());
 
 	// no need to use transactions because the mem db will be dumped

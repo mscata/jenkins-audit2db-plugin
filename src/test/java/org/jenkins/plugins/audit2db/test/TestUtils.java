@@ -2,7 +2,9 @@ package org.jenkins.plugins.audit2db.test;
 
 import hudson.ExtensionList;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,9 @@ import java.util.Map;
 
 import jenkins.model.Jenkins;
 
+import org.jenkins.plugins.audit2db.data.BuildDetailsRepository;
+import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
+import org.jenkins.plugins.audit2db.internal.data.HibernateUtil;
 import org.jenkins.plugins.audit2db.internal.model.BuildDetailsImpl;
 import org.jenkins.plugins.audit2db.internal.model.BuildNodeImpl;
 import org.jenkins.plugins.audit2db.internal.model.BuildParameterImpl;
@@ -18,10 +23,42 @@ import org.jenkins.plugins.audit2db.model.BuildNode;
 import org.jenkins.plugins.audit2db.model.BuildParameter;
 import org.jenkins.plugins.audit2db.reports.DbAuditReport;
 
-public class RepositoryTests {
+public class TestUtils {
+    public static final SimpleDateFormat DATE_FORMAT_NOTIME = new SimpleDateFormat(
+	"yyyy-MM-dd");
 
-    private RepositoryTests() {
+    public static final String JDBC_DRIVER = "org.hsqldb.jdbc.JDBCDriver";
+    public static final String JDBC_URL = "jdbc:hsqldb:mem:test";
+    public static final String JDBC_USER = "SA";
+    public static final String JDBC_PASS = "";
+
+    private static final BuildDetailsRepository repository = new BuildDetailsHibernateRepository(
+	    HibernateUtil.getSessionFactory(HibernateUtil.getExtraProperties(
+		    JDBC_DRIVER, JDBC_URL, JDBC_USER, JDBC_PASS)));
+
+    public static final String NOW;
+    public static final String YESTERDAY;
+    public static final String TOMORROW;
+
+    static {
+	final Calendar cal = Calendar.getInstance();
+
+	cal.add(Calendar.DAY_OF_MONTH, -1);
+	YESTERDAY = DATE_FORMAT_NOTIME.format(cal.getTime());
+
+	cal.add(Calendar.DAY_OF_MONTH, 1);
+	NOW = DATE_FORMAT_NOTIME.format(cal.getTime());
+
+	cal.add(Calendar.DAY_OF_MONTH, 1);
+	TOMORROW = DATE_FORMAT_NOTIME.format(cal.getTime());
+    }
+
+    private TestUtils() {
 	// cannot be instantiated by others
+    }
+
+    public static BuildDetailsRepository getTestRepository() {
+	return repository;
     }
 
     public static BuildDetails createRandomBuildDetails(final boolean withParams) {
