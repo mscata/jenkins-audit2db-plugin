@@ -331,7 +331,7 @@ public class BuildDetailsHibernateRepository extends
 		));
 
 	if ((pattern != null) && !pattern.isEmpty()
-		&& !pattern.trim().equals("*")) {
+		&& !pattern.trim().equals("%")) {
 	    criteria = criteria.add(Restrictions.ilike("name", pattern));
 	}
 
