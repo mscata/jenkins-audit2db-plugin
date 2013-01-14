@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.jenkins.plugins.audit2db.data;
 
@@ -13,12 +13,12 @@ import org.jenkins.plugins.audit2db.model.BuildNode;
 
 /**
  * @author Marco Scata
- * 
+ *
  */
 public interface BuildDetailsRepository {
     /**
      * Creates a new entity in the repository with the given build details.
-     * 
+     *
      * @param details
      *            the details to save.
      * @return the entity id.
@@ -28,7 +28,7 @@ public interface BuildDetailsRepository {
     /**
      * Creates new entities in the repository according to the given list of
      * build details.
-     * 
+     *
      * @param details
      *            the collection of details to save.
      */
@@ -36,7 +36,7 @@ public interface BuildDetailsRepository {
 
     /**
      * Retrieves previously saved build details that match the given id.
-     * 
+     *
      * @param id
      *            the build details id.
      * @return the matching build details if found, otherwise <code>null</code>.
@@ -45,7 +45,7 @@ public interface BuildDetailsRepository {
 
     /**
      * Retrieves previously saved build details that match the given name.
-     * 
+     *
      * @param name
      *            the build name
      * @return a list of matching build details if found, otherwise an empty
@@ -55,7 +55,7 @@ public interface BuildDetailsRepository {
 
     /**
      * Retrieves previously saved build details that match the given full name.
-     * 
+     *
      * @param fullName
      * @return a list of matching build details if found, otherwise an empty
      *         list.
@@ -65,7 +65,7 @@ public interface BuildDetailsRepository {
     /**
      * Retrieves previously saved build details whose start date or end date
      * fall between the given range. The range is inclusive.
-     * 
+     *
      * @param start
      *            the start date.
      * @param end
@@ -78,7 +78,7 @@ public interface BuildDetailsRepository {
     /**
      * Retrieves previously saved build details whose duration in seconds falls
      * between the given range. The range is inclusive.
-     * 
+     *
      * @param min
      *            the minimum duration in seconds.
      * @param max
@@ -90,7 +90,7 @@ public interface BuildDetailsRepository {
 
     /**
      * Retrieves previously saved build details that match the given user id.
-     * 
+     *
      * @param userId
      *            the user id to match.
      * @return a list of matching build details if found, otherwise an empty
@@ -100,7 +100,7 @@ public interface BuildDetailsRepository {
 
     /**
      * Retrieves previously saved build details that match the given user name.
-     * 
+     *
      * @param userName
      *            the user name to match.
      * @return a list of matching build details if found, otherwise an empty
@@ -109,8 +109,28 @@ public interface BuildDetailsRepository {
     List<BuildDetails> getBuildDetailsByUserName(String userName);
 
     /**
+     * Retrieves previously saved build details that were executed using the
+     * given parameter values.
+     *
+     * @param masterHostName
+     *            the host name of the Jenkins master.
+     * @param paramName
+     *            the parameter name.
+     * @param paramValue
+     *            the parameter value.
+     * @param fromDate
+     *            the start (inclusive) of the date range.
+     * @param toDate
+     *            the end (inclusive) of the date range.
+     * @return a list of build details matching the specified criteria. Never
+     *         <code>null</code>.
+     */
+    List<BuildDetails> getBuildDetailsByParams(String masterHostName,
+	    String paramName, String paramValue, Date fromDate, Date toDate);
+
+    /**
      * Updates a previously saved build using the given build details.
-     * 
+     *
      * @param details
      *            the updated build details.
      */
@@ -118,17 +138,17 @@ public interface BuildDetailsRepository {
 
     /**
      * Retrieves the build node that matches the given url.
-     * 
+     *
      * @param url
      *            the node url (unique).
-     * 
+     *
      * @return the matching node if found, otherwise <code>null</code>.
      */
     BuildNode getBuildNodeByUrl(String url);
 
     /**
      * Retrieves the build details for the given Jenkins build.
-     * 
+     *
      * @param build
      *            a reference to the Jenkins build.
      * @return the relevant build details if found, otherwise <code>null</code>.
@@ -139,7 +159,7 @@ public interface BuildDetailsRepository {
      * Retrieves a list of all the projects registered with the specified
      * Jenkins master that have had job instances executed between the specified
      * dates.
-     * 
+     *
      * @param masterHostName
      *            the host name of the Jenkins master.
      * @param fromDate
@@ -155,7 +175,7 @@ public interface BuildDetailsRepository {
      * Retrieves a list of all the projects registered with the specified
      * Jenkins master that have had job instances executed between the specified
      * dates.
-     * 
+     *
      * @param masterHostName
      *            the host name of the Jenkins master.
      * @param pattern
@@ -173,7 +193,7 @@ public interface BuildDetailsRepository {
      * Retrieves the build details for all job instances that ran on the
      * specified Jenkins master or all the slaves registered with that master,
      * between two dates for al projects.
-     * 
+     *
      * @param masterHostName
      *            the host name of the Jenkins master.
      * @param fromDate
@@ -190,7 +210,7 @@ public interface BuildDetailsRepository {
      * Retrieves the build details for all job instances that ran on the
      * specified Jenkins master or all the slaves registered with that master,
      * between two dates and for a specific project.
-     * 
+     *
      * @param masterHostName
      *            the host name of the Jenkins master.
      * @param projectName

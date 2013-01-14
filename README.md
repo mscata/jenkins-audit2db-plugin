@@ -59,6 +59,6 @@ Contributions are always welcome. Here's how:
 5. Open a [Pull Request][1]
 6. Wait. Good things will come.
 
-[1]: http://github.com/github/markup/pulls
+[1]: https://help.github.com/articles/creating-a-pull-request
 [2]: http://blogs.msdn.com/b/jdbcteam/archive/2007/06/18/com-microsoft-sqlserver-jdbc-sqlserverexception-this-driver-is-not-configured-for-integrated-authentication.aspx?PageIndex=2
 [3]: https://wiki.jenkins-ci.org/display/JENKINS/Plugins#Plugins-Howtoinstallplugins

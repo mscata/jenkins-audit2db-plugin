@@ -14,9 +14,9 @@ import org.jenkins.plugins.audit2db.internal.DbAuditPublisherImpl;
 import org.jenkins.plugins.audit2db.internal.DbAuditUtil;
 import org.jenkins.plugins.audit2db.internal.data.BuildDetailsHibernateRepository;
 import org.jenkins.plugins.audit2db.model.BuildDetails;
-import org.jenkins.plugins.audit2db.reports.JobsByDateReport;
+import org.jenkins.plugins.audit2db.reports.JobHistoryReport;
 import org.jenkins.plugins.audit2db.test.TestUtils;
-import org.jenkins.plugins.audit2db.test.integration.webpages.JobsByDateReportPage;
+import org.jenkins.plugins.audit2db.test.integration.webpages.JobHistoryReportPage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,9 +29,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * @author Marco Scata
  *
  */
-public class WhenRunningJobsByDateReport extends HudsonTestCase {
+public class WhenRunningJobsHistoryReport extends HudsonTestCase {
     private static final Logger LOGGER = Logger.getLogger(
-	    WhenRunningJobsByDateReport.class.getName());
+	    WhenRunningJobsHistoryReport.class.getName());
 
     private final SimpleDateFormat DATE_FORMAT_NOTIME = new SimpleDateFormat(
 	"yyyy-MM-dd");
@@ -45,9 +45,9 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
     private final String yesterday;
     private final String tomorrow;
 
-    private JobsByDateReportPage page;
+    private JobHistoryReportPage page;
 
-    public WhenRunningJobsByDateReport() {
+    public WhenRunningJobsHistoryReport() {
 	final Calendar cal = Calendar.getInstance();
 
 	cal.add(Calendar.DAY_OF_MONTH, -1);
@@ -60,6 +60,21 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 	tomorrow = DATE_FORMAT_NOTIME.format(cal.getTime());
     }
 
+    private Map<String, List<BuildDetails>> populateTestDataset() {
+	final JobHistoryReport report = TestUtils.getReportExtension(JobHistoryReport.class);
+
+	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
+	final Map<String, List<BuildDetails>> dataset = TestUtils
+	.createRandomDataset(DbAuditUtil.getHostName());
+	// no need to use transactions because the mem db will be dumped
+	// after each test run
+	for (final List<BuildDetails> detailsList : dataset.values()) {
+	    repository.saveBuildDetailsList(detailsList);
+	}
+
+	return dataset;
+    }
+
     @Before
     @Override
     public void setUp() throws Exception {
@@ -69,7 +84,7 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 	DbAuditPublisherImpl.descriptor.setJdbcUser(user);
 	DbAuditPublisherImpl.descriptor.setJdbcPassword(password);
 
-	page = new JobsByDateReportPage(createWebClient());
+	page = new JobHistoryReportPage(createWebClient());
     }
 
     @After
@@ -100,6 +115,7 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 		    DATE_FORMAT_NOTIME.format(expectedStartDate.getTime()));
 	    WebAssert.assertInputContainsValue(page.getPage(), "endDate",
 		    DATE_FORMAT_NOTIME.format(expectedEndDate.getTime()));
+	    WebAssert.assertInputContainsValue(page.getPage(), "jobName", "");
 	} catch (final Exception e) {
 	    // expecting successful access
 	    e.printStackTrace();
@@ -109,7 +125,7 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 
     @Test
     public void testShouldDisplayNoRecordsForNonMatchingSelection() {
-	final JobsByDateReport report = TestUtils.getReportExtension(JobsByDateReport.class);
+	final JobHistoryReport report = TestUtils.getReportExtension(JobHistoryReport.class);
 
 	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
 	final Map<String, List<BuildDetails>> dataset = TestUtils
@@ -124,7 +140,8 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 	try {
 	    page.load();
 	    page.setStartDate(yesterday);
-	    page.setEndDate(yesterday);
+	    page.setEndDate(tomorrow);
+	    page.setJobName("A JOB THAT DOES NOT EXIST");
 
 	    final HtmlPage resultPage = page.submit();
 	    pageText = resultPage.asText();
@@ -138,22 +155,26 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 
     @Test
     public void testShouldDisplaySomeRecordsForMatchingSelection() {
-	final JobsByDateReport report = TestUtils.getReportExtension(JobsByDateReport.class);
+	final JobHistoryReport report = TestUtils.getReportExtension(JobHistoryReport.class);
 
 	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
 	final Map<String, List<BuildDetails>> dataset = TestUtils
 	.createRandomDataset(DbAuditUtil.getHostName());
+
 	// no need to use transactions because the mem db will be dumped
 	// after each test run
 	for (final List<BuildDetails> detailsList : dataset.values()) {
 	    repository.saveBuildDetailsList(detailsList);
 	}
 
+	final String projectName = dataset.keySet().iterator().next();
+
 	String pageText = null; //used for debugging
 	try {
 	    page.load();
 	    page.setStartDate(now);
 	    page.setEndDate(tomorrow);
+	    page.setJobName(projectName + "%"); // test wildcard
 
 	    final HtmlPage resultPage = page.submit();
 	    pageText = resultPage.asText();
@@ -164,4 +185,11 @@ public class WhenRunningJobsByDateReport extends HudsonTestCase {
 	    fail("Unexpected error.");
 	}
     }
+
+
+    @Test
+    public void testShouldDisplayWarningForNoJobName() {
+
+    }
+
 }

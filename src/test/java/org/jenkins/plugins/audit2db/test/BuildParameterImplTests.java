@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.jenkins.plugins.audit2db.test;
 
@@ -15,7 +15,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for the {@link BuildParameterImpl} class.
- * 
+ *
  * @author Marco Scata
  *
  */
@@ -37,7 +37,7 @@ public class BuildParameterImplTests {
                 expected.getId(),
                 expected.getName() + "DIFFERENT",
                 expected.getValue() + "DIFFERENT",
-                expected.getBuildDetails());
+                otherDetails);
         Assert.assertEquals("Broken equality", expected, actual);
     }
 
