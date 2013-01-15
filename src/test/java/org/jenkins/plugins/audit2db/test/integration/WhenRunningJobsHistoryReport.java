@@ -60,21 +60,6 @@ public class WhenRunningJobsHistoryReport extends HudsonTestCase {
 	tomorrow = DATE_FORMAT_NOTIME.format(cal.getTime());
     }
 
-    private Map<String, List<BuildDetails>> populateTestDataset() {
-	final JobHistoryReport report = TestUtils.getReportExtension(JobHistoryReport.class);
-
-	final BuildDetailsHibernateRepository repository = (BuildDetailsHibernateRepository) report.getRepository();
-	final Map<String, List<BuildDetails>> dataset = TestUtils
-	.createRandomDataset(DbAuditUtil.getHostName());
-	// no need to use transactions because the mem db will be dumped
-	// after each test run
-	for (final List<BuildDetails> detailsList : dataset.values()) {
-	    repository.saveBuildDetailsList(detailsList);
-	}
-
-	return dataset;
-    }
-
     @Before
     @Override
     public void setUp() throws Exception {

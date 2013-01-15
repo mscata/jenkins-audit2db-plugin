@@ -1,9 +1,8 @@
 /**
- * 
+ *
  */
 package org.jenkins.plugins.audit2db.test.integration;
 
-import java.util.Date;
 import java.util.List;
 
 import org.jenkins.plugins.audit2db.test.integration.webpages.AuditReportsListPage;
@@ -25,9 +24,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
  *
  */
 public class WhenBrowsingReportsList extends HudsonTestCase {
-    private final static String AUDITOR_NAME = String.format("AUDITOR_"
-	    + (new Date()).getTime());
-
     private static AuditReportsListPage page;
 
     @Before
